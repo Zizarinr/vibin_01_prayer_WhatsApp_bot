@@ -1,0 +1,29 @@
+{
+  "name": "whatsapp-prayer-reminder-bot",
+  "version": "1.0.0",
+  "description": "WhatsApp Bot to send dynamic prayer time reminders with Hadiths and Hijri date.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "whatsapp",
+    "bot",
+    "prayer",
+    "reminder",
+    "sholat",
+    "adhan"
+  ],
+  "author": "Antigravity Google Team",
+  "license": "ISC",
+  "dependencies": {
+    "adhan": "^4.4.1",
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.26.0",
+    "winston": "^3.13.0",
+    "winston-daily-rotate-file": "^5.0.0"
+  }
+}
