@@ -105,7 +105,7 @@ function scheduleToday() {
       logger.info(`-> Main reminder for [${logPrayerName}] is in the past. Skipped.`);
     }
 
-    const minutesArray = Array.isArray(config.preReminderMinutes) ? config.preReminderMinutes : [15, 10, 5, 3];
+    const minutesArray = Array.isArray(config.preReminderMinutes) ? config.preReminderMinutes : [3];
 
     minutesArray.forEach(minutes => {
       const preReminderTime = new Date(prayerTime.getTime() - (minutes * 60000));
