@@ -1,8 +1,15 @@
 const path = require('path');
 const dotenv = require('dotenv');
 
+const envPath = path.join(__dirname, '../.env');
+
 // Load environment variables from .env
-dotenv.config({ path: path.join(__dirname, '../.env') });
+dotenv.config({ path: envPath });
+
+// Warn if .env is missing
+if (!require('fs').existsSync(envPath)) {
+  console.warn(`[CONFIG] .env file not found at ${envPath}. Using defaults. Copy .env.example to .env and configure it.`);
+}
 
 function parseBoolean(val, defaultVal = false) {
   if (val === undefined || val === null) return defaultVal;

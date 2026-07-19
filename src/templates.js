@@ -47,25 +47,25 @@ async function getRandomHadith() {
   let poolHadiths = [];
 
   try {
-    poolHadiths = await fetchHadithsFromWeb();
-    poolHadiths = poolHadiths.filter(h =>
-      h.text.toLowerCase().includes('shalat') ||
-      h.text.toLowerCase().includes('sholat') ||
-      h.text.toLowerCase().includes('wudhu') ||
-      h.text.toLowerCase().includes('masjid') ||
-      h.text.toLowerCase().includes('imam')
-    );
-  } catch (e) {
-    logger.warn(`Gagal mengambil hadits dari Web API (${e.message}). Menggunakan cadangan lokal.`);
+    if (fs.existsSync(backupHadithsPath)) {
+      poolHadiths = JSON.parse(fs.readFileSync(backupHadithsPath, 'utf8'));
+    }
+  } catch (err) {
+    logger.error(`Gagal membaca database hadits lokal: ${err.message}`);
   }
 
   if (!poolHadiths || poolHadiths.length === 0) {
     try {
-      if (fs.existsSync(backupHadithsPath)) {
-        poolHadiths = JSON.parse(fs.readFileSync(backupHadithsPath, 'utf8'));
-      }
-    } catch (err) {
-      logger.error(`Gagal membaca database cadangan lokal: ${err.message}`);
+      poolHadiths = await fetchHadithsFromWeb();
+      poolHadiths = poolHadiths.filter(h =>
+        h.text.toLowerCase().includes('shalat') ||
+        h.text.toLowerCase().includes('sholat') ||
+        h.text.toLowerCase().includes('wudhu') ||
+        h.text.toLowerCase().includes('masjid') ||
+        h.text.toLowerCase().includes('imam')
+      );
+    } catch (e) {
+      logger.warn(`Gagal mengambil hadits dari Web API (${e.message}).`);
     }
   }
 
@@ -121,7 +121,6 @@ function formatLocalTime(date) {
 function formatHijriDate(date) {
   try {
     const options = {
-      calendar: 'islamic-umalqura',
       day: 'numeric',
       month: 'long',
       year: 'numeric'
