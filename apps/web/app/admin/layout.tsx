@@ -2,8 +2,9 @@
 
 import {
 	ArrowLeft,
+	BookOpen,
 	Calendar,
-	CheckSquare,
+	LayoutDashboard,
 	MessageSquare,
 	Moon,
 	Radio,
@@ -22,6 +23,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 	const pathname = usePathname();
 
 	const navItems = [
+		{
+			label: "Dashboard Utama",
+			href: "/admin",
+			icon: <LayoutDashboard className="h-4 w-4" />,
+		},
 		{
 			label: "WhatsApp Sesi",
 			href: "/admin/whatsapp",
@@ -45,7 +51,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 		{
 			label: "Konten Hadits",
 			href: "/admin/hadits",
-			icon: <CheckSquare className="h-4 w-4" />,
+			icon: <BookOpen className="h-4 w-4" />,
 		},
 		{
 			label: "Pengaturan Sistem",

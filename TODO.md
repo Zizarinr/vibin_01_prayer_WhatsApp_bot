@@ -50,11 +50,11 @@
 
 ## Fase 5 — Dashboard + System
 
-- [ ] `/admin`, `/admin/whatsapp`, `/admin/targets`, `/admin/prayer`, `/admin/messages`, `/admin/settings`, `/admin/hadits`
-- [ ] CRUD hadits: tambah/edit/nonaktifkan (soft bila sudah dipakai) + warning bila 0 aktif
-- [ ] Semua halaman punya loading/empty/error/success/konfirmasi
-- [ ] `/system/status` (API+DB+WAHA+heartbeat+counts+recent)
-- [ ] Audit log aksi berisiko; branding biru + logo
+- [x] `/admin`, `/admin/whatsapp`, `/admin/targets`, `/admin/prayer`, `/admin/messages`, `/admin/settings`, `/admin/hadits`
+- [x] CRUD hadits: tambah/edit/nonaktifkan (soft bila sudah dipakai) + warning bila 0 aktif
+- [x] Semua halaman punya loading/empty/error/success/konfirmasi
+- [x] `/system/status` (API+DB+WAHA+heartbeat+counts+recent)
+- [x] Audit log aksi berisiko; branding biru + logo
 
 ## Fase 6 — CI/CD + Production
 
