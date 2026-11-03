@@ -1,12 +1,20 @@
+import cors from "@elysiajs/cors";
 import { fail } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
 import { config } from "./core/config";
 import { createLogger } from "./core/logger";
+import { prayerRoutes } from "./modules/prayer/routes";
 import { systemRoutes } from "./modules/system/routes";
 
 const logger = createLogger("api");
 
 const app = new Elysia()
+	.use(
+		cors({
+			origin: true,
+			credentials: true,
+		}),
+	)
 	.onError(({ code, error, status }) => {
 		// Jangan bocorkan stack trace / detail internal ke klien.
 		if (code === "NOT_FOUND") {
@@ -21,6 +29,7 @@ const app = new Elysia()
 		return status(500, fail("INTERNAL_ERROR", "Terjadi kesalahan internal."));
 	})
 	.use(systemRoutes)
+	.use(prayerRoutes)
 	.listen(config.port);
 
 logger.info("API berjalan.", {

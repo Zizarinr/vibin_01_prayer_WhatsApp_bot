@@ -12,6 +12,7 @@
 		"db:seed": "bun run src/seed.ts"
 	},
 	"dependencies": {
+		"@elysiajs/cors": "^1.4.2",
 		"@unida-prayer/prayer-engine": "workspace:*",
 		"@unida-prayer/shared": "workspace:*",
 		"dotenv": "^18.0.9",
