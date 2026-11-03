@@ -99,6 +99,12 @@ export async function loginAdmin(
 }
 
 export async function getSessionAdmin(token?: string): Promise<AdminProfile> {
+	// Mode development lokal (APP_ENV=development): lewati login agar ngoprek
+	// dashboard di localhost tidak terhambat. Tidak aktif di production
+	// (lihat config.isDev — mati otomatis bila NODE_ENV=production).
+	if (config.isDev) {
+		return { id: 0, name: "Developer", email: "dev@localhost", lastLoginAt: null };
+	}
 	if (!token) {
 		throw new AuthError("Sesi login tidak valid atau telah berakhir.", 401, "UNAUTHENTICATED");
 	}

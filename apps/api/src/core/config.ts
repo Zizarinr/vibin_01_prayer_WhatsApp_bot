@@ -44,6 +44,10 @@ function port(name: string, fallback: number): number {
 
 export interface AppConfig {
 	nodeEnv: string;
+	/** Mode aplikasi: "development" = bypass login admin + CORS longgar (localhost saja). */
+	appEnv: string;
+	/** True hanya bila appEnv=development DAN nodeEnv bukan production (pengaman lapis dua). */
+	isDev: boolean;
 	port: number;
 	appSecret: string;
 	databaseUrl: string;
@@ -63,8 +67,15 @@ function csvList(name: string): string[] {
 		.filter((s) => s.length > 0);
 }
 
+const nodeEnv = optional("NODE_ENV", "development").trim().toLowerCase();
+const appEnv = (process.env.APP_ENV?.trim() || nodeEnv).toLowerCase();
+
 export const config: AppConfig = {
-	nodeEnv: optional("NODE_ENV", "development"),
+	nodeEnv,
+	appEnv,
+	// Bypass auth + CORS longgar HANYA di dev lokal. Image Docker memaksa
+	// NODE_ENV=production sehingga bypass mati otomatis di server.
+	isDev: appEnv === "development" && nodeEnv !== "production",
 	port: port("API_PORT", 3001),
 	appSecret: required("APP_SECRET"),
 	databaseUrl: required("DATABASE_URL"),

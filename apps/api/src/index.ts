@@ -15,9 +15,11 @@ import { whatsappRoutes } from "./modules/whatsapp/routes";
 const logger = createLogger("api");
 
 const app = new Elysia()
+	// Mode development (localhost): CORS dibuka (origin apa pun) agar frontend
+	// dev tidak terhambat. Production: hanya allowlist config.corsOrigins.
 	.use(
 		cors({
-			origin: config.corsOrigins.length > 0 ? config.corsOrigins : false,
+			origin: config.isDev ? true : config.corsOrigins.length > 0 ? config.corsOrigins : false,
 			credentials: true,
 		}),
 	)
@@ -47,7 +49,16 @@ const app = new Elysia()
 logger.info("API berjalan.", {
 	port: config.port,
 	nodeEnv: config.nodeEnv,
+	appEnv: config.appEnv,
+	devBypass: config.isDev,
 	wahaSession: config.wahaSession,
 });
+
+if (config.isDev) {
+	logger.warn(
+		"MODE DEVELOPMENT AKTIF: login admin di-bypass + CORS longgar. Jangan pakai .env ini di server produksi (wajib APP_ENV=production).",
+		{},
+	);
+}
 
 export type App = typeof app;

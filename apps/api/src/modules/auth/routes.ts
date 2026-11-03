@@ -71,6 +71,9 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
 				const rawToken = cookie[SESSION_COOKIE_NAME]?.value;
 				const token = typeof rawToken === "string" ? rawToken : undefined;
 				const admin = await getSessionAdmin(token);
+				if (admin.id === 0) {
+					return status(400, fail("VALIDATION_ERROR", "Ganti kata sandi nonaktif dalam mode development (bypass login)."));
+				}
 				await changeAdminPassword(admin.id, body.oldPassword, body.newPassword);
 				cookie[SESSION_COOKIE_NAME]?.remove();
 				return ok({ success: true, message: "Kata sandi berhasil diperbarui. Silakan login kembali." });
