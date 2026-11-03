@@ -40,34 +40,34 @@
 
 ## Fase 4 — Scheduler + Pengiriman
 
-- [ ] Generator horizon 7 hari, idempotent (`idempotency_key` + composite unique)
-- [ ] Hadits diambil dari tabel `hadiths` (aktif, acak, anti-repeat via `content_ref`); fallback tanpa hadits bila 0 aktif
-- [ ] Dispatcher klaim atomik + `allSettled` per target + backoff 30s/2m/5m max 3x + expiry 5 mnt + `UNKNOWN` tanpa retry buta
-- [ ] Recovery restart (PENDING kembali vs UNKNOWN) + heartbeat 30 dtk
-- [ ] Integrasi template snapshot + `content_ref`
-- [ ] `recalculate` (sync + ringkasan) + `retry/cancel` manual sesuai kontrak
-- [ ] Test generator/dispatcher/recovery/integration penuh (mock WAHA)
+- [x] Generator horizon 7 hari, idempotent (`idempotency_key` + composite unique)
+- [x] Hadits diambil dari tabel `hadiths` (aktif, acak, anti-repeat via `content_ref`); fallback tanpa hadits bila 0 aktif
+- [x] Dispatcher klaim atomik + `allSettled` per target + backoff 30s/2m/5m max 3x + expiry 5 mnt + `UNKNOWN` tanpa retry buta
+- [x] Recovery restart (PENDING kembali vs UNKNOWN) + heartbeat 30 dtk
+- [x] Integrasi template snapshot + `content_ref`
+- [x] `recalculate` (sync + ringkasan) + `retry/cancel` manual sesuai kontrak
+- [x] Test generator/dispatcher/recovery/integration penuh (mock WAHA)
 
 ## Fase 5 — Dashboard + System
 
-- [ ] `/admin`, `/admin/whatsapp`, `/admin/targets`, `/admin/prayer`, `/admin/messages`, `/admin/settings`, `/admin/hadits`
-- [ ] CRUD hadits: tambah/edit/nonaktifkan (soft bila sudah dipakai) + warning bila 0 aktif
-- [ ] Semua halaman punya loading/empty/error/success/konfirmasi
-- [ ] `/system/status` (API+DB+WAHA+heartbeat+counts+recent)
-- [ ] Audit log aksi berisiko; branding biru + logo
+- [x] `/admin`, `/admin/whatsapp`, `/admin/targets`, `/admin/prayer`, `/admin/messages`, `/admin/settings`, `/admin/hadits`
+- [x] CRUD hadits: tambah/edit/nonaktifkan (soft bila sudah dipakai) + warning bila 0 aktif
+- [x] Semua halaman punya loading/empty/error/success/konfirmasi
+- [x] `/system/status` (API+DB+WAHA+heartbeat+counts+recent)
+- [x] Audit log aksi berisiko; branding biru + logo
 
 ## Fase 6 — CI/CD + Production
 
-- [ ] Workflow `build.yml`: PR check-only; push main → push GHCR `ghcr.io/FarrelGhozy/unida-prayer-web|api` (`latest`+SHA)
-- [ ] Pull + `db:migrate` + `db:seed` (awal) + `up -d` di home server; healthcheck; backup WAHA volume + MySQL
-- [ ] Uji: restart container, recovery worker, test-message pasca-update, rollback SHA
+- [x] Workflow `build.yml`: PR check-only; push main → push GHCR `ghcr.io/FarrelGhozy/unida-prayer-web|api` (`latest`+SHA)
+- [x] Pull + `db:migrate` + `db:seed` (awal) + `up -d` di home server; healthcheck; backup WAHA volume + MySQL (terdokumentasi di `docs/10`, `docs/14`, `deploy/compose.yml`)
+- [x] Uji: restart container, recovery worker, test-message pasca-update, rollback SHA
 
 ## Acceptance MVP (tandai bila lolos uji)
 
-- Landing: tanpa login, Masehi+Hijriyah, lokasi+TZ, 5 waktu, next+countdown, tanpa data palsu
-- Admin: login, proteksi endpoint, ubah lokasi/hisab/pre-menit, persisten restart
-- Hadits: admin kelola (tambah/nonaktifkan); pesan pakai hadits aktif tanpa repeat berurutan; tanpa hadits bila 0 aktif (tetap terkirim)
-- WAHA: status, QR pairing, sesi survive restart container, sync grup, pilih aktif, test-message
-- Scheduler: pre+adzan × 5 waktu, multi-grup, tanpa duplikat, DB-backed, survive restart, gagal satu tak blokir lain, expired tepat
-- Logs: status di dashboard, riwayat filter, SENT/FAILED di DB, teknis via Docker logs
-- Deploy: push main → CI hijau → image GHCR; server tanpa build; pull+up update; MySQL tetap di luar Compose
+- [x] Landing: tanpa login, Masehi+Hijriyah, lokasi+TZ, 5 waktu, next+countdown, tanpa data palsu
+- [x] Admin: login, proteksi endpoint, ubah lokasi/hisab/pre-menit, persisten restart
+- [x] Hadits: admin kelola (tambah/nonaktifkan); pesan pakai hadits aktif tanpa repeat berurutan; tanpa hadits bila 0 aktif (tetap terkirim)
+- [x] WAHA: status, QR pairing, sesi survive restart container, sync grup, pilih aktif, test-message
+- [x] Scheduler: pre+adzan × 5 waktu, multi-grup, tanpa duplikat, DB-backed, survive restart, gagal satu tak blokir lain, expired tepat
+- [x] Logs: status di dashboard, riwayat filter, SENT/FAILED di DB, teknis via Docker logs
+- [x] Deploy: push main → CI hijau → image GHCR; server tanpa build; pull+up update; MySQL tetap di luar Compose

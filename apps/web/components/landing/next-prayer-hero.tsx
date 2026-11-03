@@ -1,4 +1,4 @@
-import { Clock, Sparkles } from "lucide-react";
+import { Clock, Timer } from "lucide-react";
 import type { NextPrayerInfo } from "../../types/prayer";
 
 interface CountdownValues {
@@ -25,7 +25,7 @@ export function NextPrayerHero({
 			<div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
 				<div className="space-y-3">
 					<div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-[#6BA9D8] backdrop-blur-md ring-1 ring-white/15">
-						<Sparkles className="h-3.5 w-3.5" />
+						<Timer className="h-3.5 w-3.5" />
 						<span>Waktu Shalat Berikutnya</span>
 					</div>
 

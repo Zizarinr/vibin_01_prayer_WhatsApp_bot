@@ -1,23 +1,41 @@
 "use client";
 
-import { ArrowLeft, Lock, Mail, Moon, ShieldCheck } from "lucide-react";
+import {
+	AlertCircle,
+	ArrowLeft,
+	Lock,
+	Mail,
+	Moon,
+	ShieldCheck,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { fetchApi } from "../../lib/api-client";
 
 export default function LoginPage() {
 	const router = useRouter();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
-	const handleLogin = (e: React.FormEvent) => {
+	const handleLogin = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setLoading(true);
-		// Arahkan ke dashboard admin
-		setTimeout(() => {
+		setError(null);
+
+		const res = await fetchApi<{ id: number; name: string; email: string }>("/api/auth/login", {
+			method: "POST",
+			body: JSON.stringify({ email, password }),
+		});
+
+		if (res.data) {
 			router.push("/admin");
-		}, 600);
+		} else if (res.error) {
+			setError(res.error.message);
+		}
+		setLoading(false);
 	};
 
 	return (
@@ -45,6 +63,13 @@ export default function LoginPage() {
 							Universitas Darussalam Gontor • Kampus Siman
 						</p>
 					</div>
+
+					{error && (
+						<div className="flex items-center gap-3 rounded-2xl bg-rose-50 border border-rose-200 p-3.5 text-xs text-rose-800">
+							<AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
+							<span className="flex-1 font-medium">{error}</span>
+						</div>
+					)}
 
 					<form onSubmit={handleLogin} className="space-y-4">
 						<div>
