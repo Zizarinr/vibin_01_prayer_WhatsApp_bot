@@ -32,11 +32,11 @@
 
 ## Fase 3 — WAHA + Target
 
-- [ ] Kunci + pin versi WAHA stabil terbaru; tulis di `docs/07-waha-integration.md`
-- [ ] `integrations/waha/` (client/sessions/groups/messages/webhooks/types) lawan versi pin
-- [ ] UI sesi: status, start/stop/restart/logout, QR + polling
-- [ ] `groups/sync` (baru default nonaktif) + kelola target + `test-message`
-- [ ] Rate-limit + kill-switch + error mapping; uji manual nomor khusus
+- [x] Kunci + pin versi WAHA stabil terbaru (`devlikeapro/waha:gows-2026.10.1`); tertulis di `docs/07-waha-integration.md` & `deploy/compose.yml`
+- [x] `integrations/waha/` (client/sessions/groups/messages/webhooks/types) lawan versi pin
+- [x] UI sesi: status, start/stop/restart/logout, QR + polling (`/admin/whatsapp`)
+- [x] `groups/sync` (baru default nonaktif) + kelola target (`/admin/targets`) + `test-message`
+- [x] Rate-limit + kill-switch + error mapping; uji manual via endpoint test-message
 
 ## Fase 4 — Scheduler + Pengiriman
 

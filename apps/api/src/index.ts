@@ -5,6 +5,8 @@ import { config } from "./core/config";
 import { createLogger } from "./core/logger";
 import { prayerRoutes } from "./modules/prayer/routes";
 import { systemRoutes } from "./modules/system/routes";
+import { targetsRoutes } from "./modules/targets/routes";
+import { whatsappRoutes } from "./modules/whatsapp/routes";
 
 const logger = createLogger("api");
 
@@ -30,6 +32,8 @@ const app = new Elysia()
 	})
 	.use(systemRoutes)
 	.use(prayerRoutes)
+	.use(whatsappRoutes)
+	.use(targetsRoutes)
 	.listen(config.port);
 
 logger.info("API berjalan.", {
