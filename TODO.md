@@ -23,12 +23,12 @@
 
 ## Fase 2 — Prayer Engine + Landing
 
-- [ ] Port `prayerEngine.js` → `packages/prayer-engine` (TS murni, adjustments, UTC, `date-fns-tz`)
-- [ ] Hijriyah + `adjustmentDays`; label Jumat (tanpa logika hari besar)
-- [ ] Endpoint publik `today/next/settings` + `preview`
-- [ ] Landing `/` + countdown + state gagal jujur
-- [ ] Validasi vs rujukan Kemenag + catat selisih (lampiran doc)
-- [ ] Test TZ + koreksi + Jumat + hijriyah
+- [x] Port `prayerEngine.js` → `packages/prayer-engine` (TS murni, adjustments, UTC, `date-fns-tz`)
+- [x] Hijriyah + `adjustmentDays`; label Jumat (tanpa logika hari besar)
+- [x] Endpoint publik `today/next/settings` + `preview`
+- [x] Landing `/` + countdown + state gagal jujur
+- [x] Validasi vs rujukan Kemenag + catat selisih (lampiran doc `docs/04-lampiran-validasi.md`)
+- [x] Test TZ + koreksi + Jumat + hijriyah
 
 ## Fase 3 — WAHA + Target
 
