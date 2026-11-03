@@ -21,15 +21,6 @@
 		"dev:web": "cd apps/web && bun run dev",
 		"worker": "cd apps/api && bun run worker"
 	},
-	"dependencies": {
-		"adhan": "^4.4.1",
-		"dotenv": "^16.4.5",
-		"node-cron": "^3.0.3",
-		"qrcode-terminal": "^0.12.0",
-		"whatsapp-web.js": "^1.26.0",
-		"winston": "^3.17.0",
-		"winston-daily-rotate-file": "^5.0.0"
-	},
 	"devDependencies": {
 		"bun-types": "latest",
 		"oxlint": "^1.91.0",
