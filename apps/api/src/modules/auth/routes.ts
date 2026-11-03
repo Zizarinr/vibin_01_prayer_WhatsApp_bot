@@ -1,6 +1,7 @@
 import { fail, ok, type ErrorCode } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
 import { config } from "../../core/config";
+import { SESSION_COOKIE_NAME } from "./guard";
 import { changePasswordBodySchema, loginBodySchema } from "./schema";
 import {
 	AuthError,
@@ -9,8 +10,6 @@ import {
 	loginAdmin,
 	logoutAdmin,
 } from "./service";
-
-const SESSION_COOKIE_NAME = "unida_prayer_session";
 
 export const authRoutes = new Elysia({ prefix: "/api/auth" })
 	// POST /api/auth/login

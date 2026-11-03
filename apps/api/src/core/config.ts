@@ -50,6 +50,17 @@ export interface AppConfig {
 	wahaBaseUrl: string;
 	wahaApiKey: string;
 	wahaSession: string;
+	webUrl: string;
+	corsOrigins: string[];
+}
+
+function csvList(name: string): string[] {
+	const raw = process.env[name];
+	if (!raw || raw.trim().length === 0) return [];
+	return raw
+		.split(",")
+		.map((s) => s.trim().replace(/\/+$/, ""))
+		.filter((s) => s.length > 0);
 }
 
 export const config: AppConfig = {
@@ -60,4 +71,12 @@ export const config: AppConfig = {
 	wahaBaseUrl: optional("WAHA_BASE_URL", "http://localhost:3000"),
 	wahaApiKey: optional("WAHA_API_KEY", ""),
 	wahaSession: optional("WAHA_SESSION", "unida-prayer"),
+	webUrl: optional("WEB_URL", "http://localhost:3000"),
+	corsOrigins: (() => {
+		const fromEnv = csvList("CORS_ORIGINS");
+		if (fromEnv.length > 0) return fromEnv;
+		const webUrl = optional("WEB_URL", "http://localhost:3000").replace(/\/+$/, "");
+		const defaults = [webUrl, "http://localhost:3000", "http://127.0.0.1:3000"];
+		return [...new Set(defaults)];
+	})(),
 };

@@ -127,7 +127,7 @@ export async function generateHorizonMessages(
 
 		const timesResult = calcPrayerTimes(engineInput);
 		const hijriInfo = formatHijri(dateLocal, settings.hijri.adjustmentDays);
-		const gregorianStr = formatIndonesianDate(targetDate);
+		const gregorianStr = formatIndonesianDate(targetDate, tz);
 
 		for (const prayer of PRAYER_NAMES) {
 			const prayerData = timesResult.times[prayer as PrayerName];
@@ -225,12 +225,13 @@ export async function generateHorizonMessages(
 
 	// Insert idempotent ke MySQL: ON DUPLICATE KEY UPDATE id = id (no-op update)
 	// Memastikan baris yang sudah SENT / FAILED / PROCESSING tidak disentuh sama sekali!
+	// affectedRows MySQL: 1 untuk insert baru, 0 untuk duplikat no-op.
 	let insertedCount = 0;
 	if (jobsToInsert.length > 0) {
 		const batchSize = 50;
 		for (let i = 0; i < jobsToInsert.length; i += batchSize) {
 			const batch = jobsToInsert.slice(i, i + batchSize);
-			await db
+			const result = await db
 				.insert(scheduledMessages)
 				.values(batch)
 				.onDuplicateKeyUpdate({
@@ -238,13 +239,17 @@ export async function generateHorizonMessages(
 						id: sql`id`,
 					},
 				});
-			insertedCount += batch.length;
+			const affected = Number(
+				(result as unknown as { affectedRows?: unknown })?.affectedRows ?? 0,
+			);
+			insertedCount += Number.isSafeInteger(affected) ? affected : 0;
 		}
 	}
 
 	logger.info("Generator horizon 7 hari selesai.", {
 		activeTargets: activeTargets.length,
-		totalJobsEvaluated: insertedCount,
+		totalJobsEvaluated: jobsToInsert.length,
+		totalJobsInserted: insertedCount,
 	});
 
 	return {

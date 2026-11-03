@@ -1,6 +1,7 @@
 import { type ErrorCode, fail, ok } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
 import { WahaError } from "../../integrations/waha";
+import { requireAdmin } from "../auth/guard";
 import { testMessageSchema } from "./schema";
 import {
 	fetchQrCode,
@@ -14,6 +15,7 @@ import {
 } from "./service";
 
 export const whatsappRoutes = new Elysia({ prefix: "/api/admin/whatsapp" })
+	.use(requireAdmin)
 	.onError(({ error, status }) => {
 		if (error instanceof WahaError) {
 			return status(error.statusCode, fail(error.code as ErrorCode, error.message));

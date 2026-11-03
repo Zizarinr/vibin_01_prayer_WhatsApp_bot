@@ -1,5 +1,6 @@
 import { fail, ok } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
+import { requireAdmin } from "../auth/guard";
 import { patchTargetSchema, targetsQuerySchema } from "./schema";
 import {
 	getTargetsList,
@@ -8,6 +9,7 @@ import {
 } from "./service";
 
 export const targetsRoutes = new Elysia({ prefix: "/api/admin/targets" })
+	.use(requireAdmin)
 	.onError(({ error, status }) => {
 		if (error instanceof TargetNotFoundError) {
 			return status(404, fail("TARGET_NOT_FOUND", error.message));

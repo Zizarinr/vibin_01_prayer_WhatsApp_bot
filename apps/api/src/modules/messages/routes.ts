@@ -1,5 +1,6 @@
 import { fail, ok } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
+import { requireAdmin } from "../auth/guard";
 import { recalculateFuturePending } from "./generator";
 import { getMessagesQuerySchema, messageIdParamSchema } from "./schema";
 import {
@@ -12,6 +13,7 @@ import {
 } from "./service";
 
 export const messagesRoutes = new Elysia({ prefix: "/api/admin" })
+	.use(requireAdmin)
 	// Recalculate (sync)
 	.post("/prayer/recalculate", async () => {
 		const result = await recalculateFuturePending();

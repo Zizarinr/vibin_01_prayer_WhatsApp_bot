@@ -33,7 +33,21 @@ const INDO_MONTHS = [
 	"Desember",
 ];
 
-export function formatIndonesianDate(date: Date): string {
+export function formatIndonesianDate(date: Date, timezone?: string): string {
+	if (timezone) {
+		try {
+			const parts = new Intl.DateTimeFormat("id-ID", {
+				timeZone: timezone,
+				day: "numeric",
+				month: "long",
+				year: "numeric",
+			}).formatToParts(date);
+			const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+			return `${get("day")} ${get("month")} ${get("year")}`;
+		} catch {
+			// fallback ke lokal bila timezone invalid
+		}
+	}
 	const day = date.getDate();
 	const month = INDO_MONTHS[date.getMonth()];
 	const year = date.getFullYear();

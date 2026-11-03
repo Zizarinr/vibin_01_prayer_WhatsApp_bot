@@ -12,16 +12,11 @@ export interface AdminProfile {
 	lastLoginAt: Date | null;
 }
 
-interface SessionData {
-	adminId: number;
-	email: string;
-	name: string;
-	expiresAt: number;
-}
-
-// In-memory session store (TTL 7 hari)
+// Sesi stateless: token = adminId.random.issuedAt.expiresAt.signature
+// signature = HMAC(appSecret, payload + "." + passwordHash) sehingga
+// ganti password otomatis menginvalidasi semua token lama.
+// Survive restart API (tidak ada Map in-memory).
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
-const sessions = new Map<string, SessionData>();
 
 export class AuthError extends Error {
 	constructor(
@@ -34,28 +29,27 @@ export class AuthError extends Error {
 	}
 }
 
-function generateSessionToken(adminId: number): string {
-	const random = crypto.randomUUID().replaceAll("-", "");
-	const payload = `${adminId}:${random}:${Date.now()}`;
-	const signature = crypto
+function signPayload(payload: string, passwordHash: string): string {
+	return crypto
 		.createHmac("sha256", config.appSecret)
-		.update(payload)
+		.update(`${payload}.${passwordHash}`)
 		.digest("hex")
 		.slice(0, 32);
-	return `${payload}.${signature}`;
 }
 
-function verifySessionToken(token: string): boolean {
-	const lastDot = token.lastIndexOf(".");
-	if (lastDot === -1) return false;
-	const payload = token.slice(0, lastDot);
-	const signature = token.slice(lastDot + 1);
-	const expected = crypto
-		.createHmac("sha256", config.appSecret)
-		.update(payload)
-		.digest("hex")
-		.slice(0, 32);
-	return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+function generateSessionToken(adminId: number, passwordHash: string): string {
+	const random = crypto.randomUUID().replaceAll("-", "");
+	const issuedAt = Date.now();
+	const expiresAt = issuedAt + SESSION_TTL_MS;
+	const payload = `${adminId}.${random}.${issuedAt}.${expiresAt}`;
+	return `${payload}.${signPayload(payload, passwordHash)}`;
+}
+
+function safeEqual(a: string, b: string): boolean {
+	const ba = Buffer.from(a);
+	const bb = Buffer.from(b);
+	if (ba.length !== bb.length) return false;
+	return crypto.timingSafeEqual(ba, bb);
 }
 
 export async function loginAdmin(
@@ -91,13 +85,7 @@ export async function loginAdmin(
 		})
 		.where(eq(admins.id, admin.id));
 
-	const token = generateSessionToken(admin.id);
-	sessions.set(token, {
-		adminId: admin.id,
-		email: admin.email,
-		name: admin.name,
-		expiresAt: Date.now() + SESSION_TTL_MS,
-	});
+	const token = generateSessionToken(admin.id, admin.passwordHash);
 
 	return {
 		admin: {
@@ -111,25 +99,50 @@ export async function loginAdmin(
 }
 
 export async function getSessionAdmin(token?: string): Promise<AdminProfile> {
-	if (!token || !verifySessionToken(token)) {
+	if (!token) {
 		throw new AuthError("Sesi login tidak valid atau telah berakhir.", 401, "UNAUTHENTICATED");
 	}
-
-	const session = sessions.get(token);
-	if (!session || Date.now() > session.expiresAt) {
-		sessions.delete(token);
-		throw new AuthError("Sesi login telah kedaluwarsa.", 401, "UNAUTHENTICATED");
+	const parts = token.split(".");
+	if (parts.length !== 5) {
+		throw new AuthError("Sesi login tidak valid atau telah berakhir.", 401, "UNAUTHENTICATED");
+	}
+	const [adminIdRaw, random, issuedAtRaw, expiresAtRaw, signature] = parts as [
+		string,
+		string,
+		string,
+		string,
+		string,
+	];
+	const adminId = Number.parseInt(adminIdRaw ?? "", 10);
+	const issuedAt = Number.parseInt(issuedAtRaw ?? "", 10);
+	const expiresAt = Number.parseInt(expiresAtRaw ?? "", 10);
+	if (
+		!Number.isSafeInteger(adminId) ||
+		adminId <= 0 ||
+		!Number.isSafeInteger(issuedAt) ||
+		!Number.isSafeInteger(expiresAt) ||
+		!random ||
+		random.length < 10 ||
+		!signature ||
+		Date.now() > expiresAt
+	) {
+		throw new AuthError("Sesi login tidak valid atau telah berakhir.", 401, "UNAUTHENTICATED");
 	}
 
 	const [admin] = await db
 		.select()
 		.from(admins)
-		.where(eq(admins.id, session.adminId))
+		.where(eq(admins.id, adminId))
 		.limit(1);
 
 	if (!admin || !admin.isActive) {
-		sessions.delete(token);
 		throw new AuthError("Akun administrator tidak aktif atau tidak ditemukan.", 403, "FORBIDDEN");
+	}
+
+	const payload = `${adminIdRaw}.${random}.${issuedAtRaw}.${expiresAtRaw}`;
+	const expected = signPayload(payload, admin.passwordHash);
+	if (!safeEqual(signature, expected)) {
+		throw new AuthError("Sesi login tidak valid atau telah berakhir.", 401, "UNAUTHENTICATED");
 	}
 
 	return {
@@ -140,10 +153,9 @@ export async function getSessionAdmin(token?: string): Promise<AdminProfile> {
 	};
 }
 
-export function logoutAdmin(token?: string): void {
-	if (token) {
-		sessions.delete(token);
-	}
+export function logoutAdmin(_token?: string): void {
+	// Stateless: logout cukup hapus cookie di sisi klien (routes.ts).
+	// Token kedaluwarsa otomatis via expiresAt; ganti password membatalkan semua token.
 }
 
 export async function changeAdminPassword(
@@ -187,10 +199,5 @@ export async function changeAdminPassword(
 		})
 		.where(eq(admins.id, adminId));
 
-	// Cabut session lain untuk keamanan (Q-AUTH-02)
-	for (const [key, val] of sessions.entries()) {
-		if (val.adminId === adminId) {
-			sessions.delete(key);
-		}
-	}
+	// Token lama otomatis invalid karena signature mengikat passwordHash lama.
 }

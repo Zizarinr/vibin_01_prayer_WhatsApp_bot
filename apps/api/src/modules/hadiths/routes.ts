@@ -1,5 +1,6 @@
 import { fail, ok } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
+import { requireAdmin } from "../auth/guard";
 import {
 	createHadithBodySchema,
 	getHadithsQuerySchema,
@@ -16,6 +17,7 @@ import {
 } from "./service";
 
 export const hadithsRoutes = new Elysia({ prefix: "/api/admin/hadiths" })
+	.use(requireAdmin)
 	.get(
 		"/",
 		async ({ query }) => {

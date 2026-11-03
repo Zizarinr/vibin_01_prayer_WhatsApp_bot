@@ -17,7 +17,7 @@ const logger = createLogger("api");
 const app = new Elysia()
 	.use(
 		cors({
-			origin: true,
+			origin: config.corsOrigins.length > 0 ? config.corsOrigins : false,
 			credentials: true,
 		}),
 	)
