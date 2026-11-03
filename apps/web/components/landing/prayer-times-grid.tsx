@@ -1,5 +1,9 @@
+"use client";
+
 import {
+	Check,
 	CloudSun,
+	Copy,
 	Moon,
 	RefreshCw,
 	Sun,
@@ -7,6 +11,7 @@ import {
 	Sunrise,
 	Sunset,
 } from "lucide-react";
+import { useState } from "react";
 import type { SlotStatus, TodayPrayerData } from "../../types/prayer";
 import { PrayerCard } from "./prayer-card";
 
@@ -23,21 +28,67 @@ export function PrayerTimesGrid({
 	onRefresh,
 	getSlotStatus,
 }: PrayerTimesGridProps) {
+	const [copied, setCopied] = useState(false);
+
+	const handleCopySchedule = async () => {
+		const text = `🕌 *Jadwal Shalat Kampus Siman UNIDA Gontor*
+📅 ${data.dateLocal} ${data.hijri ? `(${data.hijri.formatted})` : ""}
+
+• Subuh: ${data.times.FAJR.timeLabel} WIB
+• Terbit: ${data.times.SUNRISE.timeLabel} WIB
+• ${data.isFriday ? "Jumat" : "Dzuhur"}: ${data.times.DHUHR.timeLabel} WIB
+• Ashar: ${data.times.ASR.timeLabel} WIB
+• Maghrib: ${data.times.MAGHRIB.timeLabel} WIB
+• Isya: ${data.times.ISHA.timeLabel} WIB
+
+_UNIDA Prayer System V2.0_`;
+
+		try {
+			await navigator.clipboard.writeText(text);
+			setCopied(true);
+			setTimeout(() => setCopied(false), 2000);
+		} catch {
+			// fallback jika clipboard tidak didukung
+		}
+	};
+
 	return (
 		<div>
-			<div className="mb-4 flex items-center justify-between">
+			<div className="mb-4 flex flex-wrap items-center justify-between gap-2">
 				<h3 className="text-base font-bold text-[#102A46] sm:text-lg">
 					Jadwal Shalat Hari Ini
 				</h3>
-				<button
-					type="button"
-					onClick={onRefresh}
-					disabled={refreshing}
-					className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1D5FA7] hover:underline disabled:opacity-50"
-				>
-					<RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
-					<span>Segarkan</span>
-				</button>
+
+				<div className="flex items-center gap-2">
+					<button
+						type="button"
+						onClick={handleCopySchedule}
+						className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 hover:text-[#123B6D] transition"
+						title="Salin ringkasan jadwal untuk dibagikan ke WhatsApp"
+					>
+						{copied ? (
+							<>
+								<Check className="h-3.5 w-3.5 text-emerald-600" />
+								<span className="text-emerald-700">Tersalin!</span>
+							</>
+						) : (
+							<>
+								<Copy className="h-3.5 w-3.5 text-slate-500" />
+								<span>Salin Jadwal</span>
+							</>
+						)}
+					</button>
+
+					<button
+						type="button"
+						onClick={onRefresh}
+						disabled={refreshing}
+						className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200/80 bg-blue-50/50 px-2.5 py-1 text-xs font-semibold text-[#1D5FA7] hover:bg-blue-100/50 transition disabled:opacity-50"
+					>
+						<RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
+						<span>Segarkan</span>
+					</button>
+				</div>
 			</div>
 
 			<div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-6">

@@ -5,12 +5,12 @@ import {
 	ArrowLeft,
 	Lock,
 	Mail,
-	Moon,
 	ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { UnidaPrayerIcon } from "../../components/shared/unida-prayer-logo";
 import { fetchApi } from "../../lib/api-client";
 
 export default function LoginPage() {
@@ -53,11 +53,9 @@ export default function LoginPage() {
 				{/* Card */}
 				<div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-sm space-y-6">
 					<div className="flex flex-col items-center text-center space-y-2">
-						<div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#123B6D] text-white shadow-xs">
-							<Moon className="h-6 w-6 text-[#6BA9D8]" />
-						</div>
-						<h1 className="text-lg font-bold text-[#102A46] sm:text-xl">
-							Portal Administrator UNIDA Prayer
+						<UnidaPrayerIcon size="lg" className="mb-1" />
+						<h1 className="text-xl font-black text-[#102A46]">
+							Portal Administrator UNIDA <span className="text-[#1D5FA7]">Prayer</span>
 						</h1>
 						<p className="text-xs text-[#64748B]">
 							Universitas Darussalam Gontor • Kampus Siman
