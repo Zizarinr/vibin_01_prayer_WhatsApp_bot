@@ -40,13 +40,13 @@
 
 ## Fase 4 — Scheduler + Pengiriman
 
-- [ ] Generator horizon 7 hari, idempotent (`idempotency_key` + composite unique)
-- [ ] Hadits diambil dari tabel `hadiths` (aktif, acak, anti-repeat via `content_ref`); fallback tanpa hadits bila 0 aktif
-- [ ] Dispatcher klaim atomik + `allSettled` per target + backoff 30s/2m/5m max 3x + expiry 5 mnt + `UNKNOWN` tanpa retry buta
-- [ ] Recovery restart (PENDING kembali vs UNKNOWN) + heartbeat 30 dtk
-- [ ] Integrasi template snapshot + `content_ref`
-- [ ] `recalculate` (sync + ringkasan) + `retry/cancel` manual sesuai kontrak
-- [ ] Test generator/dispatcher/recovery/integration penuh (mock WAHA)
+- [x] Generator horizon 7 hari, idempotent (`idempotency_key` + composite unique)
+- [x] Hadits diambil dari tabel `hadiths` (aktif, acak, anti-repeat via `content_ref`); fallback tanpa hadits bila 0 aktif
+- [x] Dispatcher klaim atomik + `allSettled` per target + backoff 30s/2m/5m max 3x + expiry 5 mnt + `UNKNOWN` tanpa retry buta
+- [x] Recovery restart (PENDING kembali vs UNKNOWN) + heartbeat 30 dtk
+- [x] Integrasi template snapshot + `content_ref`
+- [x] `recalculate` (sync + ringkasan) + `retry/cancel` manual sesuai kontrak
+- [x] Test generator/dispatcher/recovery/integration penuh (mock WAHA)
 
 ## Fase 5 — Dashboard + System
 

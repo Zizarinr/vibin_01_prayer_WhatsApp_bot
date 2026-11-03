@@ -24,7 +24,7 @@ export const scheduledMessages = mysqlTable(
 			.autoincrement()
 			.primaryKey(),
 		idempotencyKey: char("idempotency_key", { length: 64 }).notNull().unique(),
-		prayerDate: date("prayer_date").notNull(),
+		prayerDate: date("prayer_date", { mode: "string" }).notNull(),
 		prayerName: varchar("prayer_name", { length: 20 }).notNull(),
 		messageType: varchar("message_type", { length: 30 }).notNull(),
 		targetId: bigint("target_id", { mode: "number", unsigned: true })

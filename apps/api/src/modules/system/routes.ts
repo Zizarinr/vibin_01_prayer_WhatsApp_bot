@@ -1,10 +1,16 @@
 import { fail, ok } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
-import { DatabaseUnavailableError, getHealth, getReadiness } from "./service";
+import {
+	DatabaseUnavailableError,
+	getHealth,
+	getReadiness,
+	getSystemStatus,
+} from "./service";
 
 /**
- * GET /api/health — liveness proses (tanpa cek DB).
- * GET /api/ready  — kesiapan (cek DB; 503 bila belum siap).
+ * GET /api/health       — liveness proses (tanpa cek DB).
+ * GET /api/ready        — kesiapan (cek DB; 503 bila belum siap).
+ * GET /api/admin/system/status — status sistem lengkap untuk dashboard admin.
  */
 export const systemRoutes = new Elysia({ prefix: "/api" })
 	.get("/health", () => ok(getHealth()))
@@ -17,4 +23,8 @@ export const systemRoutes = new Elysia({ prefix: "/api" })
 			}
 			throw error;
 		}
+	})
+	.get("/admin/system/status", async () => {
+		const data = await getSystemStatus();
+		return ok(data);
 	});
