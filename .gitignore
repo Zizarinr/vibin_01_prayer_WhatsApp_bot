@@ -22,9 +22,6 @@ dist/
 out/
 *.tsbuildinfo
 
-# Drizzle
-drizzle/
-
 # OS specific files
 Thumbs.db
 ehthumbs.db
