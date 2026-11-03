@@ -1,26 +1,45 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F5F8FC;
+  --foreground: #172B43;
+  --unida-primary: #123B6D;
+  --unida-primary-strong: #1D5FA7;
+  --unida-sky: #6BA9D8;
+  --unida-soft-blue: #EAF2FB;
+  --unida-navy: #102A46;
+  --unida-surface: #FFFFFF;
+  --unida-muted: #64748B;
+  --unida-success: #16835D;
+  --unida-warning: #B7791F;
+  --unida-danger: #C2413B;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-unida-primary: var(--unida-primary);
+  --color-unida-primary-strong: var(--unida-primary-strong);
+  --color-unida-sky: var(--unida-sky);
+  --color-unida-soft-blue: var(--unida-soft-blue);
+  --color-unida-navy: var(--unida-navy);
+  --color-unida-surface: var(--unida-surface);
+  --color-unida-muted: var(--unida-muted);
+  --color-unida-success: var(--unida-success);
+  --color-unida-warning: var(--unida-warning);
+  --color-unida-danger: var(--unida-danger);
+  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tabular figures for countdown and clock numbers */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
