@@ -70,7 +70,9 @@ Backend per modul minimal dipisah `routes.ts / service.ts / schema.ts / reposito
 5. Query via Drizzle/parameterized saja.
 6. Tulis/ubah test untuk logika penting (lihat `docs/11-testing.md`).
 7. Update `TODO.md` (`[ ]` → `[x]`) dan catat file yang diubah di ringkasan akhir.
-8. Jangan melebar ke luar-scope MVP (`docs/01-overview-scope.md` § Di luar scope).
+8. **Wajib git commit lokal per stage perubahan**: satu commit per unit perubahan logis (mis. satu modul / satu doc), pesan commit jelas (`docs: ...`, `feat: ...`, `fix: ...`). Jangan menumpuk banyak perubahan tak terkait dalam satu commit, dan jangan biarkan working tree kotor tanpa commit di akhir setiap stage.
+9. Jangan melebar ke luar-scope MVP (`docs/01-overview-scope.md` § Di luar scope).
+10. Push ke remote **hanya bila pemilik meminta eksplisit**; defaultnya berhenti di commit lokal.
 
 ## 7. Definition of Done (per modul)
 
