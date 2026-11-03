@@ -18,7 +18,7 @@ Untuk tiap `date` dalam horizon × tiap target aktif × tiap kombinasi aktif (pr
 
 1. Hitung 5 waktu via `prayer-engine` (UTC + `prayer_date` lokal).
 2. `scheduled_at_utc` = `prayer_time_utc` (ADHAN) atau `- preReminderMinutes` (PRE).
-3. Render `message_body` snapshot + `content_ref` (hadits/template).
+3. Render `message_body` snapshot + `content_ref` (hadits/template). Hadits diambil dari tabel `hadiths` (`is_active=true`, acak, hindari `content_ref` terakhir untuk anti-repeat); bila 0 aktif / `includeHadith=false` → pesan tanpa hadits.
 4. `idempotency_key = sha256(prayer_date|prayer_name|message_type|targetDbId)`.
 5. `INSERT ... ON DUPLICATE KEY UPDATE nothing` (atau `INSERT IGNORE`). **Jangan overwrite `SENT/FAILED`.**
 

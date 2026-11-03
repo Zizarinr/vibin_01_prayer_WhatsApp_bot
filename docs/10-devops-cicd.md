@@ -1,6 +1,9 @@
 # 10 — DevOps, Docker, CI/CD
 
 > CI = check+build+push GHCR. Deploy = manual di home server. Tanpa SSH dari CI.
+>
+> Compose di repo ini **khusus production**. Development jalan native (Bun/Next + MySQL lokal Fedora) — tanpa Compose dev, tanpa pengkhususan dev di Compose.
+> Domain/proxy/TLS **ditunda** (keputusan pemilik). Untuk sekarang `web` cukup di loopback. Catatan: Docker tidak menggantikan reverse proxy — saat domain resmi ada, putuskan publish langsung vs reverse proxy (Nginx/Caddy) + dari mana TLS berasal.
 
 ## 10.1 Service Compose (prod) — tanpa MySQL
 

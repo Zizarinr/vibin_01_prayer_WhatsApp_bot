@@ -11,9 +11,10 @@
 - `/admin/targets` — grup & penerima.
 - `/admin/prayer` — jadwal hari ini + preview + lokasi/perhitungan.
 - `/admin/messages` — riwayat + detail + retry/cancel.
+- `/admin/hadits` — kelola hadits (CRUD admin).
 - `/admin/settings` — lokasi, hisab, reminder, hijriyah, konten, kill-switch.
 
-Sidebar: Overview / WhatsApp (Session, Grup) / Prayer (Jadwal, Lokasi & Perhitungan) / Messages (Riwayat) / System (Status, Pengaturan).
+Sidebar: Overview / WhatsApp (Session, Grup) / Prayer (Jadwal, Lokasi & Perhitungan) / Messages (Riwayat) / Konten (Hadits) / System (Status, Pengaturan).
 
 ## 8.2 Landing (`/`)
 
@@ -27,6 +28,8 @@ Timezone tampil dari API (`timezone`), format 24-jam + label WIB/WITA/WIT bila s
 
 Kartu: API, DB (latency), WAHA status, worker heartbeat state, next prayer + countdown, hitung todaySent/pending/failed-unknown, tabel kiriman terbaru (link ke `/messages`).
 
+Tambahan: warning bila `includeHadith=true` tapi 0 hadits aktif ("pesan terkirim tanpa hadits").
+
 Polling status tiap 15–30 dtk; tampilkan `lastUpdatedAt` agar admin tahu data basi atau live.
 
 ## 8.4 Halaman kunci (perilaku)
@@ -36,6 +39,7 @@ Polling status tiap 15–30 dtk; tampilkan `lastUpdatedAt` agar admin tahu data 
 - **Targets**: tabel + search + filter aktif, toggle aktif (konfirmasi bila menonaktifkan target dengan PENDING), tombol Sync (loading + ringkasan "N baru, M diperbarui").
 - **Prayer**: form lokasi (nama/lat/lng/timezone), sudut Subuh/Isya, Asr factor, koreksi menit per waktu, pre-menit + toggle, koreksi Hijriyah; tombol **Preview** (tanpa simpan) + **Simpan** (validasi + info "PENDING masa depan diregenerasi"); tampilkan jadwal hari ini hasil tersimpan.
 - **Messages**: filter status/shalat/jenis/target/tanggal + search, pagination server-side, badge status (PENDING abu, PROCESSING biru, SENT hijau, FAILED merah, EXPIRED kuning, CANCELLED netral, UNKNOWN ungu "perlu verifikasi"), detail drawer (body snapshot, attempt, error, waha id), aksi Retry (syarat ketat) / Cancel (PENDING saja).
+- **Hadits (`/admin/hadits`)**: tabel + search + filter aktif; tambah/edit (`text` + `source`); nonaktifkan (konfirmasi bila sudah pernah dipakai di riwayat); hapus fisik hanya bila belum pernah dipakai; warning bila 0 aktif.
 - **Settings/System**: gabungan/pecah sesuai kebutuhan; tampilkan heartbeat mentah + interpretasi + panduan recovery singkat.
 
 ## 8.5 State wajib per halaman
@@ -44,9 +48,9 @@ Loading (skeleton), Empty ("belum ada target — sync dulu"), Error (pesan + tom
 
 ## 8.6 Branding & aksesibilitas
 
-Palet V2 (usulan, bukan kode resmi UNIDA): `primary #123B6D`, `primary-strong #1D5FA7`, `sky #6BA9D8`, `soft-blue #EAF2FB`, `navy #102A46`, `bg #F5F8FC`, `surface #FFFFFF`, `text #172B43`, `muted #64748B`, sukses `#16835D`, warning `#B7791F`, danger `#C2413B`.
+Palet V2 (usulan, bukan kode resmi): `primary #123B6D`, `primary-strong #1D5FA7`, `sky #6BA9D8`, `soft-blue #EAF2FB`, `navy #102A46`, `bg #F5F8FC`, `surface #FFFFFF`, `text #172B43`, `muted #64748B`, sukses `#16835D`, warning `#B7791F`, danger `#C2413B`.
 
-Aturan: pakai logo resmi + izin; jangan redraw lambang. Kontras teks ≥ 4.5:1 untuk info penting. Countdown terbaca (tabular-nums). Mobile-first untuk landing; dashboard responsif minimal tablet.
+Aturan: logo disediakan pemilik; jangan modifikasi lambang. Kontras teks ≥ 4.5:1 untuk info penting. Countdown terbaca (tabular-nums). Mobile-first untuk landing; dashboard responsif minimal tablet.
 
 ## 8.7 API client
 

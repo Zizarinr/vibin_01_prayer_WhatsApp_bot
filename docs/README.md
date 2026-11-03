@@ -20,6 +20,7 @@
 | 11 | `11-testing.md` | Unit + integration, mock WAHA | Semua fase |
 | 12 | `12-migrasi-v1-ke-v2.md` | Pemetaan V1 → V2, apa dibawa/dibuang | Phase 2–4 |
 | 13 | `13-open-questions.md` | **Ambiguitas + keputusan yang harus dipastikan** | Sebelum coding |
+| 14 | `14-panduan-mysql.md` | Panduan setup MySQL eksternal (dieksekusi pemilik) | Sebelum Fase 1 |
 | — | `../TODO.md` | Daftar kerja per fase + acceptance | Harian |
 | — | `../AGENTS.md` | Aturan agen coding | Selalu |
 

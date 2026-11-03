@@ -8,7 +8,7 @@
 |---|---|---|
 | `src/prayerEngine.js` (adhan-js, Kemenag 20/18, Shafi) | `packages/prayer-engine/` | Port ke TS murni + tambah adjustments/timezone eksplisit + test |
 | `src/templates.js` (3 varian/doa, Jumat, Idul*, `{{time/hijri/gregorian}}`) | `packages/prayer-engine/render.ts` + template TS | Port 3 varian + Jumat; **buang** deteksi Idul via substring; **buang** fallback API hadits acak |
-| `data/hadiths.json` (10 item) | `data/hadiths.json` (terversi) | Pertahankan setelah verifikasi sumber; tambah `id, text, source`; anti-repeat via `content_ref` (ganti `state.json`) |
+| `data/hadiths.json` (10 item) | `data/hadiths.json` (seed) + tabel `hadiths` + CRUD admin | JSON menjadi seed awal berversi (bersama akun admin utama); runtime baca dari DB (`text, source, topic, is_active, seed_key`); anti-repeat via `content_ref` (ganti `state.json`) |
 | Hijriyah `Intl...islamic-umalqura` | `packages/prayer-engine/hijri.ts` | Pertahankan + tambah `adjustmentDays` |
 | `src/scheduler.js` (setTimeout, cron tengah malam, `!lokasi`, allSettled) | `apps/api/src/worker/` | Ganti timer dengan DB-backed (§06); pertahankan ide midnight→generator horizon + `allSettled` per target |
 | `src/bot.js` (whatsapp-web.js, monkey-patch Puppeteer, LocalAuth, admin WA) | `integrations/waha/` | **Buang** whatsapp-web.js/monkey-patch/LocalAuth; ganti WAHA GoWS; **buang** admin WA (`!ping/!jadwal/!status/!lokasi`) sebagai jalur utama (dashboard ganti) |
@@ -21,7 +21,7 @@
 ## 12.2 Template & hadits awal (harus diverifikasi)
 
 - Template awal boleh di TS agar sederhana; struktur render modular agar kelak pindah ke DB tanpa ubah caller.
-- Hadits: pakai 10 V1 **hanya setelah** cek teks+sumber satu per satu. Sumber meragukan → buang/ganti dengan yang terverifikasi. Jangan tambah dari API acak.
+- Hadits: pakai 10 V1 **hanya setelah** cek teks+sumber satu per satu; hasilnya masuk tabel `hadiths` via seed (`bun run db:seed`) dan dikelola dari dashboard. Sumber meragukan → buang/ganti dengan yang terverifikasi. Jangan tambah dari API acak.
 - Pesan Jumat: label Dzuhur→Jumat, waktu tetap Dzuhur.
 - `message_body` snapshot: template berubah tak ubah job lama.
 

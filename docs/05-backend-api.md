@@ -83,6 +83,17 @@ Semua via integration layer. Petakan nama endpoint WAHA aktual sesuai versi yang
 
 Hapus target fisik: tolak (409) bila masih punya riwayat, kecuali kebijakan retensi diputuskan (Q-DB-02).
 
+**Hadits (admin CRUD):**
+
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| GET | `/api/admin/hadiths` | List + `?active&search&page&limit` |
+| POST | `/api/admin/hadiths` | Tambah `{ text, source, topic?, is_active? }` |
+| PATCH | `/api/admin/hadiths/:id` | Ubah text/source/is_active |
+| DELETE | `/api/admin/hadiths/:id` | Soft-disable bila sudah dipakai (`content_ref` ada); hapus fisik hanya bila belum pernah dipakai |
+
+Validasi: `text` min 10 karakter, `source` wajib. Bila `content_settings.includeHadith=true` tapi 0 hadits aktif → dashboard warning + pesan terkirim tanpa hadits (jangan gagal kirim).
+
 ## 5.7 System & webhook
 
 | Method | Endpoint | Fungsi |

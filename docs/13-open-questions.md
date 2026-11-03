@@ -3,14 +3,16 @@
 > Status: `BLOCKER` = hentikan fase terkait sampai dijawab. `NON-BLOCKER` = pakai default usulan, bisa diubah kemudian.
 > Jawab dengan: nomor → pilihan → nilai final. Agen dilarang menebak untuk BLOCKER.
 
-## Keputusan masuk (4 Nov 2026, dicatat dari konfirmasi pemilik)
+## Keputusan masuk (dicatat 4 Nov 2026, mengikat)
 
-- Q-AUTH-01 → **Opaque DB session** (cookie HttpOnly, cabut mudah).
+- Q-AUTH-01 → **Opaque DB session** (cookie HttpOnly, mudah dicabut).
 - Q-PRAY-01 → **date-fns-tz**.
-- Q-API-01 → **Sync langsung** (ringkasan; cocok target sedikit).
-- Q-OWNER-01 → **Akun personal** (nama OWNER final belum diisi — wajib dilengkapi sebelum tulis workflow).
-
-Sisa BLOCKER yang masih butuh nilai: Q-WAHA-01 (versi pin), Q-DB-01 (host/versi/backup MySQL), Q-OPS-01 (domain + proxy), + nama OWNER personal.
+- Q-API-01 → **Sync langsung** (kembalikan ringkasan; cocok untuk target sedikit).
+- Q-OWNER-01 → OWNER **`FarrelGhozy`** (image `ghcr.io/FarrelGhozy/unida-prayer-web|api`). Visibilitas package: default **private** (konfirmasi bila mau public).
+- Q-WAHA-01 → Pin **versi stabil terbaru yang tersedia saat mulai Fase 3**; dilarang tag `latest`. Versi aktual dicatat di `docs/07-waha-integration.md` saat implementasi.
+- Q-DB-01 → MySQL eksternal **port standar 3306**, provisioning oleh pemilik. Panduan di `docs/14-panduan-mysql.md`. Dev Fedora pakai MySQL lokal (panduan sama).
+- Q-OPS-01 → **Ditunda** (bukan domain resmi institusi). Compose di repo ini **khusus production**; development jalan native (Bun/Next + MySQL lokal) tanpa Compose dev. Catatan: Docker tidak menggantikan reverse proxy — saat domain ada, putuskan publish langsung vs proxy (lihat `docs/10-devops-cicd.md`).
+- Perubahan rancangan (pemilik): **hadits masuk database + CRUD admin**. `data/hadiths.json` menjadi **seed awal** bersama akun admin utama. Tabel `hadiths` ditambah (lihat `docs/03-database.md`); template pesan tetap di TypeScript untuk MVP.
 
 ## BLOCKER
 
