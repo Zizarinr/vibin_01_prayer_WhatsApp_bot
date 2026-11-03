@@ -16,6 +16,15 @@ git-portable/
 # External node dependencies
 node_modules/
 
+# Build outputs
+.next/
+dist/
+out/
+*.tsbuildinfo
+
+# Drizzle
+drizzle/
+
 # OS specific files
 Thumbs.db
 ehthumbs.db

@@ -13,13 +13,13 @@
 
 ## Fase 1 — Foundation
 
-- [ ] Inisialisasi monorepo Bun Workspace (`apps/web`, `apps/api`, `packages/shared`, `packages/prayer-engine`)
-- [ ] `tsconfig` strict + script `typecheck/lint/test/build`
-- [ ] Drizzle + `DATABASE_URL` + migration 5 tabel (`admins`, `app_settings`, `message_targets`, `scheduled_messages`, `hadiths`)
-- [ ] Seed `db:seed`: admin utama + hadits dari `data/hadiths.json` (idempotent via `email` / `seed_key`)
-- [ ] Endpoint `health/ready`
-- [ ] `Dockerfile` web/api + `deploy/compose.yml` (prod-only, tanpa MySQL) + `.env.example` final
-- [ ] Validasi: web+api+DB konek di Fedora (MySQL lokal, panduan `docs/14-panduan-mysql.md`)
+- [x] Inisialisasi monorepo Bun Workspace (`apps/web`, `apps/api`, `packages/shared`, `packages/prayer-engine`)
+- [x] `tsconfig` strict + script `typecheck/lint(oxlint)/test/build`
+- [x] Drizzle + `DATABASE_URL` + migration 5 tabel (`admins`, `app_settings`, `message_targets`, `scheduled_messages`, `hadiths`)
+- [x] Seed `db:seed`: admin utama + hadits dari `data/hadiths.json` (idempotent via `email` / `seed_key`)
+- [x] Endpoint `health/ready`
+- [x] `Dockerfile` web/api + `deploy/compose.yml` (prod-only, tanpa MySQL) + `.env.example` final (image API teruji: build + smoke test health/ready OK)
+- [x] Validasi: web+api+DB konek di Fedora (MySQL lokal, panduan `docs/14-panduan-mysql.md`)
 
 ## Fase 2 — Prayer Engine + Landing
 
