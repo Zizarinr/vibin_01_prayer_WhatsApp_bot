@@ -273,7 +273,7 @@ export async function cancelFuturePendingForInactiveTargets(): Promise<number> {
 	const targetIds = inactiveTargets.map((t) => t.id);
 	const now = utcNow();
 
-	await db
+	const result = await db
 		.update(scheduledMessages)
 		.set({
 			status: "CANCELLED",
@@ -288,7 +288,7 @@ export async function cancelFuturePendingForInactiveTargets(): Promise<number> {
 			),
 		);
 
-	return targetIds.length;
+	return Number((result as unknown as { affectedRows?: unknown })?.affectedRows ?? 0);
 }
 
 /**
@@ -301,7 +301,7 @@ export async function recalculateFuturePending(): Promise<RecalculateResult> {
 	const now = utcNow();
 
 	// 1. Hitung dan batalkan PENDING masa depan
-	await db
+	const cancelled = await db
 		.update(scheduledMessages)
 		.set({
 			status: "CANCELLED",
@@ -325,7 +325,9 @@ export async function recalculateFuturePending(): Promise<RecalculateResult> {
 		.where(inArray(scheduledMessages.status, ["SENT", "PROCESSING"]));
 
 	return {
-		cancelledPendingCount: 0,
+		cancelledPendingCount: Number(
+			(cancelled as unknown as { affectedRows?: unknown })?.affectedRows ?? 0,
+		),
 		generatedCount: genResult.totalJobsGenerated,
 		preservedCount: Number(preservedRows[0]?.count ?? 0),
 	};
