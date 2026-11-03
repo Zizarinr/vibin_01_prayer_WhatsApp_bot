@@ -34,12 +34,12 @@ export function PrayerTimesGrid({
 		const text = `🕌 *Jadwal Shalat Kampus Siman UNIDA Gontor*
 📅 ${data.dateLocal} ${data.hijri ? `(${data.hijri.formatted})` : ""}
 
-• Subuh: ${data.times.FAJR.timeLabel} WIB
-• Terbit: ${data.times.SUNRISE.timeLabel} WIB
-• ${data.isFriday ? "Jumat" : "Dzuhur"}: ${data.times.DHUHR.timeLabel} WIB
-• Ashar: ${data.times.ASR.timeLabel} WIB
-• Maghrib: ${data.times.MAGHRIB.timeLabel} WIB
-• Isya: ${data.times.ISHA.timeLabel} WIB
+• Subuh: ${data.times.FAJR.timeLabel}
+• Terbit: ${data.times.SUNRISE.timeLabel}
+• ${data.isFriday ? "Jumat" : "Dzuhur"}: ${data.times.DHUHR.timeLabel}
+• Ashar: ${data.times.ASR.timeLabel}
+• Maghrib: ${data.times.MAGHRIB.timeLabel}
+• Isya: ${data.times.ISHA.timeLabel}
 
 _UNIDA Prayer System V2.0_`;
 

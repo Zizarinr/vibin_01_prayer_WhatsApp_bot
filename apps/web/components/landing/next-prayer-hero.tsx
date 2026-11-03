@@ -51,7 +51,7 @@ export function NextPrayerHero({
 							<span>
 								Pukul{" "}
 								<strong className="text-white text-base font-bold">
-									{nextPrayer.timeLabel} WIB
+									{nextPrayer.timeLabel}
 								</strong>
 							</span>
 							{nextPrayer.isTomorrow && (
