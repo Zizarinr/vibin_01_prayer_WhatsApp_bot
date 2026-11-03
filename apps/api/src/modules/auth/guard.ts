@@ -1,5 +1,3 @@
-import { fail, type ErrorCode } from "@unida-prayer/shared";
-import { Elysia } from "elysia";
 import { AuthError, getSessionAdmin } from "./service";
 
 export const SESSION_COOKIE_NAME = "unida_prayer_session";
@@ -22,15 +20,3 @@ export async function requireAdminAuth(cookie: Record<string, unknown>) {
 	}
 }
 
-export const requireAdmin = new Elysia({ name: "require-admin" }).onBeforeHandle(
-	async ({ cookie, status }) => {
-		try {
-			await requireAdminAuth(cookie as Record<string, unknown>);
-		} catch (error) {
-			if (error instanceof AuthError) {
-				return status(error.statusCode, fail(error.code as ErrorCode, error.message));
-			}
-			return status(401, fail("UNAUTHENTICATED", "Sesi login tidak valid atau telah berakhir."));
-		}
-	},
-);

@@ -1,11 +1,21 @@
 import { fail, ok } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
-import { requireAdmin } from "../auth/guard";
+import { requireAdminAuth } from "../auth/guard";
+import { AuthError } from "../auth/service";
 import { patchSettingsBodySchema } from "./schema";
 import { getAdminSettings, updateAdminSettings } from "./service";
 
 export const settingsRoutes = new Elysia({ prefix: "/api/admin/settings" })
-	.use(requireAdmin)
+	.onBeforeHandle(async ({ cookie, status }) => {
+		try {
+			await requireAdminAuth(cookie as Record<string, unknown>);
+		} catch (error) {
+			if (error instanceof AuthError) {
+				return status(error.statusCode, { data: null, error: { code: error.code, message: error.message } });
+			}
+			return status(401, { data: null, error: { code: "UNAUTHENTICATED", message: "Sesi login tidak valid atau telah berakhir." } });
+		}
+	})
 	.get("/", async () => {
 		const data = await getAdminSettings();
 		return ok(data);
