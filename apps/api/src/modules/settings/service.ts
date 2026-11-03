@@ -113,14 +113,24 @@ export async function updateAdminSettings(
 	}
 
 	// Trigger regenerasi job PENDING masa depan bila setting hisab / jadwal berubah
+	// hijri ikut memicu karena message_body memuat tanggal Hijriyah.
 	let recalcResult: RecalculateResult | undefined;
 	const shouldRecalc =
 		patch.location ||
 		patch.prayer_calculation ||
 		patch.prayer_adjustments ||
-		patch.reminder_settings;
+		patch.reminder_settings ||
+		patch.hijri_settings;
 
 	if (shouldRecalc) {
+		// Validasi timezone IANA sebelum generate ulang agar tidak crash formatInTimeZone.
+		if (patch.location?.timezone) {
+			try {
+				Intl.DateTimeFormat(undefined, { timeZone: patch.location.timezone });
+			} catch {
+				throw new Error(`Timezone tidak valid: ${patch.location.timezone}`);
+			}
+		}
 		recalcResult = await recalculateFuturePending();
 	}
 

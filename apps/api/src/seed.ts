@@ -88,10 +88,13 @@ async function seedHadiths(): Promise<void> {
 		const text = item.text.trim();
 		const source = item.source.trim();
 		if (text.length < 10 || source.length === 0) continue;
-		const key =
-			typeof item.id === "number"
-				? `hadith-${item.id}`
-				: `hadith-text-${text.length}-${source.length}`;
+		let key: string;
+		if (typeof item.id === "number") {
+			key = `hadith-${item.id}`;
+		} else {
+			const hash = Bun.hash(`${text}||${source}`).toString(16);
+			key = `hadith-hash-${hash}`;
+		}
 		if (taken.has(key)) continue;
 		await db
 			.insert(hadiths)

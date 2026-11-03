@@ -1,6 +1,8 @@
 import { eq } from "drizzle-orm";
+import { utcNow } from "../../core/time";
 import { db } from "../../database/client";
 import { messageTargets } from "../../database/schema/targets";
+import { getResolvedSettings } from "../prayer/service";
 import {
 	getSessionQr,
 	getSessionStatus,
@@ -59,15 +61,22 @@ export async function sendTestMessage(targetId: number, customText?: string) {
 		);
 	}
 
-	const nowWib = new Date().toLocaleString("id-ID", {
-		timeZone: "Asia/Jakarta",
+	let timezone = "Asia/Jakarta";
+	try {
+		const resolved = await getResolvedSettings();
+		timezone = resolved.location.timezone;
+	} catch {
+		// fallback ke default bila settings gagal dibaca
+	}
+	const nowWib = utcNow().toLocaleString("id-ID", {
+		timeZone: timezone,
 		dateStyle: "full",
 		timeStyle: "medium",
 	});
 
 	const text =
 		customText?.trim() ||
-		`🧪 *Uji Coba Pengiriman UNIDA Prayer*\n\nPesan uji coba ini dikirim oleh Administrator sistem untuk memastikan integrasi bot WhatsApp berjalan dengan baik.\n\n📅 Waktu uji: ${nowWib} WIB`;
+		`🧪 *Uji Coba Pengiriman UNIDA Prayer*\n\nPesan uji coba ini dikirim oleh Administrator sistem untuk memastikan integrasi bot WhatsApp berjalan dengan baik.\n\n📅 Waktu uji: ${nowWib}`;
 
 	const result = await sendTextMessage({
 		chatId: target.targetId,
@@ -106,7 +115,7 @@ export async function syncGroups() {
 			if (existing.name !== group.name) {
 				await db
 					.update(messageTargets)
-					.set({ name: group.name, updatedAt: new Date() })
+					.set({ name: group.name, updatedAt: utcNow() })
 					.where(eq(messageTargets.id, existing.id));
 				updatedCount += 1;
 			}

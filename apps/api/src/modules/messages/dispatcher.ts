@@ -175,62 +175,63 @@ export async function runDispatcherTick(batchSize = 10): Promise<DispatchTickRes
 
 	// Gunakan Promise.allSettled agar satu kegagalan target tidak memblokir target lain
 	const promises = claimed.map(async (msg) => {
-		const target = targetMap.get(msg.targetId);
+		try {
+			const target = targetMap.get(msg.targetId);
 
-		// 1. Cek target aktif
-		if (!target || !target.isActive) {
-			await db
-				.update(scheduledMessages)
-				.set({
-					status: "CANCELLED",
-					lastError: "Target grup WhatsApp tidak aktif atau telah dihapus.",
-					updatedAt: utcNow(),
-				})
-				.where(eq(scheduledMessages.id, msg.id));
-			return;
-		}
-
-		// 2. Cek apakah sudah expired melewati lateGraceMinutes
-		const diffMs = now.getTime() - new Date(msg.scheduledAtUtc).getTime();
-		if (diffMs > lateGraceMs) {
-			expiredCount++;
-			await db
-				.update(scheduledMessages)
-				.set({
-					status: "EXPIRED",
-					lastError: `Melewati batas toleransi keterlambatan (${settings.reminder.lateGraceMinutes} menit).`,
-					updatedAt: utcNow(),
-				})
-				.where(eq(scheduledMessages.id, msg.id));
-			return;
-		}
-
-		// 3. Bila sesi WAHA down, jadwalkan retry backoff jika belum lewat max attempt
-		if (!wahaIsWorking) {
-			if (msg.attemptCount < MAX_ATTEMPTS) {
-				const nextAttempt = new Date(now.getTime() + getBackoffMs(msg.attemptCount));
+			// 1. Cek target aktif
+			if (!target || !target.isActive) {
 				await db
 					.update(scheduledMessages)
 					.set({
-						status: "PENDING",
-						nextAttemptAtUtc: nextAttempt,
-						lastError: "Sesi WhatsApp belum terhubung (menunggu reconnect).",
+						status: "CANCELLED",
+						lastError: "Target grup WhatsApp tidak aktif atau telah dihapus.",
 						updatedAt: utcNow(),
 					})
 					.where(eq(scheduledMessages.id, msg.id));
-			} else {
-				failedCount++;
-				await db
-					.update(scheduledMessages)
-					.set({
-						status: "FAILED",
-						lastError: "Gagal kirim: sesi WhatsApp tidak terhubung setelah batas retry.",
-						updatedAt: utcNow(),
-					})
-					.where(eq(scheduledMessages.id, msg.id));
+				return;
 			}
-			return;
-		}
+
+			// 2. Cek apakah sudah expired melewati lateGraceMinutes
+			const diffMs = now.getTime() - new Date(msg.scheduledAtUtc).getTime();
+			if (diffMs > lateGraceMs) {
+				expiredCount++;
+				await db
+					.update(scheduledMessages)
+					.set({
+						status: "EXPIRED",
+						lastError: `Melewati batas toleransi keterlambatan (${settings.reminder.lateGraceMinutes} menit).`,
+						updatedAt: utcNow(),
+					})
+					.where(eq(scheduledMessages.id, msg.id));
+				return;
+			}
+
+			// 3. Bila sesi WAHA down, jadwalkan retry backoff jika belum lewat max attempt
+			if (!wahaIsWorking) {
+				if (msg.attemptCount < MAX_ATTEMPTS) {
+					const nextAttempt = new Date(now.getTime() + getBackoffMs(msg.attemptCount));
+					await db
+						.update(scheduledMessages)
+						.set({
+							status: "PENDING",
+							nextAttemptAtUtc: nextAttempt,
+							lastError: "Sesi WhatsApp belum terhubung (menunggu reconnect).",
+							updatedAt: utcNow(),
+						})
+						.where(eq(scheduledMessages.id, msg.id));
+				} else {
+					failedCount++;
+					await db
+						.update(scheduledMessages)
+						.set({
+							status: "FAILED",
+							lastError: "Gagal kirim: sesi WhatsApp tidak terhubung setelah batas retry.",
+							updatedAt: utcNow(),
+						})
+						.where(eq(scheduledMessages.id, msg.id));
+				}
+				return;
+			}
 
 		// 4. Kirim via WAHA
 		try {
@@ -316,6 +317,25 @@ export async function runDispatcherTick(batchSize = 10): Promise<DispatchTickRes
 					.where(eq(scheduledMessages.id, msg.id));
 			}
 		}
+	} catch (outer) {
+		logger.error("Gagal proses job dispatcher (DB/update).", {
+			messageId: msg.id,
+			error: outer instanceof Error ? outer.message : String(outer),
+		});
+		try {
+			await db
+				.update(scheduledMessages)
+				.set({
+					status: "PENDING",
+					nextAttemptAtUtc: new Date(Date.now() + getBackoffMs(msg.attemptCount)),
+					lastError: `Gagal internal dispatcher: ${outer instanceof Error ? outer.message : String(outer)}`.slice(0, 500),
+					updatedAt: utcNow(),
+				})
+				.where(eq(scheduledMessages.id, msg.id));
+		} catch {
+			// biarkan recovery startup yang menangani bila tetap PROCESSING
+		}
+	}
 	});
 
 	await Promise.allSettled(promises);

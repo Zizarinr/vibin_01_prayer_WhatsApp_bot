@@ -34,6 +34,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 	const pathname = usePathname();
 	const router = useRouter();
 	const [admin, setAdmin] = useState<AdminProfile | null>(null);
+	const [authChecked, setAuthChecked] = useState(false);
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
 	// Tutup mobile menu ketika rute berpindah
@@ -42,14 +43,23 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 	}, [pathname]);
 
 	useEffect(() => {
+		let cancelled = false;
 		async function checkAuth() {
 			const res = await fetchApi<AdminProfile>("/api/auth/me");
+			if (cancelled) return;
 			if (res.data) {
 				setAdmin(res.data);
+			} else {
+				router.push("/login");
+				return;
 			}
+			setAuthChecked(true);
 		}
 		checkAuth();
-	}, []);
+		return () => {
+			cancelled = true;
+		};
+	}, [router]);
 
 	const handleLogout = async () => {
 		await fetchApi("/api/auth/logout", { method: "POST" });
@@ -93,6 +103,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 			icon: <Settings className="h-4 w-4" />,
 		},
 	];
+
+	if (!authChecked) {
+		return (
+			<div className="flex min-h-screen items-center justify-center bg-[#F5F8FC]">
+				<p className="text-sm font-medium text-[#64748B]">Memeriksa sesi login…</p>
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex min-h-screen flex-col bg-[#F5F8FC] lg:flex-row">

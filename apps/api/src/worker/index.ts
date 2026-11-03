@@ -17,23 +17,26 @@ let isDispatching = false;
 
 async function writeHeartbeat(): Promise<void> {
 	try {
+		const now = utcNow();
 		await db
 			.insert(appSettings)
 			.values({
 				key: "worker_heartbeat",
 				value: {
-					atUtc: utcNow().toISOString(),
+					atUtc: now.toISOString(),
 					workerId: WORKER_ID,
 					version: "2.0.0",
 				},
+				updatedAt: now,
 			})
 			.onDuplicateKeyUpdate({
 				set: {
 					value: {
-						atUtc: utcNow().toISOString(),
+						atUtc: now.toISOString(),
 						workerId: WORKER_ID,
 						version: "2.0.0",
 					},
+					updatedAt: now,
 				},
 			});
 	} catch (error) {

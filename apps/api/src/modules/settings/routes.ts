@@ -1,4 +1,4 @@
-import { ok } from "@unida-prayer/shared";
+import { fail, ok } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
 import { requireAdmin } from "../auth/guard";
 import { patchSettingsBodySchema } from "./schema";
@@ -12,9 +12,16 @@ export const settingsRoutes = new Elysia({ prefix: "/api/admin/settings" })
 	})
 	.patch(
 		"/",
-		async ({ body }) => {
-			const data = await updateAdminSettings(body);
-			return ok(data);
+		async ({ body, status }) => {
+			try {
+				const data = await updateAdminSettings(body);
+				return ok(data);
+			} catch (error) {
+				if (error instanceof Error && error.message.startsWith("Timezone tidak valid")) {
+					return status(400, fail("VALIDATION_ERROR", error.message));
+				}
+				throw error;
+			}
 		},
 		{
 			body: patchSettingsBodySchema,

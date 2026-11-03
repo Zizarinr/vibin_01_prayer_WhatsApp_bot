@@ -1,4 +1,5 @@
 import { desc, eq, sql } from "drizzle-orm";
+import { formatInTimeZone } from "date-fns-tz";
 import { config } from "../../core/config";
 import { createLogger } from "../../core/logger";
 import { utcNow } from "../../core/time";
@@ -7,6 +8,7 @@ import { appSettings } from "../../database/schema/appSettings";
 import { scheduledMessages } from "../../database/schema/messages";
 import { messageTargets } from "../../database/schema/targets";
 import { waha } from "../../integrations/waha";
+import { getResolvedSettings } from "../prayer/service";
 
 const logger = createLogger("api");
 
@@ -138,8 +140,14 @@ export async function getSystemStatus(): Promise<SystemStatusData> {
 		wahaStatusStr = "OFFLINE";
 	}
 
-	// 4. Message counts
-	const todayDateStr = now.toISOString().slice(0, 10);
+	// 4. Message counts — prayer_date adalah tanggal lokal, jadi pakai timezone lokasi.
+	let todayDateStr = now.toISOString().slice(0, 10);
+	try {
+		const resolved = await getResolvedSettings();
+		todayDateStr = formatInTimeZone(now, resolved.location.timezone, "yyyy-MM-dd");
+	} catch {
+		// fallback ke UTC bila settings gagal dibaca
+	}
 	const countsRes = await db
 		.select({
 			todaySent: sql<number>`SUM(CASE WHEN ${scheduledMessages.status} = 'SENT' AND ${scheduledMessages.prayerDate} = ${todayDateStr} THEN 1 ELSE 0 END)`,
