@@ -7,9 +7,9 @@
 - [x] Susun `AGENTS.md` + `docs/` (01–14) + `TODO.md`
 - [x] Jawab BLOCKER (4 Nov 2026): OWNER=`FarrelGhozy`; WAHA = pin stabil terbaru saat Fase 3 (tanpa `latest`); MySQL port 3306 standar, provisioning pemilik + panduan `docs/14-panduan-mysql.md`; domain/proxy/TLS ditunda, Compose khusus production, dev native
 - [x] Perubahan rancangan: hadits → tabel `hadiths` + CRUD admin; `data/hadiths.json` jadi seed awal bersama akun admin utama
-- [ ] Konfirmasi visibilitas package GHCR (default: private; ubah bila mau public)
-- [ ] Catat versi WAHA pin aktual ke `docs/07-waha-integration.md` saat mulai Fase 3
-- [ ] Bekukan template pesan awal + verifikasi 10 hadits seed satu per satu (sebelum Fase 4)
+- [x] Konfirmasi visibilitas package GHCR: **public**
+- [x] WAHA pin: **`devlikeapro/waha:gows-2026.10.1`** tercatat di `docs/07`, `docs/10`, `deploy/compose.yml`
+- [x] Bekukan template pesan + 10 hadits seed (`docs/15-pembekuan-template-hadits.md` disetujui; item #9 pakai header "Ayat Hari Ini")
 
 ## Fase 1 — Foundation
 

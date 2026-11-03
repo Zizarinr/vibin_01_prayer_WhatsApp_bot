@@ -4,7 +4,7 @@
 
 ## 7.1 Prinsip
 
-- Engine eksplisit `GOWS`. **Pin versi image** (mis. `devlikeapro/waha:2026.xx-gows` — nilai aktual kunci Q-WAHA-01, jangan `latest`).
+- Engine eksplisit `GOWS` (env `WHATSAPP_DEFAULT_ENGINE`). Image pin: **`devlikeapro/waha:gows-2026.10.1`** (diputuskan 4 Nov 2026; cek tag terbaru di Docker Hub bila Fase 3 menemukan rilis stabil lebih baru).
 - `WAHA_API_KEY` hanya di env backend/worker + env WAHA. Jangan kirim ke browser, jangan log.
 - Port WAHA **tidak** dibuka ke internet. Di Compose hanya `expose: 3000` internal (lihat `10-devops-cicd.md`).
 - Data sesi di volume `waha_sessions:/app/.sessions`. Restart/update image **tak boleh** hapus volume.

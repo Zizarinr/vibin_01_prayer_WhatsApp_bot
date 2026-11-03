@@ -9,7 +9,7 @@
 
 `deploy/compose.yml` menjalankan: `web`, `api`, `worker` (image API + cmd beda), `waha`.
 
-Contoh acuan (ganti `OWNER`, `PINNED_VERSION`, domain):
+Contoh acuan (OWNER `farrelghozy`, WAHA `gows-2026.10.1`; domain/proxy ditunda):
 
 ```yaml
 services:
@@ -37,7 +37,7 @@ services:
     env_file: [.env]
     depends_on: [waha]
   waha:
-    image: devlikeapro/waha:PINNED_VERSION
+    image: devlikeapro/waha:gows-2026.10.1
     restart: unless-stopped
     environment:
       WHATSAPP_DEFAULT_ENGINE: GOWS
@@ -51,7 +51,7 @@ volumes:
 Aturan:
 - `depends_on` hanya urutan; API/worker **tetap retry** MySQL/WAHA saat start.
 - WAHA jangan `ports` ke publik. API publish ke loopback / lewat proxy internal saja.
-- Reverse proxy/TLS pakai yang ada di home server; tambah config minimal per domain bila belum ada (kunci Q-OPS-01: domain + proxy).
+- Reverse proxy/TLS ditunda (keputusan pemilik) — untuk sekarang cukup loopback.
 - Tambah `healthcheck` API via `/api/health|/ready`.
 - `.env` prod di server saja (lihat §10.3).
 

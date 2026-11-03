@@ -37,8 +37,7 @@ services:
       - waha
 
   waha:
-    # Versi pin diputuskan di Fase 3 (docs/07-waha-integration.md). Wajib diisi sebelum deploy.
-    image: devlikeapro/waha:${WAHA_VERSION:?isi WAHA_VERSION di .env, lihat docs/07-waha-integration.md}
+    image: devlikeapro/waha:gows-2026.10.1
     restart: unless-stopped
     environment:
       WHATSAPP_DEFAULT_ENGINE: GOWS

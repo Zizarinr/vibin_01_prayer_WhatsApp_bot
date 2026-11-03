@@ -8,8 +8,8 @@
 - Q-AUTH-01 → **Opaque DB session** (cookie HttpOnly, mudah dicabut).
 - Q-PRAY-01 → **date-fns-tz**.
 - Q-API-01 → **Sync langsung** (kembalikan ringkasan; cocok untuk target sedikit).
-- Q-OWNER-01 → OWNER **`FarrelGhozy`** (image `ghcr.io/FarrelGhozy/unida-prayer-web|api`). Visibilitas package: default **private** (konfirmasi bila mau public).
-- Q-WAHA-01 → Pin **versi stabil terbaru yang tersedia saat mulai Fase 3**; dilarang tag `latest`. Versi aktual dicatat di `docs/07-waha-integration.md` saat implementasi.
+- Q-OWNER-01 → OWNER **`FarrelGhozy`** (image `ghcr.io/FarrelGhozy/unida-prayer-web|api`). Visibilitas package: **public** (diputuskan 4 Nov 2026).
+- Q-WAHA-01 → Pin **`devlikeapro/waha:gows-2026.10.1`** (tag GoWS terbaru saat cek 4 Nov 2026; engine `GOWS` via env juga). Dilarang tag `latest`. Bila ada rilis stabil lebih baru saat Fase 3, putuskan ulang dan catat di `docs/07-waha-integration.md`.
 - Q-DB-01 → MySQL eksternal **port standar 3306**, provisioning oleh pemilik. Panduan di `docs/14-panduan-mysql.md`. Dev Fedora pakai MySQL lokal (panduan sama).
 - Q-OPS-01 → **Ditunda** (bukan domain resmi institusi). Compose di repo ini **khusus production**; development jalan native (Bun/Next + MySQL lokal) tanpa Compose dev. Catatan: Docker tidak menggantikan reverse proxy — saat domain ada, putuskan publish langsung vs proxy (lihat `docs/10-devops-cicd.md`).
 - Perubahan rancangan (pemilik): **hadits masuk database + CRUD admin**. `data/hadiths.json` menjadi **seed awal** bersama akun admin utama. Tabel `hadiths` ditambah (lihat `docs/03-database.md`); template pesan tetap di TypeScript untuk MVP.
