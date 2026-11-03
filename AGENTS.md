@@ -42,6 +42,8 @@ Jika ada konflik: `docs/` menang atas ingatan/V1. Jika `docs/` ambigu: **berhent
 - Setiap modul UI wajib punya: loading, empty, error, success, konfirmasi aksi berisiko.
 - Status yang tampil di UI harus dari backend/DB, bukan asumsi klik tombol.
 - Jalankan `bun run typecheck` secara eksplisit; lolos-run Bun ≠ lolos-typecheck.
+- Komentar `//` hanya bila perlu (menjelaskan *kenapa*, bukan *apa*). Kode yang sudah jelas tidak perlu dikomentari; jangan beri keterangan yang tidak penting.
+- Linter utama: **oxlint** (`bun run lint`). Pastikan lolos sebelum commit.
 
 ## 5. Struktur Repo yang Diwajibkan
 
