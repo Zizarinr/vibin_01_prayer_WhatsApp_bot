@@ -95,5 +95,5 @@ _"<text>"_
 
 ## 15.7 Aturan perubahan template berikutnya
 
-- Naikkan `TEMPLATE_VERSION` di `apps/api/src/modules/messages/templates.ts` + sesuaikan `isStaleTemplateBody()` agar snapshot lama otomatis dibatalkan dan diregenerasi (`cancelStaleTemplatePending()` + `reviveRegeneratedRows()` di generator).
-- `CANCELLED` manual admin tidak dibangkitkan otomatis; `SENT/FAILED` tidak pernah disentuh.
+- Naikkan `TEMPLATE_VERSION` di `apps/api/src/modules/messages/templates.ts` + sesuaikan `isStaleTemplateBody()` agar snapshot lama otomatis dibatalkan, dihapus, dan diganti baris segar (`cancelStaleTemplatePending()` + `deleteRegeneratedRows()` di generator).
+- `CANCELLED` manual admin dan `SENT/FAILED` tidak pernah disentuh.

@@ -42,6 +42,18 @@ export function computeIdempotencyKey(
 }
 
 /**
+ * Ambil jumlah baris terdampak dari hasil mentah drizzle-mysql
+ * (berbentuk array `[OkPacket, ...]`, bukan objek langsung).
+ */
+function affectedRowsOf(result: unknown): number {
+	const packet = Array.isArray(result) ? result[0] : result;
+	const n = Number(
+		(packet as { affectedRows?: unknown } | undefined)?.affectedRows ?? 0,
+	);
+	return Number.isSafeInteger(n) ? n : 0;
+}
+
+/**
  * Batalkan PENDING masa depan yang body-nya memakai template lama (tanpa
  * penanda `TEMPLATE_BODY_MARKER`). Tanpa ini, snapshot basi tetap terkirim
  * karena generator tidak pernah menimpa baris yang sudah ada.
@@ -64,7 +76,7 @@ export async function cancelStaleTemplatePending(now = utcNow()): Promise<number
 			),
 		);
 
-	return Number((result as unknown as { affectedRows?: unknown })?.affectedRows ?? 0);
+	return affectedRowsOf(result);
 }
 
 /**
@@ -76,12 +88,28 @@ export async function cancelStaleTemplatePending(now = utcNow()): Promise<number
  * itu penonaktifan sengaja per pesan dan tidak boleh bangkit otomatis.
  * SENT / FAILED / PROCESSING / EXPIRED / UNKNOWN tidak disentuh.
  */
-export async function reviveRegeneratedRows(
+export function isRegeneratableRow(
+	status: string | null | undefined,
+	lastError: string | null | undefined,
+): boolean {
+	if (status !== "CANCELLED") return false;
+	return !(lastError ?? "").startsWith(MANUAL_CANCEL_PREFIX);
+}
+
+/**
+ * Hapus draf antrean lama yang kuncinya diregenerasi (CANCELLED non-manual)
+ * agar INSERT berikutnya menulis baris segar (id + createdAt baru).
+ * PENDING segar yang kuncinya bertabrakan dibiarkan (INSERT no-op).
+ * Tidak menyentuh SENT / FAILED / PROCESSING / EXPIRED / UNKNOWN dan
+ * CANCELLED manual admin.
+ * @returns jumlah baris yang dihapus + jumlah kunci yang tetap bertabrakan
+ * (dipakai menghitung sisipan baru secara eksak).
+ */
+export async function deleteRegeneratedRows(
 	jobs: NewScheduledMessage[],
-	now = utcNow(),
-): Promise<number> {
-	const freshByKey = new Map(jobs.map((j) => [j.idempotencyKey, j]));
-	if (freshByKey.size === 0) return 0;
+): Promise<{ deleted: number; kept: number }> {
+	const freshKeys = new Set(jobs.map((j) => j.idempotencyKey));
+	if (freshKeys.size === 0) return { deleted: 0, kept: 0 };
 
 	const existing = await db
 		.select({
@@ -90,32 +118,22 @@ export async function reviveRegeneratedRows(
 			lastError: scheduledMessages.lastError,
 		})
 		.from(scheduledMessages)
-		.where(inArray(scheduledMessages.idempotencyKey, [...freshByKey.keys()]));
+		.where(inArray(scheduledMessages.idempotencyKey, [...freshKeys]));
 
-	let revived = 0;
-	for (const row of existing) {
-		if (row.status !== "CANCELLED") continue;
-		if ((row.lastError ?? "").startsWith(MANUAL_CANCEL_PREFIX)) continue;
-		const job = freshByKey.get(row.key);
-		if (!job) continue;
+	const deletable = existing
+		.filter((row) => isRegeneratableRow(row.status, row.lastError))
+		.map((row) => row.key);
+	if (deletable.length > 0) {
 		await db
-			.update(scheduledMessages)
-			.set({
-				status: "PENDING",
-				prayerTimeUtc: job.prayerTimeUtc,
-				scheduledAtUtc: job.scheduledAtUtc,
-				messageBody: job.messageBody,
-				contentRef: job.contentRef,
-				attemptCount: 0,
-				nextAttemptAtUtc: null,
-				claimedAtUtc: null,
-				lastError: `Diregenerasi otomatis pada ${now.toISOString()} (template v${TEMPLATE_VERSION}).`,
-				updatedAt: now,
-			})
-			.where(eq(scheduledMessages.idempotencyKey, row.key));
-		revived++;
+			.delete(scheduledMessages)
+			.where(
+				and(
+					eq(scheduledMessages.status, "CANCELLED"),
+					inArray(scheduledMessages.idempotencyKey, deletable),
+				),
+			);
 	}
-	return revived;
+	return { deleted: deletable.length, kept: existing.length - deletable.length };
 }
 
 
@@ -308,49 +326,44 @@ export async function generateHorizonMessages(
 		}
 	}
 
-	// Insert idempotent ke MySQL: ON DUPLICATE KEY UPDATE id = id (no-op update)
-	// Memastikan baris yang sudah SENT / FAILED / PROCESSING tidak disentuh sama sekali!
-	// Baris CANCELLED non-manual yang kuncinya diregenerasi dihidupkan ulang dulu
-	// (lihat reviveRegeneratedRows) karena INSERT IGNORE tidak menimpa baris duplikat.
+	// Insert idempotent ke MySQL. Baris yang kuncinya sudah ada tidak disentuh
+	// (SENT / FAILED / PROCESSING / PENDING segar aman).
+	// Draf lama (CANCELLED non-manual) yang kuncinya diregenerasi dihapus dulu
+	// (lihat deleteRegeneratedRows) agar diganti baris segar.
+	// Catatan: affectedRows ON DUPLICATE KEY UPDATE menghitung 2 per baris duplikat,
+	// jadi hitungan sisipan eksak = total kunci − kunci yang tetap bertabrakan.
 	let insertedCount = 0;
-	let revivedTotal = 0;
 	if (jobsToInsert.length > 0) {
-		revivedTotal = await reviveRegeneratedRows(jobsToInsert);
-		if (revivedTotal > 0) {
-			logger.info("Baris CANCELLED diregenerasi menjadi PENDING segar.", {
-				revivedCount: revivedTotal,
+		const { deleted: deletedCount, kept: keptCount } =
+			await deleteRegeneratedRows(jobsToInsert);
+		if (deletedCount > 0) {
+			logger.info("Draf antrean lama dihapus untuk diganti baris segar.", {
+				deletedCount,
 				templateVersion: TEMPLATE_VERSION,
 			});
 		}
 		const batchSize = 50;
 		for (let i = 0; i < jobsToInsert.length; i += batchSize) {
 			const batch = jobsToInsert.slice(i, i + batchSize);
-			const result = await db
-				.insert(scheduledMessages)
-				.values(batch)
-				.onDuplicateKeyUpdate({
-					set: {
-						id: sql`id`,
-					},
-				});
-			const affected = Number(
-				(result as unknown as { affectedRows?: unknown })?.affectedRows ?? 0,
-			);
-			insertedCount += Number.isSafeInteger(affected) ? affected : 0;
+			await db.insert(scheduledMessages).values(batch).onDuplicateKeyUpdate({
+				set: {
+					id: sql`id`,
+				},
+			});
 		}
+		insertedCount = jobsToInsert.length - keptCount;
 	}
 
 	logger.info("Generator horizon 7 hari selesai.", {
 		activeTargets: activeTargets.length,
 		totalJobsEvaluated: jobsToInsert.length,
 		totalJobsInserted: insertedCount,
-		revivedCount: revivedTotal,
 	});
 
 	return {
 		horizonDays: 7,
 		activeTargetsCount: activeTargets.length,
-		totalJobsGenerated: insertedCount + revivedTotal,
+		totalJobsGenerated: insertedCount,
 	};
 }
 
@@ -383,7 +396,7 @@ export async function cancelFuturePendingForInactiveTargets(): Promise<number> {
 			),
 		);
 
-	return Number((result as unknown as { affectedRows?: unknown })?.affectedRows ?? 0);
+	return affectedRowsOf(result);
 }
 
 /**
@@ -391,8 +404,8 @@ export async function cancelFuturePendingForInactiveTargets(): Promise<number> {
  * Sesuai docs/06-worker-scheduler.md §6.6:
  * - SENT, FAILED, PROCESSING tidak disentuh.
  * - PENDING masa depan (scheduled_at > now) dibatalkan lalu di-generate ulang.
- * - CANCELLED non-manual yang kuncinya diregenerasi dihidupkan ulang segar
- *   (reviveRegeneratedRows); CANCELLED manual admin tidak dibangkitkan.
+ * - Draf lama (CANCELLED non-manual) yang kuncinya diregenerasi dihapus dan
+ *   diganti baris segar (deleteRegeneratedRows); CANCELLED manual admin dipertahankan.
  */
 export async function recalculateFuturePending(): Promise<RecalculateResult> {
 	const now = utcNow();
@@ -419,9 +432,7 @@ export async function recalculateFuturePending(): Promise<RecalculateResult> {
 		.where(inArray(scheduledMessages.status, ["SENT", "PROCESSING"]));
 
 	return {
-		cancelledPendingCount: Number(
-			(cancelled as unknown as { affectedRows?: unknown })?.affectedRows ?? 0,
-		),
+		cancelledPendingCount: affectedRowsOf(cancelled),
 		generatedCount: genResult.totalJobsGenerated,
 		preservedCount: Number(preservedRows[0]?.count ?? 0),
 	};

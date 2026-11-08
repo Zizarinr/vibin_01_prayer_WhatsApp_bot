@@ -21,10 +21,10 @@ Untuk tiap `date` dalam horizon × tiap target aktif × tiap kombinasi aktif (pr
 3. Render `message_body` snapshot + `content_ref` (hadits/template). Hadits diambil dari tabel `hadiths` (`is_active=true`, acak, hindari `content_ref` terakhir untuk anti-repeat); bila 0 aktif / `includeHadith=false` → pesan tanpa hadits.
 4. `idempotency_key = sha256(prayer_date|prayer_name|message_type|targetDbId)`.
 5. `INSERT ... ON DUPLICATE KEY UPDATE nothing` (atau `INSERT IGNORE`). **Jangan overwrite `SENT/FAILED`.**
-   Baris `CANCELLED` non-manual yang kuncinya diregenerasi dihidupkan ulang segar
-   (`reviveRegeneratedRows`): tanpa ini horizon yang pernah dibatalkan recalculate
-   tidak akan terisi lagi karena INSERT IGNORE tidak menimpa duplikat.
-   `CANCELLED` manual admin tidak dibangkitkan.
+   Draf lama (`CANCELLED` non-manual) yang kuncinya diregenerasi dihapus dulu
+   (`deleteRegeneratedRows`) lalu ditulis baris segar — tanpa ini horizon yang pernah
+   dibatalkan recalculate tidak akan terisi lagi karena INSERT IGNORE tidak menimpa
+   duplikat. `CANCELLED` manual admin dipertahankan.
 
 Aturan:
 - Target nonaktif → jangan buat job baru. Job PENDING milik target yang baru dinonaktifkan → `CANCELLED` saat regenerasi/sync (jangan kirim).
@@ -70,6 +70,9 @@ Backoff usulan: attempt1→+30s, attempt2→+2m, attempt3→+5m. Simpan `last_er
 5. Lanjut tick normal.
 
 Jangan kirim ulang `SENT`. Jangan hapus riwayat untuk "bersih-bersih".
+Pengecualian satu-satunya: regenerasi menghapus draf antrean yang belum terkirim
+(`PENDING`/`CANCELLED` non-manual masa depan) untuk diganti baris segar — riwayat
+kirim (`SENT`/`FAILED`) dan pembatalan manual admin tidak pernah dihapus.
 
 ## 6.5 State machine
 
@@ -92,9 +95,11 @@ stateDiagram-v2
 ## 6.6 Pemicu regenerasi
 
 - Admin ubah lokasi/timezone/metode/koreksi/pre-menit/toggle → `PATCH /settings` sukses → panggil `regenerateFuturePending()` (sync kecil atau job internal; kunci Q-API-01).
+  `PENDING` masa depan dibatalkan, draf lama yang kuncinya diregenerasi dihapus,
+  lalu ditulis baris segar (id + `createdAt` baru).
 - Target dinonaktifkan → `CANCELLED`kan `PENDING` masa depan milik target itu.
 - Target diaktifkan → generator akan membuat job ke depan (jangan buat job masa lalu).
-  Baris `CANCELLED` non-manual yang kuncinya diregenerasi dihidupkan ulang segar
+  Draf `CANCELLED` non-manual yang kuncinya diregenerasi dihapus dan diganti segar
   (kecuali `CANCELLED` manual admin) — reaktivasi target otomatis mengisi horizon lagi.
 - Template pesan berubah → naikkan `TEMPLATE_VERSION` di `templates.ts` + sesuaikan
   `isStaleTemplateBody()`. Tiap tick generator membatalkan `PENDING` masa depan yang
