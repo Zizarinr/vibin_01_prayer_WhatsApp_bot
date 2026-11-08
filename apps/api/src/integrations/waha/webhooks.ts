@@ -15,7 +15,6 @@ export function handleWebhookEvent(event: WahaWebhookEvent): void {
 		session: event.session,
 	});
 
-	// Penanganan event spesifik (misal status sesi berubah atau delivery ack)
 	if (event.event === "session.status") {
 		logger.info("Perubahan status sesi WAHA:", {
 			session: event.session,

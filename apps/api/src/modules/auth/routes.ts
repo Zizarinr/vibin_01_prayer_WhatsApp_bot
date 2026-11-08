@@ -12,7 +12,6 @@ import {
 } from "./service";
 
 export const authRoutes = new Elysia({ prefix: "/api/auth" })
-	// POST /api/auth/login
 	.post(
 		"/login",
 		async ({ body, cookie, status }) => {
@@ -26,7 +25,7 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
 					path: "/",
 					sameSite: "lax",
 					secure: config.nodeEnv === "production",
-					maxAge: 7 * 24 * 60 * 60, // 7 hari
+					maxAge: 7 * 24 * 60 * 60,
 				});
 
 				return ok(admin);
@@ -41,7 +40,6 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
 			body: loginBodySchema,
 		},
 	)
-	// POST /api/auth/logout
 	.post("/logout", ({ cookie }) => {
 		const rawToken = cookie[SESSION_COOKIE_NAME]?.value;
 		const token = typeof rawToken === "string" ? rawToken : undefined;
@@ -49,7 +47,6 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
 		cookie[SESSION_COOKIE_NAME]?.remove();
 		return ok({ success: true });
 	})
-	// GET /api/auth/me
 	.get("/me", async ({ cookie, status }) => {
 		try {
 			const rawToken = cookie[SESSION_COOKIE_NAME]?.value;
@@ -63,7 +60,6 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
 			throw error;
 		}
 	})
-	// POST /api/auth/change-password
 	.post(
 		"/change-password",
 		async ({ body, cookie, status }) => {

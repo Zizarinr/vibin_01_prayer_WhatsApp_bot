@@ -38,7 +38,6 @@ export async function getSessionStatus(
 		};
 	} catch (error) {
 		if (error instanceof WahaError && error.statusCode === 404) {
-			// Sesi belum dibuat di WAHA
 			return {
 				name: sessionName,
 				status: "STOPPED",

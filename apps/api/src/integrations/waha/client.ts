@@ -46,7 +46,6 @@ export async function wahaFetch<T>(
 			try {
 				errorBody = await res.text();
 			} catch {
-				// abaikan error parse body
 			}
 
 			logger.warn("WAHA mengembalikan respons HTTP gagal.", {
@@ -84,7 +83,6 @@ export async function wahaFetch<T>(
 			);
 		}
 
-		// Bila respons biner (misal QR image) atau JSON
 		const contentType = res.headers.get("content-type") || "";
 		if (contentType.includes("application/json")) {
 			return (await res.json()) as T;

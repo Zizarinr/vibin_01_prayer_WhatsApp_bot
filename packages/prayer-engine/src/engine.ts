@@ -242,7 +242,6 @@ export function getNextPrayer(params: {
 		}
 	}
 
-	// Semua shalat hari ini sudah lewat -> ambil Subuh besok
 	let tomorrow = params.tomorrowResult;
 	if (!tomorrow) {
 		const nextDate = format(

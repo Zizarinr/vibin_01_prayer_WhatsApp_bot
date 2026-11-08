@@ -11,8 +11,8 @@ export interface GetMessagesParams {
 	prayerName?: string;
 	messageType?: string;
 	targetId?: number;
-	from?: string; // YYYY-MM-DD
-	to?: string; // YYYY-MM-DD
+	from?: string;
+	to?: string;
 	search?: string;
 }
 
@@ -82,7 +82,6 @@ export async function getMessages(
 
 	const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-	// Total count
 	const countResult = await db
 		.select({ count: sql<number>`count(*)` })
 		.from(scheduledMessages)
@@ -91,7 +90,6 @@ export async function getMessages(
 
 	const total = Number(countResult[0]?.count ?? 0);
 
-	// Fetch items
 	const rows = await db
 		.select({
 			msg: scheduledMessages,

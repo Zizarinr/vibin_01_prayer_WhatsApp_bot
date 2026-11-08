@@ -89,7 +89,6 @@ describe("buildDayTestMessages", () => {
 	});
 
 	it("memakai label Jumat bila tanggal Jumat", () => {
-		// 2026-11-06 adalah Jumat
 		const messages = buildDayTestMessages({
 			settings: DEFAULT_SETTINGS,
 			activeHadiths: [],

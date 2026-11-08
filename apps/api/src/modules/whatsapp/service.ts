@@ -68,7 +68,6 @@ export async function sendTestMessage(
 		const resolved = await getResolvedSettings();
 		timezone = resolved.location.timezone;
 	} catch {
-		// fallback ke default bila settings gagal dibaca
 	}
 	const nowWib = utcNow().toLocaleString("id-ID", {
 		timeZone: timezone,
@@ -113,7 +112,6 @@ export async function syncGroups() {
 	for (const group of groups) {
 		const existing = existingMap.get(group.id);
 		if (existing) {
-			// Update nama bila ada perubahan
 			if (existing.name !== group.name) {
 				await db
 					.update(messageTargets)
@@ -122,7 +120,6 @@ export async function syncGroups() {
 				updatedCount += 1;
 			}
 		} else {
-			// Grup baru default NONAKTIF
 			await db.insert(messageTargets).values({
 				targetType: "GROUP",
 				targetId: group.id,

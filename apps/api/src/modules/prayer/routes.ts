@@ -11,7 +11,6 @@ import {
 } from "./service";
 
 export const prayerRoutes = new Elysia({ prefix: "/api" })
-	// Endpoint publik (tanpa autentikasi)
 	.get(
 		"/public/prayer/today",
 		async ({ query }) => {
@@ -30,7 +29,6 @@ export const prayerRoutes = new Elysia({ prefix: "/api" })
 		const data = await getPublicSettings();
 		return ok(data);
 	})
-	// Endpoint admin (preview hisab tanpa simpan)
 	.post(
 		"/admin/prayer/preview",
 		async ({ body, cookie, status }) => {

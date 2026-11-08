@@ -7,7 +7,7 @@ import {
 
 describe("messages/templates", () => {
 	it("memformat tanggal Indonesia secara benar", () => {
-		const d = new Date(2026, 10, 4); // 4 November 2026
+		const d = new Date(2026, 10, 4);
 		expect(formatIndonesianDate(d)).toBe("4 November 2026");
 	});
 

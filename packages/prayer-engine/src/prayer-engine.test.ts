@@ -53,7 +53,6 @@ describe("packages/prayer-engine", () => {
 		expect(adjusted.utc.dhuhrUtc.getTime() - base.utc.dhuhrUtc.getTime()).toBe(
 			-3 * 60 * 1000,
 		);
-		// Waktu lain tidak terpengaruh
 		expect(adjusted.utc.asrUtc.getTime()).toBe(base.utc.asrUtc.getTime());
 		expect(adjusted.utc.maghribUtc.getTime()).toBe(base.utc.maghribUtc.getTime());
 	});
@@ -72,7 +71,6 @@ describe("packages/prayer-engine", () => {
 	});
 
 	it("mendeteksi hari Jumat dan mengubah label Dzuhur menjadi Sholat Jumat tanpa ubah jam", () => {
-		// 6 November 2026 adalah hari Jumat
 		const fridayDate = "2026-11-06";
 		expect(isFriday(fridayDate)).toBe(true);
 		expect(getPrayerDisplayName("DHUHR", fridayDate)).toBe("Sholat Jumat");
@@ -84,7 +82,6 @@ describe("packages/prayer-engine", () => {
 		expect(res.isFriday).toBe(true);
 		expect(res.times.DHUHR.displayName).toBe("Sholat Jumat");
 
-		// Bukan Jumat (4 November 2026 = Rabu)
 		expect(isFriday("2026-11-04")).toBe(false);
 		expect(getPrayerDisplayName("DHUHR", "2026-11-04")).toBe("Dzuhur");
 	});
@@ -92,7 +89,6 @@ describe("packages/prayer-engine", () => {
 	it("menghitung next prayer di antara waktu shalat dan keesokan harinya", () => {
 		const res = calcPrayerTimes(defaultInput);
 
-		// Saat jam 02:00 WIB (sebelum Subuh 03:45)
 		const earlyMorning = new Date(res.utc.fajrUtc.getTime() - 3600 * 1000);
 		const nextEarly = getNextPrayer({
 			todayResult: res,
@@ -101,7 +97,6 @@ describe("packages/prayer-engine", () => {
 		expect(nextEarly.prayerName).toBe("FAJR");
 		expect(nextEarly.isTomorrow).toBe(false);
 
-		// Saat jam 12:00 WIB (antara Dzuhur dan Ashar)
 		const afternoon = new Date(res.utc.dhuhrUtc.getTime() + 1800 * 1000);
 		const nextAfternoon = getNextPrayer({
 			todayResult: res,
@@ -110,7 +105,6 @@ describe("packages/prayer-engine", () => {
 		expect(nextAfternoon.prayerName).toBe("ASR");
 		expect(nextAfternoon.isTomorrow).toBe(false);
 
-		// Setelah Isya malam -> next prayer adalah Subuh besok
 		const lateNight = new Date(res.utc.ishaUtc.getTime() + 3600 * 1000);
 		const nextTomorrow = getNextPrayer({
 			todayResult: res,

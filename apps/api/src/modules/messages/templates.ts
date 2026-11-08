@@ -5,7 +5,7 @@ export interface TemplateVariables {
 	hijri: string; // mis. "23 Jumadil Ula 1448 H"
 	gregorian: string; // mis. "4 November 2026"
 	isFriday: boolean;
-	minutes?: number; // untuk pre-reminder
+	minutes?: number;
 	hadith?: {
 		id: number;
 		text: string;
@@ -45,7 +45,6 @@ export function formatIndonesianDate(date: Date, timezone?: string): string {
 			const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
 			return `${get("day")} ${get("month")} ${get("year")}`;
 		} catch {
-			// fallback ke lokal bila timezone invalid
 		}
 	}
 	const day = date.getDate();

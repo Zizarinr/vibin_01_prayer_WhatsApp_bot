@@ -85,7 +85,6 @@ export async function generateHorizonMessages(
 		};
 	}
 
-	// Baca content_settings dari app_settings
 	const contentSettingsRow = await db
 		.select()
 		.from(appSettings)
@@ -96,7 +95,6 @@ export async function generateHorizonMessages(
 		includeHadith?: boolean;
 	}) ?? { includeHadith: true };
 
-	// Ambil hadits aktif
 	const activeHadiths: Hadith[] = await db
 		.select()
 		.from(hadiths)
@@ -108,7 +106,6 @@ export async function generateHorizonMessages(
 	const jobsToInsert: NewScheduledMessage[] = [];
 	let lastPickedHadithId: number | null = null;
 
-	// Loop 7 hari horizon
 	for (let offset = 0; offset < 7; offset++) {
 		const targetDate = addDays(now, offset);
 		const dateLocal = formatInTimeZone(targetDate, tz, "yyyy-MM-dd");
@@ -135,7 +132,6 @@ export async function generateHorizonMessages(
 			const timeFormatted = prayerData.timeLabel;
 
 			for (const target of activeTargets) {
-				// 1. PRE-REMINDER
 				if (settings.reminder.preReminderEnabled) {
 					const preMinutes = settings.reminder.preReminderMinutes || 3;
 					const preScheduledAtUtc = new Date(
@@ -170,7 +166,6 @@ export async function generateHorizonMessages(
 					});
 				}
 
-				// 2. ADHAN
 				if (settings.reminder.adhanReminderEnabled) {
 					const adhanKey = computeIdempotencyKey(
 						dateLocal,
@@ -179,7 +174,6 @@ export async function generateHorizonMessages(
 						target.id,
 					);
 
-					// Pilih hadits acak anti-repeat
 					let selectedHadith: { id: number; text: string; source: string } | null = null;
 					if (contentSettings.includeHadith !== false && activeHadiths.length > 0) {
 						let pool = activeHadiths;
@@ -300,7 +294,6 @@ export async function cancelFuturePendingForInactiveTargets(): Promise<number> {
 export async function recalculateFuturePending(): Promise<RecalculateResult> {
 	const now = utcNow();
 
-	// 1. Hitung dan batalkan PENDING masa depan
 	const cancelled = await db
 		.update(scheduledMessages)
 		.set({
@@ -315,10 +308,8 @@ export async function recalculateFuturePending(): Promise<RecalculateResult> {
 			),
 		);
 
-	// 2. Generate ulang horizon 7 hari ke depan
 	const genResult = await generateHorizonMessages();
 
-	// 3. Ambil ringkasan
 	const preservedRows = await db
 		.select({ count: sql<number>`count(*)` })
 		.from(scheduledMessages)

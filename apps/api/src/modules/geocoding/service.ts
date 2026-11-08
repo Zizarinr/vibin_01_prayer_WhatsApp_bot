@@ -33,7 +33,7 @@ interface CacheEntry<T> {
 	expiresAt: number;
 }
 
-const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour cache
+const CACHE_TTL_MS = 60 * 60 * 1000;
 const searchCache = new Map<string, CacheEntry<GeocodingResult[]>>();
 const reverseCache = new Map<string, CacheEntry<ReverseGeocodingResult>>();
 

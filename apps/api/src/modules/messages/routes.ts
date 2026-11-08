@@ -24,12 +24,10 @@ export const messagesRoutes = new Elysia({ prefix: "/api/admin" })
 			return status(401, { data: null, error: { code: "UNAUTHENTICATED", message: "Sesi login tidak valid atau telah berakhir." } });
 		}
 	})
-	// Recalculate (sync)
 	.post("/prayer/recalculate", async () => {
 		const result = await recalculateFuturePending();
 		return ok(result);
 	})
-	// List messages dengan filter & pagination
 	.get(
 		"/messages",
 		async ({ query }) => {
@@ -40,7 +38,6 @@ export const messagesRoutes = new Elysia({ prefix: "/api/admin" })
 			query: getMessagesQuerySchema,
 		},
 	)
-	// Detail pesan
 	.get(
 		"/messages/:id",
 		async ({ params, status }) => {
@@ -58,7 +55,6 @@ export const messagesRoutes = new Elysia({ prefix: "/api/admin" })
 			params: messageIdParamSchema,
 		},
 	)
-	// Retry pesan manual
 	.post(
 		"/messages/:id/retry",
 		async ({ params, status }) => {
@@ -79,7 +75,6 @@ export const messagesRoutes = new Elysia({ prefix: "/api/admin" })
 			params: messageIdParamSchema,
 		},
 	)
-	// Cancel pesan manual
 	.post(
 		"/messages/:id/cancel",
 		async ({ params, status }) => {

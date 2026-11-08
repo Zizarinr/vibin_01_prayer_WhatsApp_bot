@@ -63,7 +63,6 @@ export async function updateAdminSettings(
 	const current = await getAdminSettings();
 	const now = utcNow();
 
-	// Upsert per key yang berubah
 	if (patch.location) {
 		const newLocation = { ...current.location, ...patch.location };
 		await db
