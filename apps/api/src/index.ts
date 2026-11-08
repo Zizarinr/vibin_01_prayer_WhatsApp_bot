@@ -49,14 +49,13 @@ const app = new Elysia()
 logger.info("API berjalan.", {
 	port: config.port,
 	nodeEnv: config.nodeEnv,
-	appEnv: config.appEnv,
 	devBypass: config.isDev,
 	wahaSession: config.wahaSession,
 });
 
 if (config.isDev) {
 	logger.warn(
-		"MODE DEVELOPMENT AKTIF: login admin di-bypass + CORS longgar. Jangan pakai .env ini di server produksi (wajib APP_ENV=production).",
+		"MODE DEVELOPMENT AKTIF: login admin di-bypass + CORS longgar. Jangan pakai .env ini di server produksi (wajib NODE_ENV=production).",
 		{},
 	);
 }

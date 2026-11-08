@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
+	// Mode development lokal (NODE_ENV=development): tanpa login, akses path
+	// admin langsung masuk. Tidak aktif di production (NODE_ENV=production).
+	if (process.env.NODE_ENV === "development") {
+		return NextResponse.next();
+	}
+
 	const rawAdminPath =
 		process.env.NEXT_PUBLIC_ADMIN_PATH ||
 		process.env.ADMIN_PATH ||

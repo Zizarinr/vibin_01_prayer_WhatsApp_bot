@@ -58,6 +58,31 @@ describe("middleware secret admin routing", () => {
 		expect(res.headers.get("x-middleware-rewrite")).toContain("/admin/prayer");
 	});
 
+	it("melewatkan semua cek (tanpa login) bila NODE_ENV=development", () => {
+		const originalNodeEnv = process.env.NODE_ENV;
+		// NODE_ENV readonly di types Next — set via defineProperty.
+		Object.defineProperty(process.env, "NODE_ENV", {
+			value: "development",
+			configurable: true,
+			writable: true,
+			enumerable: true,
+		});
+		process.env.NEXT_PUBLIC_ADMIN_PATH = "/pengurus-siman";
+
+		const req = new NextRequest("http://localhost:3000/pengurus-siman");
+		const res = middleware(req);
+		expect(res.status).toBe(200);
+		expect(res.headers.get("location")).toBeNull();
+		expect(res.headers.get("x-middleware-rewrite")).toBeNull();
+
+		Object.defineProperty(process.env, "NODE_ENV", {
+			value: originalNodeEnv,
+			configurable: true,
+			writable: true,
+			enumerable: true,
+		});
+	});
+
 	it("membiarkan rute landing / tanpa intervensi", () => {
 		process.env.NEXT_PUBLIC_ADMIN_PATH = "/pengurus-siman";
 
