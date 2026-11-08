@@ -2,9 +2,14 @@
  * Konfigurasi rute path admin dari environment variable.
  * Default fallback adalah "/admin" bila NEXT_PUBLIC_ADMIN_PATH tidak disetel.
  */
-export const ADMIN_BASE_PATH = (
-	process.env.NEXT_PUBLIC_ADMIN_PATH || "/admin"
-).replace(/\/+$/, "") || "/admin";
+function normalizeAdminPath(raw: string | undefined): string {
+	const trimmed = (raw ?? "").trim();
+	if (!trimmed || trimmed === "undefined" || trimmed === "null") return "/admin";
+	const withSlash = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+	return withSlash.replace(/\/+$/, "") || "/admin";
+}
+
+export const ADMIN_BASE_PATH = normalizeAdminPath(process.env.NEXT_PUBLIC_ADMIN_PATH);
 
 export const LOGIN_ROUTE = `${ADMIN_BASE_PATH}/login`;
 

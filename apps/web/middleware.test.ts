@@ -91,7 +91,11 @@ describe("middleware secret admin routing", () => {
 		expect(res.headers.get("x-middleware-rewrite")).toBeNull();
 		expect(res.status).toBe(200);
 
-		// Restore env
-		process.env.NEXT_PUBLIC_ADMIN_PATH = originalAdminPath;
+		// Restore env tanpa meninggalkan string "undefined" bila awalnya tak disetel.
+		if (originalAdminPath === undefined) {
+			delete process.env.NEXT_PUBLIC_ADMIN_PATH;
+		} else {
+			process.env.NEXT_PUBLIC_ADMIN_PATH = originalAdminPath;
+		}
 	});
 });

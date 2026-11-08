@@ -8,11 +8,16 @@ export function middleware(request: NextRequest) {
 		return NextResponse.next();
 	}
 
-	const rawAdminPath =
+	const rawAdminPath = (
 		process.env.NEXT_PUBLIC_ADMIN_PATH ||
 		process.env.ADMIN_PATH ||
-		"/admin";
-	const adminBasePath = rawAdminPath.replace(/\/+$/, "") || "/admin";
+		"/admin"
+	).trim();
+	const normalized =
+		!rawAdminPath || rawAdminPath === "undefined" || rawAdminPath === "null"
+			? "/admin"
+			: (rawAdminPath.startsWith("/") ? rawAdminPath : `/${rawAdminPath}`);
+	const adminBasePath = normalized.replace(/\/+$/, "") || "/admin";
 	const pathname = request.nextUrl.pathname;
 
 	// 1. Jika rute kustom diaktifkan (bukan "/admin"), blokir akses langsung ke "/admin" atau "/login" default
