@@ -5,6 +5,7 @@ import { config } from "./core/config";
 import { createLogger } from "./core/logger";
 import { WahaError } from "./integrations/waha";
 import { authRoutes } from "./modules/auth/routes";
+import { geocodingRoutes } from "./modules/geocoding/routes";
 import { hadithsRoutes } from "./modules/hadiths/routes";
 import { messagesRoutes } from "./modules/messages/routes";
 import { prayerRoutes } from "./modules/prayer/routes";
@@ -48,6 +49,7 @@ const app = new Elysia()
 	.use(messagesRoutes)
 	.use(hadithsRoutes)
 	.use(settingsRoutes)
+	.use(geocodingRoutes)
 	.listen(config.port);
 
 logger.info("API berjalan.", {
