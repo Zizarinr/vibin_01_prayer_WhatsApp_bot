@@ -1,29 +1,29 @@
 {
-  "name": "whatsapp-prayer-reminder-bot",
-  "version": "1.0.0",
-  "description": "WhatsApp Bot to send dynamic prayer time reminders with Hadiths and Hijri date.",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "test": "node test.js"
-  },
-  "keywords": [
-    "whatsapp",
-    "bot",
-    "prayer",
-    "reminder",
-    "sholat",
-    "adhan"
-  ],
-  "author": "Antigravity Google Team",
-  "license": "ISC",
-  "dependencies": {
-    "adhan": "^4.4.1",
-    "dotenv": "^16.4.5",
-    "node-cron": "^3.0.3",
-    "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^1.26.0",
-    "winston": "^3.13.0",
-    "winston-daily-rotate-file": "^5.0.0"
-  }
+	"name": "unida-prayer",
+	"version": "2.0.0",
+	"private": true,
+	"type": "module",
+	"description": "UNIDA Prayer V2 — pengingat waktu shalat via WhatsApp (monorepo Bun Workspace)",
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"scripts": {
+		"typecheck": "tsc --noEmit -p packages/shared && tsc --noEmit -p packages/prayer-engine && tsc --noEmit -p apps/api && tsc --noEmit -p apps/web",
+		"lint": "oxlint",
+		"test": "bun test",
+		"build": "bun run build:api && bun run build:web",
+		"build:api": "tsc --noEmit -p apps/api",
+		"build:web": "cd apps/web && bun run build",
+		"db:migrate": "cd apps/api && bun run db:migrate",
+		"db:seed": "cd apps/api && bun run db:seed",
+		"dev:api": "cd apps/api && bun run dev",
+		"dev:web": "cd apps/web && bun run dev",
+		"worker": "cd apps/api && bun run worker"
+	},
+	"devDependencies": {
+		"bun-types": "latest",
+		"oxlint": "^1.91.0",
+		"typescript": "^5.9.3"
+	}
 }

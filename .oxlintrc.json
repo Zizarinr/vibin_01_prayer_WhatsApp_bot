@@ -1,0 +1,4 @@
+{
+	"$schema": "https://cdn.jsdelivr.net/gh/oxc-project/oxlint@main/npm/oxlint/configuration_schema.json",
+	"ignorePatterns": ["src/**", "index.js", "test.js", "**/node_modules/**", "**/.next/**", "**/dist/**"]
+}

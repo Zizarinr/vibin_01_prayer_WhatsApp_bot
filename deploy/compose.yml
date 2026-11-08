@@ -1,0 +1,52 @@
+services:
+  web:
+    image: ghcr.io/farrelghozy/unida-prayer-web:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      INTERNAL_API_URL: http://api:3001
+      NEXT_PUBLIC_API_BASE_URL: /api
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - api
+
+  api:
+    image: ghcr.io/farrelghozy/unida-prayer-api:latest
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    expose:
+      - "3001"
+    depends_on:
+      - waha
+    healthcheck:
+      test: ["CMD-SHELL", "bun -e 'const r = await fetch(\"http://localhost:3001/api/ready\"); if (!r.ok) process.exit(1)'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  worker:
+    image: ghcr.io/farrelghozy/unida-prayer-api:latest
+    command: ["bun", "run", "src/worker/index.ts"]
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    depends_on:
+      - waha
+
+  waha:
+    image: devlikeapro/waha:gows-2026.10.1
+    restart: unless-stopped
+    environment:
+      WHATSAPP_DEFAULT_ENGINE: GOWS
+      WAHA_API_KEY: ${WAHA_API_KEY}
+      WAHA_GOWS_LINK_PREVIEW_TIMEOUT: 15s
+    volumes:
+      - waha_sessions:/app/.sessions
+    expose:
+      - "3000"
+
+volumes:
+  waha_sessions:

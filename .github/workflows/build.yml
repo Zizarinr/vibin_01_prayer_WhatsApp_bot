@@ -1,0 +1,110 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Typecheck, Lint, Test & Build
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: Root_Test123!
+          MYSQL_DATABASE: unida_prayer
+          MYSQL_USER: unida_prayer
+          MYSQL_PASSWORD: UnidaPrayer_Test123!
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u root -pRoot_Test123!"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      NODE_ENV: test
+      APP_SECRET: test-secret-min-32-chars-for-ci-1234567890
+      DATABASE_URL: mysql://unida_prayer:UnidaPrayer_Test123!@127.0.0.1:3306/unida_prayer
+      WAHA_BASE_URL: http://127.0.0.1:3008
+      WAHA_API_KEY: ci-dummy
+      WAHA_SESSION: unida-prayer
+      WEB_URL: http://localhost:3000
+      CORS_ORIGINS: http://localhost:3000
+      INTERNAL_API_URL: http://127.0.0.1:3001
+      NEXT_PUBLIC_ADMIN_PATH: /admin
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Lint (oxlint)
+        run: bun run lint
+
+      - name: Migrate Test DB
+        run: bun run db:migrate
+
+      - name: Run Tests
+        run: bun run test
+
+      - name: Build Web & API
+        run: bun run build
+
+  build-and-push:
+    name: Build & Push GHCR Images
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Web Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: infrastructure/docker/web.Dockerfile
+          push: true
+          tags: |
+            ghcr.io/farrelghozy/unida-prayer-web:latest
+            ghcr.io/farrelghozy/unida-prayer-web:${{ github.sha }}
+
+      - name: Build and Push API Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: infrastructure/docker/api.Dockerfile
+          push: true
+          tags: |
+            ghcr.io/farrelghozy/unida-prayer-api:latest
+            ghcr.io/farrelghozy/unida-prayer-api:${{ github.sha }}
