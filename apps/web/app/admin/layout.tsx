@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
+import { DynamicPrayerBackground } from "../../components/landing/dynamic-prayer-background";
 import { UnidaPrayerLogo } from "../../components/shared/unida-prayer-logo";
 import { fetchApi } from "../../lib/api-client";
 import { adminRoute, LOGIN_ROUTE } from "../../lib/admin-path";
@@ -106,15 +107,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
 	if (!authChecked) {
 		return (
-			<div className="flex min-h-screen items-center justify-center bg-[#F5F8FC]">
-				<p className="text-sm font-medium text-[#64748B]">Memeriksa sesi login…</p>
+			<div className="relative flex min-h-screen items-center justify-center bg-transparent">
+				<DynamicPrayerBackground />
+				<div className="rounded-2xl border border-white/60 bg-white/90 p-5 shadow-sm backdrop-blur-md">
+					<p className="text-sm font-medium text-[#102A46]">Memeriksa sesi login…</p>
+				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className="flex min-h-screen flex-col bg-[#F5F8FC] lg:flex-row">
-			<header className="sticky top-0 z-40 flex items-center justify-between border-b border-blue-100/80 bg-white/95 px-4 py-3 backdrop-blur-md lg:hidden">
+		<div className="relative flex min-h-screen flex-col bg-transparent lg:flex-row">
+			<DynamicPrayerBackground />
+
+			<header className="sticky top-0 z-40 flex items-center justify-between border-b border-blue-100/70 bg-white/85 px-4 py-3 backdrop-blur-md shadow-xs lg:hidden">
 				<UnidaPrayerLogo href={adminRoute("/")} size="xs" showBadge={false} />
 
 				<button
@@ -137,7 +143,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 					onClick={() => setMobileMenuOpen(false)}
 				>
 					<div
-						className="relative flex h-full w-4/5 max-w-xs flex-col justify-between bg-white p-5 shadow-2xl"
+						className="relative flex h-full w-4/5 max-w-xs flex-col justify-between bg-white/95 p-5 shadow-2xl backdrop-blur-xl"
 						onClick={(e) => e.stopPropagation()}
 					>
 						<div>
@@ -212,7 +218,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 				</div>
 			)}
 
-			<aside className="hidden w-64 shrink-0 border-r border-blue-100/80 bg-white lg:flex lg:flex-col lg:justify-between lg:p-6 min-h-screen sticky top-0">
+			<aside className="hidden w-64 shrink-0 border-r border-blue-100/70 bg-white/85 backdrop-blur-xl lg:flex lg:flex-col lg:justify-between lg:p-6 min-h-screen sticky top-0 shadow-xs">
 				<div>
 					<UnidaPrayerLogo href={adminRoute("/")} size="sm" showBadge />
 

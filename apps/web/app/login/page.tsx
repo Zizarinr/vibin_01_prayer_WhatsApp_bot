@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { DynamicPrayerBackground } from "../../components/landing/dynamic-prayer-background";
 import { UnidaPrayerIcon } from "../../components/shared/unida-prayer-logo";
 import { fetchApi } from "../../lib/api-client";
 import { adminRoute } from "../../lib/admin-path";
@@ -40,17 +41,19 @@ export default function LoginPage() {
 	};
 
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center bg-[#F5F8FC] p-4 sm:p-6">
+		<div className="relative flex min-h-screen flex-col items-center justify-center bg-transparent p-4 sm:p-6">
+			<DynamicPrayerBackground />
+
 			<div className="w-full max-w-md space-y-6">
 				<Link
 					href="/"
-					className="inline-flex items-center gap-2 text-xs font-semibold text-[#64748B] hover:text-[#123B6D] transition"
+					className="inline-flex items-center gap-2 rounded-xl bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#102A46] shadow-2xs backdrop-blur-md ring-1 ring-slate-200/80 hover:bg-white hover:text-[#123B6D] transition"
 				>
 					<ArrowLeft className="h-4 w-4" />
 					<span>Kembali ke Beranda Jadwal</span>
 				</Link>
 
-				<div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-sm space-y-6">
+				<div className="rounded-3xl border border-white/60 bg-white/95 p-6 sm:p-8 shadow-xl backdrop-blur-md space-y-6">
 					<div className="flex flex-col items-center text-center space-y-2">
 						<UnidaPrayerIcon size="lg" className="mb-1" />
 						<h1 className="text-xl font-black text-[#102A46]">

@@ -3,6 +3,7 @@
 import { RefreshCw, ShieldCheck } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchApi } from "../../../lib/api-client";
+import { AdminPageHeader } from "../../../components/admin/shared/admin-page-header";
 import { ErrorBanner, SuccessBanner } from "../../../components/admin/shared/alert-banners";
 import { TargetFilters } from "../../../components/admin/targets/target-filters";
 import {
@@ -133,29 +134,25 @@ export default function TargetsPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
-						Grup & Target Pengiriman
-					</h1>
-					<p className="text-xs text-[#64748B]">
+			<AdminPageHeader
+				title="Grup & Target Pengiriman"
+				description={
+					<>
 						Kelola daftar grup WhatsApp penerima pengingat shalat. Hanya grup dengan status{" "}
-						<strong>Aktif</strong> yang akan menerima pesan.
-					</p>
-				</div>
-
-				<div className="flex items-center gap-2">
-					<button
-						type="button"
-						onClick={handleSync}
-						disabled={syncing || loading}
-						className="inline-flex items-center gap-2 rounded-xl bg-[#123B6D] px-3.5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#1D5FA7] transition disabled:opacity-50"
-					>
-						<RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
-						<span>{syncing ? "Sinkronisasi..." : "Sinkronisasi Grup"}</span>
-					</button>
-				</div>
-			</div>
+						<strong className="text-[#102A46]">Aktif</strong> yang akan menerima pesan.
+					</>
+				}
+			>
+				<button
+					type="button"
+					onClick={handleSync}
+					disabled={syncing || loading}
+					className="inline-flex items-center gap-2 rounded-xl bg-[#123B6D] px-3.5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#1D5FA7] transition disabled:opacity-50"
+				>
+					<RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+					<span>{syncing ? "Sinkronisasi..." : "Sinkronisasi Grup"}</span>
+				</button>
+			</AdminPageHeader>
 
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />

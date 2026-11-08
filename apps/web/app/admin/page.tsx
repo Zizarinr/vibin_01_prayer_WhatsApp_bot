@@ -10,6 +10,7 @@ import {
 } from "../../components/admin/overview/metrics-grid";
 import { QuickLinksGrid } from "../../components/admin/overview/quick-links-grid";
 import { RecentActivityTable } from "../../components/admin/overview/recent-activity-table";
+import { AdminPageHeader } from "../../components/admin/shared/admin-page-header";
 import { ErrorBanner } from "../../components/admin/shared/alert-banners";
 
 export default function AdminOverviewPage() {
@@ -35,15 +36,10 @@ export default function AdminOverviewPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
-						Dashboard Administrator
-					</h1>
-					<p className="text-xs text-[#64748B]">
-						Pantauan operasional bot pengingat waktu shalat WhatsApp UNIDA Gontor.
-					</p>
-				</div>
+			<AdminPageHeader
+				title="Dashboard Administrator"
+				description="Pantauan operasional bot pengingat waktu shalat WhatsApp UNIDA Gontor."
+			>
 				<button
 					type="button"
 					onClick={() => loadStatus()}
@@ -53,7 +49,7 @@ export default function AdminOverviewPage() {
 					<RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
 					<span>Segarkan</span>
 				</button>
-			</div>
+			</AdminPageHeader>
 
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 

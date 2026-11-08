@@ -13,6 +13,7 @@ import {
 	MessagesTable,
 	type ScheduledMessageItem,
 } from "../../../components/admin/messages/messages-table";
+import { AdminPageHeader } from "../../../components/admin/shared/admin-page-header";
 import { ErrorBanner, SuccessBanner } from "../../../components/admin/shared/alert-banners";
 
 interface MessagesResponse {
@@ -113,15 +114,10 @@ export default function AdminMessagesPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
-						Riwayat & Antrean Pesan
-					</h1>
-					<p className="text-xs text-[#64748B]">
-						Pantau jadwal pengiriman pengingat shalat, status pesan terkirim, dan penanganan kegagalan.
-					</p>
-				</div>
+			<AdminPageHeader
+				title="Riwayat & Antrean Pesan"
+				description="Pantau jadwal pengiriman pengingat shalat, status pesan terkirim, dan penanganan kegagalan."
+			>
 				<button
 					type="button"
 					onClick={() => loadMessages()}
@@ -131,7 +127,7 @@ export default function AdminMessagesPage() {
 					<RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
 					<span>Segarkan</span>
 				</button>
-			</div>
+			</AdminPageHeader>
 
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />

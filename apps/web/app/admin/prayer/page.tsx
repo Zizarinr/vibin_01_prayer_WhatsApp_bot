@@ -11,6 +11,7 @@ import {
 	type PreviewResult,
 } from "../../../components/admin/prayer/preview-calculator-card";
 import { RecalculateConfirmModal } from "../../../components/admin/prayer/recalculate-confirm-modal";
+import { AdminPageHeader } from "../../../components/admin/shared/admin-page-header";
 import { ErrorBanner, SuccessBanner } from "../../../components/admin/shared/alert-banners";
 
 interface SettingsData {
@@ -219,27 +220,20 @@ export default function AdminPrayerPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
-						Jadwal & Parameter Hisab
-					</h1>
-					<p className="text-xs text-[#64748B]">
-						Kelola koordinat lokasi, metode hisab, koreksi menit (ihtiyath), dan kalkulasi jadwal.
-					</p>
-				</div>
-				<div className="flex items-center gap-2">
-					<button
-						type="button"
-						onClick={() => setShowRecalcModal(true)}
-						disabled={recalculating || loading}
-						className="inline-flex items-center gap-2 rounded-xl bg-blue-50 px-3.5 py-2.5 text-xs font-semibold text-[#123B6D] border border-blue-200 hover:bg-blue-100 transition disabled:opacity-50"
-					>
-						<RotateCcw className={`h-4 w-4 ${recalculating ? "animate-spin" : ""}`} />
-						<span>{recalculating ? "Menghitung..." : "Hitung Ulang Jadwal (Recalculate)"}</span>
-					</button>
-				</div>
-			</div>
+			<AdminPageHeader
+				title="Jadwal & Parameter Hisab"
+				description="Kelola koordinat lokasi, metode hisab, koreksi menit (ihtiyath), dan kalkulasi jadwal."
+			>
+				<button
+					type="button"
+					onClick={() => setShowRecalcModal(true)}
+					disabled={recalculating || loading}
+					className="inline-flex items-center gap-2 rounded-xl bg-blue-50 px-3.5 py-2.5 text-xs font-semibold text-[#123B6D] border border-blue-200 hover:bg-blue-100 transition disabled:opacity-50"
+				>
+					<RotateCcw className={`h-4 w-4 ${recalculating ? "animate-spin" : ""}`} />
+					<span>{recalculating ? "Menghitung..." : "Hitung Ulang Jadwal (Recalculate)"}</span>
+				</button>
+			</AdminPageHeader>
 
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />

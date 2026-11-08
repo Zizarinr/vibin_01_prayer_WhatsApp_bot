@@ -10,6 +10,7 @@ import {
 	HaditsTable,
 	type HadithItem,
 } from "../../../components/admin/hadits/hadits-table";
+import { AdminPageHeader } from "../../../components/admin/shared/admin-page-header";
 import { ErrorBanner, SuccessBanner } from "../../../components/admin/shared/alert-banners";
 
 interface HadithsResponse {
@@ -181,15 +182,10 @@ export default function AdminHadithsPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
-						Konten Hadits & Ayat Shalat
-					</h1>
-					<p className="text-xs text-[#64748B]">
-						Kelola kutipan hadits dan ayat harian yang disisipkan pada pesan adzan WhatsApp.
-					</p>
-				</div>
+			<AdminPageHeader
+				title="Konten Hadits & Ayat Shalat"
+				description="Kelola kutipan hadits dan ayat harian yang disisipkan pada pesan adzan WhatsApp."
+			>
 				<button
 					type="button"
 					onClick={handleOpenCreate}
@@ -198,7 +194,7 @@ export default function AdminHadithsPage() {
 					<Plus className="h-4 w-4" />
 					<span>Tambah Hadits / Ayat</span>
 				</button>
-			</div>
+			</AdminPageHeader>
 
 			{warningZeroActive && (
 				<div className="flex items-center gap-3 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-xs text-amber-900">

@@ -1,15 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { TodayPrayerData } from "../../types/prayer";
+import { fetchApi } from "../../lib/api-client";
 
 export type PrayerTimePhase = "SUBUH" | "DZUHUR" | "ASHAR" | "MAGHRIB" | "ISYA";
 
-interface DynamicPrayerBackgroundProps {
-	data: TodayPrayerData | null;
-	now: number | null;
-	serverSkewMs: number;
+export interface DynamicPrayerBackgroundProps {
+	data?: TodayPrayerData | null;
+	now?: number | null;
+	serverSkewMs?: number;
+	overlayClassName?: string;
 }
 
 interface BackgroundVariant {
@@ -95,14 +97,58 @@ export function getActivePhase(
 }
 
 export function DynamicPrayerBackground({
-	data,
-	now,
-	serverSkewMs,
-}: DynamicPrayerBackgroundProps) {
-	const activePhase = useMemo(
-		() => getActivePhase(data, now, serverSkewMs),
-		[data, now, serverSkewMs],
+	data: propData,
+	now: propNow,
+	serverSkewMs: propServerSkewMs,
+	overlayClassName,
+}: DynamicPrayerBackgroundProps = {}) {
+	const [internalNow, setInternalNow] = useState<number | null>(() =>
+		propNow !== undefined ? propNow : null,
 	);
+	const [internalData, setInternalData] = useState<TodayPrayerData | null>(() =>
+		propData !== undefined ? propData : null,
+	);
+	const [internalSkew, setInternalSkew] = useState<number>(() =>
+		propServerSkewMs !== undefined ? propServerSkewMs : 0,
+	);
+
+	useEffect(() => {
+		if (propNow !== undefined) return;
+		setInternalNow(Date.now());
+		const timer = setInterval(() => {
+			setInternalNow(Date.now());
+		}, 1000);
+		return () => clearInterval(timer);
+	}, [propNow]);
+
+	useEffect(() => {
+		if (propData !== undefined) return;
+		let cancelled = false;
+		const start = Date.now();
+		fetchApi<TodayPrayerData>("/api/public/prayer/today").then((res) => {
+			if (cancelled || !res.data) return;
+			const serverTime = new Date(res.data.serverNowUtc).getTime();
+			const latency = (Date.now() - start) / 2;
+			setInternalSkew(serverTime + latency - Date.now());
+			setInternalData(res.data);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, [propData]);
+
+	const effectiveNow = propNow !== undefined ? propNow : internalNow;
+	const effectiveData = propData !== undefined ? propData : internalData;
+	const effectiveSkew =
+		propServerSkewMs !== undefined ? propServerSkewMs : internalSkew;
+
+	const activePhase = useMemo(
+		() => getActivePhase(effectiveData, effectiveNow, effectiveSkew),
+		[effectiveData, effectiveNow, effectiveSkew],
+	);
+
+	const defaultOverlay =
+		"bg-linear-to-b from-[#0A1B2E]/55 via-[#102A46]/35 to-[#F5F8FC]/95 backdrop-blur-[2px]";
 
 	return (
 		<aside
@@ -131,7 +177,11 @@ export function DynamicPrayerBackground({
 				);
 			})}
 
-			<div className="absolute inset-0 z-20 bg-linear-to-b from-[#0A1B2E]/55 via-[#102A46]/35 to-[#F5F8FC]/95 backdrop-blur-[2px]" />
+			<div
+				className={`absolute inset-0 z-20 ${
+					overlayClassName ?? defaultOverlay
+				}`}
+			/>
 		</aside>
 	);
 }

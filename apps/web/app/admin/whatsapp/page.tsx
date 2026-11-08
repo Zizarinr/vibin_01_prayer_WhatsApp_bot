@@ -3,6 +3,7 @@
 import { RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { fetchApi } from "../../../lib/api-client";
+import { AdminPageHeader } from "../../../components/admin/shared/admin-page-header";
 import { ErrorBanner, SuccessBanner } from "../../../components/admin/shared/alert-banners";
 import { QrPairingModal } from "../../../components/admin/whatsapp/qr-pairing-modal";
 import { SessionActionModal } from "../../../components/admin/whatsapp/session-action-modal";
@@ -174,15 +175,10 @@ export default function WhatsappSessionPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
-						Manajemen Sesi WhatsApp
-					</h1>
-					<p className="text-xs text-[#64748B]">
-						Kontrol sesi gateway WAHA GoWS dan pantau status koneksi perangkat bot.
-					</p>
-				</div>
+			<AdminPageHeader
+				title="Manajemen Sesi WhatsApp"
+				description="Kontrol sesi gateway WAHA GoWS dan pantau status koneksi perangkat bot."
+			>
 				<button
 					type="button"
 					onClick={() => loadSession()}
@@ -192,7 +188,7 @@ export default function WhatsappSessionPage() {
 					<RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
 					<span>Segarkan Status</span>
 				</button>
-			</div>
+			</AdminPageHeader>
 
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
