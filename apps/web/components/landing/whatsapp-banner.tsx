@@ -1,8 +1,8 @@
-import { CheckCircle2, Send } from "lucide-react";
+import { Send } from "lucide-react";
 
 export function WhatsappBanner() {
 	return (
-		<div className="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-7">
+		<div className="rounded-3xl border border-blue-100 bg-white/95 backdrop-blur-md p-6 shadow-sm sm:p-7">
 			<div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
 				<div className="flex items-start gap-4">
 					<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 ring-4 ring-emerald-50">
@@ -23,8 +23,7 @@ export function WhatsappBanner() {
 					</div>
 				</div>
 
-				<div className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-50/80 px-4 py-2.5 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-200">
-					<CheckCircle2 className="h-4 w-4 text-emerald-600" />
+				<div className="inline-flex shrink-0 items-center justify-center rounded-xl bg-emerald-50/90 px-4 py-2.5 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-200">
 					<span>Terkoneksi Grup Kampus</span>
 				</div>
 			</div>

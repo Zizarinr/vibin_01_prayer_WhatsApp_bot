@@ -30,3 +30,6 @@ Desktop.ini
 
 # MCP & Playwright local runtime
 .playwright-mcp/
+
+# Next.js auto-generated agent hints
+apps/web/AGENTS.md

@@ -28,7 +28,7 @@ export function PrayerCard({
 				isNext
 					? "bg-white/95 backdrop-blur-md ring-2 ring-[#1D5FA7] shadow-md -translate-y-0.5"
 					: isPassed
-						? "bg-slate-50/85 backdrop-blur-md border border-slate-200/60 opacity-75"
+						? "bg-slate-100/95 backdrop-blur-md border border-slate-200/80 shadow-2xs"
 						: "bg-white/95 backdrop-blur-md border border-slate-200/80 shadow-2xs hover:border-slate-300"
 			}`}
 		>
