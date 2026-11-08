@@ -35,7 +35,7 @@ const INDO_MONTHS = [
 ];
 
 const INDO_DAYS = [
-	"Minggu",
+	"Ahad",
 	"Senin",
 	"Selasa",
 	"Rabu",
@@ -55,7 +55,8 @@ export function formatIndonesianDate(date: Date, timezone?: string): string {
 				year: "numeric",
 			}).formatToParts(date);
 			const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
-			return `${get("weekday")}, ${get("day")} ${get("month")} ${get("year")}`;
+			const weekday = get("weekday") === "Minggu" ? "Ahad" : get("weekday");
+			return `${weekday}, ${get("day")} ${get("month")} ${get("year")}`;
 		} catch {
 		}
 	}

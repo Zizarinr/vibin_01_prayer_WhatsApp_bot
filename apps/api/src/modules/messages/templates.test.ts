@@ -9,6 +9,9 @@ describe("messages/templates", () => {
 	it("memformat tanggal Indonesia dengan hari secara benar", () => {
 		const d = new Date(2026, 10, 4);
 		expect(formatIndonesianDate(d)).toBe("Rabu, 4 November 2026");
+		const sunday = new Date(2026, 10, 1);
+		expect(formatIndonesianDate(sunday)).toBe("Ahad, 1 November 2026");
+		expect(formatIndonesianDate(sunday, "Asia/Jakarta")).toBe("Ahad, 1 November 2026");
 	});
 
 	it("merender pesan ADHAN Subuh dengan hadits", () => {
@@ -103,7 +106,7 @@ describe("messages/templates", () => {
 		const normal = renderPreReminderMessage("MAGHRIB", 1, {
 			time: "17:40 WIB",
 			hijri: "23 Jumadil Ula 1448 H",
-			gregorian: "Minggu, 1 November 2026",
+			gregorian: "Ahad, 1 November 2026",
 			isFriday: false,
 			minutes: 5,
 			detailUrl: "https://prayer.unida.gontor.ac.id/",
@@ -113,7 +116,7 @@ describe("messages/templates", () => {
 		expect(normal.body).toContain("Sholat Maghrib");
 		expect(normal.body).toContain("17:40 WIB");
 		expect(normal.body).toContain("23 Jumadil Ula 1448 H");
-		expect(normal.body).toContain("Minggu, 1 November 2026");
+		expect(normal.body).toContain("Ahad, 1 November 2026");
 		expect(normal.body).toContain(
 			"🔗 Jadwal lengkap: https://prayer.unida.gontor.ac.id",
 		);
