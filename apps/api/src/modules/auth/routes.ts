@@ -1,6 +1,7 @@
 import { fail, ok, type ErrorCode } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
 import { config } from "../../core/config";
+import { SESSION_COOKIE_NAME } from "./guard";
 import { changePasswordBodySchema, loginBodySchema } from "./schema";
 import {
 	AuthError,
@@ -10,10 +11,7 @@ import {
 	logoutAdmin,
 } from "./service";
 
-const SESSION_COOKIE_NAME = "unida_prayer_session";
-
 export const authRoutes = new Elysia({ prefix: "/api/auth" })
-	// POST /api/auth/login
 	.post(
 		"/login",
 		async ({ body, cookie, status }) => {
@@ -27,7 +25,7 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
 					path: "/",
 					sameSite: "lax",
 					secure: config.nodeEnv === "production",
-					maxAge: 7 * 24 * 60 * 60, // 7 hari
+					maxAge: 7 * 24 * 60 * 60,
 				});
 
 				return ok(admin);
@@ -42,7 +40,6 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
 			body: loginBodySchema,
 		},
 	)
-	// POST /api/auth/logout
 	.post("/logout", ({ cookie }) => {
 		const rawToken = cookie[SESSION_COOKIE_NAME]?.value;
 		const token = typeof rawToken === "string" ? rawToken : undefined;
@@ -50,7 +47,6 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
 		cookie[SESSION_COOKIE_NAME]?.remove();
 		return ok({ success: true });
 	})
-	// GET /api/auth/me
 	.get("/me", async ({ cookie, status }) => {
 		try {
 			const rawToken = cookie[SESSION_COOKIE_NAME]?.value;
@@ -64,7 +60,6 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
 			throw error;
 		}
 	})
-	// POST /api/auth/change-password
 	.post(
 		"/change-password",
 		async ({ body, cookie, status }) => {
@@ -72,6 +67,9 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
 				const rawToken = cookie[SESSION_COOKIE_NAME]?.value;
 				const token = typeof rawToken === "string" ? rawToken : undefined;
 				const admin = await getSessionAdmin(token);
+				if (admin.id === 0) {
+					return status(400, fail("VALIDATION_ERROR", "Ganti kata sandi nonaktif dalam mode development (bypass login)."));
+				}
 				await changeAdminPassword(admin.id, body.oldPassword, body.newPassword);
 				cookie[SESSION_COOKIE_NAME]?.remove();
 				return ok({ success: true, message: "Kata sandi berhasil diperbarui. Silakan login kembali." });

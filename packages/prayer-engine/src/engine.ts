@@ -48,7 +48,7 @@ export function getTimezoneLabel(
 	}
 }
 
-export function isFriday(dateLocal: string): boolean {
+export function isFriday(dateLocal: string, timezone = "Asia/Jakarta"): boolean {
 	const parts = dateLocal.split("-").map(Number);
 	if (parts.length !== 3 || parts.some((p) => Number.isNaN(p))) {
 		throw new Error(
@@ -58,17 +58,24 @@ export function isFriday(dateLocal: string): boolean {
 	const year = parts[0] as number;
 	const month = parts[1] as number;
 	const day = parts[2] as number;
-	const d = new Date(year, month - 1, day, 12, 0, 0);
-	return d.getDay() === 5;
+	try {
+		const noonUtc = new Date(Date.UTC(year, month - 1, day, 5, 0, 0));
+		const weekday = formatInTimeZone(noonUtc, timezone, "i");
+		return weekday === "5";
+	} catch {
+		const d = new Date(year, month - 1, day, 12, 0, 0);
+		return d.getDay() === 5;
+	}
 }
 
 export function getPrayerDisplayName(
 	prayer: PrayerOrSunrise,
 	dateLocal: string,
+	timezone = "Asia/Jakarta",
 ): string {
 	if (prayer === "FAJR") return "Subuh";
 	if (prayer === "SUNRISE") return "Terbit";
-	if (prayer === "DHUHR") return isFriday(dateLocal) ? "Sholat Jumat" : "Dzuhur";
+	if (prayer === "DHUHR") return isFriday(dateLocal, timezone) ? "Sholat Jumat" : "Dzuhur";
 	if (prayer === "ASR") return "Ashar";
 	if (prayer === "MAGHRIB") return "Maghrib";
 	if (prayer === "ISHA") return "Isya";
@@ -148,44 +155,44 @@ export function calcPrayerTimes(input: PrayerEngineInput): PrayerTimesResult {
 	};
 
 	const tzLabel = getTimezoneLabel(timezone, utc.dhuhrUtc);
-	const friday = isFriday(dateLocal);
+	const friday = isFriday(dateLocal, timezone);
 
 	const times: Record<PrayerOrSunrise, FormattedPrayerTime> = {
 		FAJR: {
 			utc: utc.fajrUtc,
 			time24: formatInTimeZone(utc.fajrUtc, timezone, "HH:mm"),
 			timeLabel: `${formatInTimeZone(utc.fajrUtc, timezone, "HH:mm")} ${tzLabel}`,
-			displayName: getPrayerDisplayName("FAJR", dateLocal),
+			displayName: getPrayerDisplayName("FAJR", dateLocal, timezone),
 		},
 		SUNRISE: {
 			utc: utc.sunriseUtc,
 			time24: formatInTimeZone(utc.sunriseUtc, timezone, "HH:mm"),
 			timeLabel: `${formatInTimeZone(utc.sunriseUtc, timezone, "HH:mm")} ${tzLabel}`,
-			displayName: getPrayerDisplayName("SUNRISE", dateLocal),
+			displayName: getPrayerDisplayName("SUNRISE", dateLocal, timezone),
 		},
 		DHUHR: {
 			utc: utc.dhuhrUtc,
 			time24: formatInTimeZone(utc.dhuhrUtc, timezone, "HH:mm"),
 			timeLabel: `${formatInTimeZone(utc.dhuhrUtc, timezone, "HH:mm")} ${tzLabel}`,
-			displayName: getPrayerDisplayName("DHUHR", dateLocal),
+			displayName: getPrayerDisplayName("DHUHR", dateLocal, timezone),
 		},
 		ASR: {
 			utc: utc.asrUtc,
 			time24: formatInTimeZone(utc.asrUtc, timezone, "HH:mm"),
 			timeLabel: `${formatInTimeZone(utc.asrUtc, timezone, "HH:mm")} ${tzLabel}`,
-			displayName: getPrayerDisplayName("ASR", dateLocal),
+			displayName: getPrayerDisplayName("ASR", dateLocal, timezone),
 		},
 		MAGHRIB: {
 			utc: utc.maghribUtc,
 			time24: formatInTimeZone(utc.maghribUtc, timezone, "HH:mm"),
 			timeLabel: `${formatInTimeZone(utc.maghribUtc, timezone, "HH:mm")} ${tzLabel}`,
-			displayName: getPrayerDisplayName("MAGHRIB", dateLocal),
+			displayName: getPrayerDisplayName("MAGHRIB", dateLocal, timezone),
 		},
 		ISHA: {
 			utc: utc.ishaUtc,
 			time24: formatInTimeZone(utc.ishaUtc, timezone, "HH:mm"),
 			timeLabel: `${formatInTimeZone(utc.ishaUtc, timezone, "HH:mm")} ${tzLabel}`,
-			displayName: getPrayerDisplayName("ISHA", dateLocal),
+			displayName: getPrayerDisplayName("ISHA", dateLocal, timezone),
 		},
 	};
 
@@ -235,7 +242,6 @@ export function getNextPrayer(params: {
 		}
 	}
 
-	// Semua shalat hari ini sudah lewat -> ambil Subuh besok
 	let tomorrow = params.tomorrowResult;
 	if (!tomorrow) {
 		const nextDate = format(

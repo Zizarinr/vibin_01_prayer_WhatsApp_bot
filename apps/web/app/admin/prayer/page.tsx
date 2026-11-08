@@ -11,6 +11,7 @@ import {
 	type PreviewResult,
 } from "../../../components/admin/prayer/preview-calculator-card";
 import { RecalculateConfirmModal } from "../../../components/admin/prayer/recalculate-confirm-modal";
+import { AdminPageHeader } from "../../../components/admin/shared/admin-page-header";
 import { ErrorBanner, SuccessBanner } from "../../../components/admin/shared/alert-banners";
 
 interface SettingsData {
@@ -57,7 +58,6 @@ export default function AdminPrayerPage() {
 	const [error, setError] = useState<string | null>(null);
 	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	// Settings Form State
 	const [locationName, setLocationName] = useState("");
 	const [latitude, setLatitude] = useState<number>(-7.8652);
 	const [longitude, setLongitude] = useState<number>(111.4617);
@@ -74,12 +74,10 @@ export default function AdminPrayerPage() {
 	const [adjIsha, setAdjIsha] = useState(0);
 	const [hijriAdjustmentDays, setHijriAdjustmentDays] = useState(0);
 
-	// Preview Hisab State
 	const [previewDate, setPreviewDate] = useState("");
 	const [previewResult, setPreviewResult] = useState<PreviewResult | null>(null);
 	const [loadingPreview, setLoadingPreview] = useState(false);
 
-	// Confirmation Modal for Recalculate
 	const [showRecalcModal, setShowRecalcModal] = useState(false);
 
 	const loadSettings = useCallback(async () => {
@@ -222,30 +220,21 @@ export default function AdminPrayerPage() {
 
 	return (
 		<div className="space-y-6">
-			{/* Page Header */}
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
-						Jadwal & Parameter Hisab
-					</h1>
-					<p className="text-xs text-[#64748B]">
-						Kelola koordinat lokasi, metode hisab, koreksi menit (ihtiyath), dan kalkulasi jadwal.
-					</p>
-				</div>
-				<div className="flex items-center gap-2">
-					<button
-						type="button"
-						onClick={() => setShowRecalcModal(true)}
-						disabled={recalculating || loading}
-						className="inline-flex items-center gap-2 rounded-xl bg-blue-50 px-3.5 py-2.5 text-xs font-semibold text-[#123B6D] border border-blue-200 hover:bg-blue-100 transition disabled:opacity-50"
-					>
-						<RotateCcw className={`h-4 w-4 ${recalculating ? "animate-spin" : ""}`} />
-						<span>{recalculating ? "Menghitung..." : "Hitung Ulang Jadwal (Recalculate)"}</span>
-					</button>
-				</div>
-			</div>
+			<AdminPageHeader
+				title="Jadwal & Parameter Hisab"
+				description="Kelola koordinat lokasi, metode hisab, koreksi menit (ihtiyath), dan kalkulasi jadwal."
+			>
+				<button
+					type="button"
+					onClick={() => setShowRecalcModal(true)}
+					disabled={recalculating || loading}
+					className="inline-flex items-center gap-2 rounded-xl bg-blue-50 px-3.5 py-2.5 text-xs font-semibold text-[#123B6D] border border-blue-200 hover:bg-blue-100 transition disabled:opacity-50"
+				>
+					<RotateCcw className={`h-4 w-4 ${recalculating ? "animate-spin" : ""}`} />
+					<span>{recalculating ? "Menghitung..." : "Hitung Ulang Jadwal (Recalculate)"}</span>
+				</button>
+			</AdminPageHeader>
 
-			{/* Alert Messages */}
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
@@ -297,7 +286,7 @@ export default function AdminPrayerPage() {
 								onChangeHijriDays={setHijriAdjustmentDays}
 							/>
 
-							<div className="flex items-center justify-end">
+							<div className="flex items-center justify-end rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-2xs backdrop-blur-md">
 								<button
 									type="submit"
 									disabled={saving}

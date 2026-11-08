@@ -26,6 +26,8 @@ export interface WahaSendMessagePayload {
 	session: string;
 	chatId: string;
 	text: string;
+	linkPreview?: boolean;
+	linkPreviewHighQuality?: boolean;
 }
 
 export interface WahaSendMessageResult {

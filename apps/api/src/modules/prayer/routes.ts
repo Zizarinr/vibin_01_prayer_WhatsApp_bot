@@ -1,5 +1,7 @@
-import { ok } from "@unida-prayer/shared";
+import { fail, ok, type ErrorCode } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
+import { requireAdminAuth } from "../auth/guard";
+import { AuthError } from "../auth/service";
 import { previewBodySchema, todayQuerySchema } from "./schema";
 import {
 	getNextPrayerOnly,
@@ -9,7 +11,6 @@ import {
 } from "./service";
 
 export const prayerRoutes = new Elysia({ prefix: "/api" })
-	// Endpoint publik (tanpa autentikasi)
 	.get(
 		"/public/prayer/today",
 		async ({ query }) => {
@@ -28,10 +29,17 @@ export const prayerRoutes = new Elysia({ prefix: "/api" })
 		const data = await getPublicSettings();
 		return ok(data);
 	})
-	// Endpoint admin (preview hisab tanpa simpan)
 	.post(
 		"/admin/prayer/preview",
-		async ({ body }) => {
+		async ({ body, cookie, status }) => {
+			try {
+				await requireAdminAuth(cookie as Record<string, unknown>);
+			} catch (error) {
+				if (error instanceof AuthError) {
+					return status(error.statusCode, fail(error.code as ErrorCode, error.message));
+				}
+				return status(401, fail("UNAUTHENTICATED", "Sesi login tidak valid atau telah berakhir."));
+			}
 			const data = await previewPrayerTimes(body);
 			return ok(data);
 		},

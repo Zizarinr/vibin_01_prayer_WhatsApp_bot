@@ -42,6 +42,7 @@ services:
     environment:
       WHATSAPP_DEFAULT_ENGINE: GOWS
       WAHA_API_KEY: ${WAHA_API_KEY}
+      WAHA_GOWS_LINK_PREVIEW_TIMEOUT: 15s
     volumes:
       - waha_sessions:/app/.sessions
     expose:

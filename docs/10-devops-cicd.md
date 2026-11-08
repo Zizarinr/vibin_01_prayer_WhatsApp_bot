@@ -70,7 +70,6 @@ Dockerfile wajib: dukung Bun Workspace, copy hasil build benar, non-root bila me
 
 ```env
 NODE_ENV=production
-APP_ENV=production
 APP_SECRET=replace-with-long-random-secret
 WEB_URL=https://prayer.example.ac.id
 API_PORT=3001

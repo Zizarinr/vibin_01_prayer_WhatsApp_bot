@@ -58,7 +58,6 @@ export function SessionStatusCard({
 					</div>
 				</div>
 
-				{/* Tombol Aksi Sesi */}
 				<div className="flex flex-wrap items-center gap-2">
 					{isStopped && (
 						<button
@@ -122,7 +121,6 @@ export function SessionStatusCard({
 				</div>
 			</div>
 
-			{/* Info Akun WhatsApp Terhubung */}
 			{isWorking && session?.me && (
 				<div className="flex items-center gap-3 rounded-2xl bg-emerald-50/70 border border-emerald-200/60 p-4">
 					<Smartphone className="h-5 w-5 text-emerald-700" />

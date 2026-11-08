@@ -11,8 +11,8 @@ export interface GetMessagesParams {
 	prayerName?: string;
 	messageType?: string;
 	targetId?: number;
-	from?: string; // YYYY-MM-DD
-	to?: string; // YYYY-MM-DD
+	from?: string;
+	to?: string;
 	search?: string;
 }
 
@@ -82,7 +82,6 @@ export async function getMessages(
 
 	const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-	// Total count
 	const countResult = await db
 		.select({ count: sql<number>`count(*)` })
 		.from(scheduledMessages)
@@ -91,7 +90,6 @@ export async function getMessages(
 
 	const total = Number(countResult[0]?.count ?? 0);
 
-	// Fetch items
 	const rows = await db
 		.select({
 			msg: scheduledMessages,
@@ -176,6 +174,8 @@ export async function retryMessage(id: number): Promise<ScheduledMessageWithTarg
 /**
  * Batalkan pesan PENDING secara manual.
  */
+export const MANUAL_CANCEL_PREFIX = "Dibatalkan secara manual";
+
 export async function cancelMessage(id: number): Promise<ScheduledMessageWithTarget> {
 	const msg = await getMessageById(id);
 
@@ -191,7 +191,7 @@ export async function cancelMessage(id: number): Promise<ScheduledMessageWithTar
 		.update(scheduledMessages)
 		.set({
 			status: "CANCELLED",
-			lastError: `Dibatalkan secara manual oleh administrator pada ${now.toISOString()}.`,
+			lastError: `${MANUAL_CANCEL_PREFIX} oleh administrator pada ${now.toISOString()}.`,
 			updatedAt: now,
 		})
 		.where(eq(scheduledMessages.id, id));

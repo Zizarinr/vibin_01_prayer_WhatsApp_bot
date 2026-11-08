@@ -3,6 +3,7 @@
 import { RefreshCw, ShieldCheck } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchApi } from "../../../lib/api-client";
+import { AdminPageHeader } from "../../../components/admin/shared/admin-page-header";
 import { ErrorBanner, SuccessBanner } from "../../../components/admin/shared/alert-banners";
 import { TargetFilters } from "../../../components/admin/targets/target-filters";
 import {
@@ -17,11 +18,9 @@ export default function TargetsPage() {
 	const [error, setError] = useState<string | null>(null);
 	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	// Filters
 	const [searchQuery, setSearchQuery] = useState("");
 	const [filterActive, setFilterActive] = useState<"ALL" | "ACTIVE" | "INACTIVE">("ALL");
 
-	// Inline editing
 	const [editingId, setEditingId] = useState<number | null>(null);
 	const [editName, setEditName] = useState("");
 
@@ -135,48 +134,40 @@ export default function TargetsPage() {
 
 	return (
 		<div className="space-y-6">
-			{/* Page Header */}
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
-						Grup & Target Pengiriman
-					</h1>
-					<p className="text-xs text-[#64748B]">
+			<AdminPageHeader
+				title="Grup & Target Pengiriman"
+				description={
+					<>
 						Kelola daftar grup WhatsApp penerima pengingat shalat. Hanya grup dengan status{" "}
-						<strong>Aktif</strong> yang akan menerima pesan.
-					</p>
-				</div>
+						<strong className="text-[#102A46]">Aktif</strong> yang akan menerima pesan.
+					</>
+				}
+			>
+				<button
+					type="button"
+					onClick={handleSync}
+					disabled={syncing || loading}
+					className="inline-flex items-center gap-2 rounded-xl bg-[#123B6D] px-3.5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#1D5FA7] transition disabled:opacity-50"
+				>
+					<RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+					<span>{syncing ? "Sinkronisasi..." : "Sinkronisasi Grup"}</span>
+				</button>
+			</AdminPageHeader>
 
-				<div className="flex items-center gap-2">
-					<button
-						type="button"
-						onClick={handleSync}
-						disabled={syncing || loading}
-						className="inline-flex items-center gap-2 rounded-xl bg-[#123B6D] px-3.5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#1D5FA7] transition disabled:opacity-50"
-					>
-						<RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
-						<span>{syncing ? "Sinkronisasi..." : "Sinkronisasi Grup"}</span>
-					</button>
-				</div>
-			</div>
-
-			{/* Alert Messages */}
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
-			{/* Stat Summary */}
-			<div className="flex items-center justify-between rounded-2xl bg-white border border-slate-200/80 px-4 py-3 shadow-2xs text-xs text-[#64748B]">
+			<div className="flex items-center justify-between rounded-2xl bg-white/95 border border-slate-200/80 px-4 py-3 shadow-2xs text-xs font-medium text-slate-700">
 				<div>
 					Total terdaftar: <strong className="text-[#102A46]">{targets.length} grup</strong> • Aktif menerima pesan:{" "}
 					<strong className="text-emerald-700">{activeCount} grup</strong>
 				</div>
-				<div className="flex items-center gap-1.5 text-[11px] text-[#1D5FA7]">
+				<div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#1D5FA7]">
 					<ShieldCheck className="h-4 w-4" />
 					<span>Grup baru hasil sync default nonaktif</span>
 				</div>
 			</div>
 
-			{/* Filter Bar */}
 			<TargetFilters
 				searchQuery={searchQuery}
 				filterActive={filterActive}
@@ -184,7 +175,6 @@ export default function TargetsPage() {
 				onFilterChange={setFilterActive}
 			/>
 
-			{/* Table Container */}
 			<div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-2xs">
 				<TargetTable
 					targets={filteredTargets}

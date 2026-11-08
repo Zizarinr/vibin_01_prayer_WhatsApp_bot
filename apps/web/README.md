@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# UNIDA Prayer — Frontend Web Application
 
-## Getting Started
+Aplikasi web modern untuk **UNIDA Prayer V2** yang menyediakan **Landing Page Jadwal Shalat Publik Kampus Siman** dan **Dashboard Administrator** interaktif.
 
-First, run the development server:
+## 🚀 Fitur Utama
+
+- **Landing Page Jadwal Shalat (`/`)**:
+  - Tampilan waktu shalat 5 waktu utama + Terbit dengan status otomatis (`UPCOMING`, `NEXT`, `PASSED`).
+  - Penandaan khusus Sholat Jumat (*Jumat Berkah*).
+  - Jam digital WIB real-time & hitung mundur (*live countdown*) menuju adzan berikutnya.
+  - Tombol **Salin Jadwal** satu-klik berformat WhatsApp.
+  - Penanggalan ganda: Masehi dalam bahasa Indonesia & Hijriyah Umm al-Qura.
+  - Desain responsif dengan footer gradasi biru khas UNIDA.
+- **Portal Login Admin (`/login`)**:
+  - Otentikasi terproteksi dengan visual brand 3D resolusi tinggi.
+- **Dashboard Administrator (`/admin/*`)**:
+  - `/admin`: Ringkasan metrik sistem, status konektivitas, dan log aktivitas terbaru.
+  - `/admin/whatsapp`: Kontrol sesi WAHA GoWS (start, stop, restart, logout, dan scan QR pairing).
+  - `/admin/targets`: Sinkronisasi grup WhatsApp, switch target aktif/nonaktif, dan test pesan manual.
+  - `/admin/prayer`: Pengaturan lokasi Siman, metode hisab, koreksi menit per waktu shalat, dan koreksi kalender Hijriyah dengan simulasi kalkulasi (*live preview*).
+  - `/admin/messages`: Riwayat pengiriman pesan terjadwal, filter status (`PENDING`, `DISPATCHING`, `SENT`, `FAILED`, `UNKNOWN`), dan tombol retry manual.
+  - `/admin/hadits`: Manajemen database hadits & ayat (tambah, edit, nonaktifkan, dan pencegahan pengulangan).
+  - `/admin/settings`: Pengaturan pre-reminder, diagnostik sistem, dan *Emergency Kill-Switch*.
+  - Desain responsif mobile dengan *mobile navigation drawer* & *top bar*.
+
+## 🛠️ Teknologi
+
+- **Framework**: [Next.js](https://nextjs.org/) 16 (App Router, Turbopack, Standalone output)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Icon**: [Lucide React](https://lucide.dev/) & Brand App Icon 3D raster resolusi tinggi
+- **Runtime**: Bun / Node.js 20+
+
+## 💻 Menjalankan Secara Lokal
+
+Dari root monorepo:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun run dev:web
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Atau langsung dari direktori ini:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cd apps/web
+bun run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Aplikasi web dapat diakses pada [http://localhost:3000](http://localhost:3000).
+Proxy internal ke backend Elysia berjalan melalui rewrites di `next.config.ts` menuju `INTERNAL_API_URL` (default: `http://127.0.0.1:3001`).
 
-## Learn More
+## 📦 Build Produksi
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+bun run build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Hasil build standalone akan ditempatkan di `.next/standalone` untuk di-package ke dalam Docker image (`infrastructure/docker/web.Dockerfile`).

@@ -65,7 +65,6 @@ export async function getHadiths(params: GetHadithsParams): Promise<PaginatedHad
 		.limit(limit)
 		.offset(offset);
 
-	// Periksa apakah hadits aktif = 0
 	const activeCountRes = await db
 		.select({ count: sql<number>`count(*)` })
 		.from(hadiths)
@@ -159,7 +158,6 @@ export async function deleteHadith(id: number): Promise<{ softDeleted: boolean }
 		throw new HadithNotFoundError(id);
 	}
 
-	// Cek apakah pernah dipakai di scheduled_messages.content_ref ('hadith:<id>')
 	const contentRef = `hadith:${id}`;
 	const usedRows = await db
 		.select({ count: sql<number>`count(*)` })
@@ -169,7 +167,6 @@ export async function deleteHadith(id: number): Promise<{ softDeleted: boolean }
 	const isUsed = Number(usedRows[0]?.count ?? 0) > 0;
 
 	if (isUsed) {
-		// Soft-delete bila sudah pernah dipakai
 		await db
 			.update(hadiths)
 			.set({
@@ -180,7 +177,6 @@ export async function deleteHadith(id: number): Promise<{ softDeleted: boolean }
 		return { softDeleted: true };
 	}
 
-	// Hapus fisik bila belum pernah dipakai
 	await db.delete(hadiths).where(eq(hadiths.id, id));
 	return { softDeleted: false };
 }

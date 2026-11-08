@@ -13,6 +13,7 @@ import {
 	MessagesTable,
 	type ScheduledMessageItem,
 } from "../../../components/admin/messages/messages-table";
+import { AdminPageHeader } from "../../../components/admin/shared/admin-page-header";
 import { ErrorBanner, SuccessBanner } from "../../../components/admin/shared/alert-banners";
 
 interface MessagesResponse {
@@ -29,7 +30,6 @@ export default function AdminMessagesPage() {
 	const [error, setError] = useState<string | null>(null);
 	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	// Filter states
 	const [statusFilter, setStatusFilter] = useState<string>("ALL");
 	const [prayerFilter, setPrayerFilter] = useState<string>("ALL");
 	const [typeFilter, setTypeFilter] = useState<string>("ALL");
@@ -38,7 +38,6 @@ export default function AdminMessagesPage() {
 	const [totalPages, setTotalPages] = useState(1);
 	const [totalCount, setTotalCount] = useState(0);
 
-	// Action modals
 	const [selectedMessage, setSelectedMessage] = useState<ScheduledMessageItem | null>(null);
 	const [confirmRetryId, setConfirmRetryId] = useState<number | null>(null);
 	const [confirmCancelId, setConfirmCancelId] = useState<number | null>(null);
@@ -115,16 +114,10 @@ export default function AdminMessagesPage() {
 
 	return (
 		<div className="space-y-6">
-			{/* Header */}
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
-						Riwayat & Antrean Pesan
-					</h1>
-					<p className="text-xs text-[#64748B]">
-						Pantau jadwal pengiriman pengingat shalat, status pesan terkirim, dan penanganan kegagalan.
-					</p>
-				</div>
+			<AdminPageHeader
+				title="Riwayat & Antrean Pesan"
+				description="Pantau jadwal pengiriman pengingat shalat, status pesan terkirim, dan penanganan kegagalan."
+			>
 				<button
 					type="button"
 					onClick={() => loadMessages()}
@@ -134,13 +127,11 @@ export default function AdminMessagesPage() {
 					<RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
 					<span>Segarkan</span>
 				</button>
-			</div>
+			</AdminPageHeader>
 
-			{/* Alert Messages */}
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
-			{/* Filters Bar */}
 			<MessagesFilters
 				searchQuery={searchQuery}
 				statusFilter={statusFilter}
@@ -164,7 +155,6 @@ export default function AdminMessagesPage() {
 				}}
 			/>
 
-			{/* Table Container */}
 			<div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-2xs">
 				<MessagesTable
 					messages={messages}
@@ -179,7 +169,6 @@ export default function AdminMessagesPage() {
 				/>
 			</div>
 
-			{/* Modals */}
 			<MessageDetailModal
 				message={selectedMessage}
 				onClose={() => setSelectedMessage(null)}

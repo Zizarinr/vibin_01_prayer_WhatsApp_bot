@@ -31,7 +31,6 @@ export function SystemDiagnosticsCard({ systemStatus }: SystemDiagnosticsCardPro
 
 			{systemStatus ? (
 				<div className="space-y-3 text-xs">
-					{/* Worker State */}
 					<div className="rounded-2xl bg-slate-50 p-3 border border-slate-100 space-y-1">
 						<div className="flex items-center justify-between">
 							<span className="font-semibold text-[#64748B] flex items-center gap-1.5">
@@ -51,7 +50,6 @@ export function SystemDiagnosticsCard({ systemStatus }: SystemDiagnosticsCardPro
 						</p>
 					</div>
 
-					{/* Database */}
 					<div className="rounded-2xl bg-slate-50 p-3 border border-slate-100 space-y-1">
 						<div className="flex items-center justify-between">
 							<span className="font-semibold text-[#64748B] flex items-center gap-1.5">
@@ -73,7 +71,6 @@ export function SystemDiagnosticsCard({ systemStatus }: SystemDiagnosticsCardPro
 						</p>
 					</div>
 
-					{/* WAHA */}
 					<div className="rounded-2xl bg-slate-50 p-3 border border-slate-100 space-y-1">
 						<div className="flex items-center justify-between">
 							<span className="font-semibold text-[#64748B] flex items-center gap-1.5">

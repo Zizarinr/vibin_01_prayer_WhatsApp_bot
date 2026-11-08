@@ -42,7 +42,7 @@ Jika ada konflik: `docs/` menang atas ingatan/V1. Jika `docs/` ambigu: **berhent
 - Setiap modul UI wajib punya: loading, empty, error, success, konfirmasi aksi berisiko.
 - Status yang tampil di UI harus dari backend/DB, bukan asumsi klik tombol.
 - Jalankan `bun run typecheck` secara eksplisit; lolos-run Bun ≠ lolos-typecheck.
-- Komentar `//` hanya bila perlu (menjelaskan *kenapa*, bukan *apa*). Kode yang sudah jelas tidak perlu dikomentari; jangan beri keterangan yang tidak penting.
+- Komentar `//` (dan `{/* */}` di JSX) hanya bila penting: menjelaskan *kenapa* (alasan bisnis, constraint infra/keamanan, workaround versi, efek samping tak jelas) atau `TODO`/`FIXME` berkonteks. Dilarang komentar noise: label section yang mengulang nama kode, penomoran urutan (`// 1.`), komentar *apa* yang sudah jelas dari nama, dan commented-out code. Bersihkan komentar tak penting setiap menyentuh file.
 - Linter utama: **oxlint** (`bun run lint`). Pastikan lolos sebelum commit.
 
 ## 5. Struktur Repo yang Diwajibkan
@@ -103,6 +103,7 @@ Nama script final wajib disamakan dengan root `package.json` dan `docs/10-devops
 
 ## 9. Larangan
 
+- Dilarang menampilkan logo, ikon, badge, atau teks penanda AI apa pun (`Made with AI`, `Powered by AI`, dsb.) di UI, respons API, maupun dokumen user-facing — walau proyek ini dibangun dengan bantuan AI. Buat hasil senatural mungkin seolah dikerjakan manual. Pengecualian hanya bila di masa depan ada fitur AI eksplisit yang disetujui pemilik proyek.
 - Dilarang mengubah scope menjadi multi-tenant/microservices/Redis/K8s tanpa persetujuan tertulis pemilik.
 - Dilarang mengklaim jadwal `adhan-js` sebagai "jadwal resmi Kemenag" sebelum validasi (`docs/04-prayer-engine-kalender.md`).
 - Dilarang mengambil hadits dari API acak tak terverifikasi.

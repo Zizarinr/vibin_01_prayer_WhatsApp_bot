@@ -1,6 +1,8 @@
 import { eq } from "drizzle-orm";
+import { utcNow } from "../../core/time";
 import { db } from "../../database/client";
 import { messageTargets } from "../../database/schema/targets";
+import { getResolvedSettings } from "../prayer/service";
 import {
 	getSessionQr,
 	getSessionStatus,
@@ -12,6 +14,7 @@ import {
 	stopSession,
 	WahaError,
 } from "../../integrations/waha";
+import { resolveDayTestTarget } from "../messages/testday";
 
 export async function fetchSessionStatus() {
 	return await getSessionStatus();
@@ -40,15 +43,16 @@ export async function fetchQrCode() {
 	return await getSessionQr();
 }
 
-export async function sendTestMessage(targetId: number, customText?: string) {
-	const [target] = await db
-		.select()
-		.from(messageTargets)
-		.where(eq(messageTargets.id, targetId));
+export async function sendTestMessage(
+	target: { targetId?: number; phone?: string },
+	customText?: string,
+) {
+	let chatId: string;
+	let displayName: string;
 
-	if (!target) {
-		throw new WahaError("Target grup tidak ditemukan di database.", 404, "TARGET_NOT_FOUND");
-	}
+	const resolved = await resolveDayTestTarget({ targetId: target.targetId, phone: target.phone });
+	chatId = resolved.chatId;
+	displayName = resolved.displayName;
 
 	const session = await getSessionStatus();
 	if (session.status !== "WORKING") {
@@ -59,25 +63,31 @@ export async function sendTestMessage(targetId: number, customText?: string) {
 		);
 	}
 
-	const nowWib = new Date().toLocaleString("id-ID", {
-		timeZone: "Asia/Jakarta",
+	let timezone = "Asia/Jakarta";
+	try {
+		const resolved = await getResolvedSettings();
+		timezone = resolved.location.timezone;
+	} catch {
+	}
+	const nowWib = utcNow().toLocaleString("id-ID", {
+		timeZone: timezone,
 		dateStyle: "full",
 		timeStyle: "medium",
 	});
 
 	const text =
 		customText?.trim() ||
-		`🧪 *Uji Coba Pengiriman UNIDA Prayer*\n\nPesan uji coba ini dikirim oleh Administrator sistem untuk memastikan integrasi bot WhatsApp berjalan dengan baik.\n\n📅 Waktu uji: ${nowWib} WIB`;
+		`🧪 *Uji Coba Pengiriman UNIDA Prayer*\n\nPesan uji coba ini dikirim oleh Administrator sistem untuk memastikan integrasi bot WhatsApp berjalan dengan baik.\n\n📅 Waktu uji: ${nowWib}`;
 
 	const result = await sendTextMessage({
-		chatId: target.targetId,
+		chatId,
 		text,
 	});
 
 	return {
 		success: true,
-		targetName: target.name,
-		targetId: target.targetId,
+		target: displayName,
+		targetId: chatId,
 		messageId: result.id,
 	};
 }
@@ -102,16 +112,14 @@ export async function syncGroups() {
 	for (const group of groups) {
 		const existing = existingMap.get(group.id);
 		if (existing) {
-			// Update nama bila ada perubahan
 			if (existing.name !== group.name) {
 				await db
 					.update(messageTargets)
-					.set({ name: group.name, updatedAt: new Date() })
+					.set({ name: group.name, updatedAt: utcNow() })
 					.where(eq(messageTargets.id, existing.id));
 				updatedCount += 1;
 			}
 		} else {
-			// Grup baru default NONAKTIF
 			await db.insert(messageTargets).values({
 				targetType: "GROUP",
 				targetId: group.id,

@@ -5,8 +5,9 @@
 
 ## 15.1 Struktur pesan utama (ADHAN)
 
-Format: `greeting` + `body` + `📖 Hadith Hari Ini` (bila aktif) + `footer`.
-Placeholder: `{{time}}` (mis. `04:12 WIB`), `{{hijri}}`, `{{gregorian}}`.
+Format: `greeting` + `body` + `📖 Hadith Hari Ini` (bila aktif) + `footer` + `🔗 Jadwal lengkap: {{WEB_URL}}`.
+Placeholder: `{{time}}` (mis. `04:12 WIB`), `{{hijri}}`, `{{gregorian}}` (format `Hari, Tgl Bulan Tahun`, mis. `Rabu, 4 November 2026`).
+Semua varian body memakai dua baris tanggal: `📅 {{hijri}}` + `📆 {{gregorian}}`.
 Rotasi: 3 varian per waktu, dipilih `tanggal-masehi % 3` (deterministik per hari).
 Jumat: label `Sholat Dzuhur` → `Sholat Jumat` + footer khusus Jumat (lihat §15.3).
 
@@ -46,12 +47,14 @@ Jumat: label `Sholat Dzuhur` → `Sholat Jumat` + footer khusus Jumat (lihat §1
 - I2: `✨ salam penuh` / `Panggilan terakhir hari ini, waktu *Sholat Isya* telah berkumandang 🕌\n🕐 Pukul *{{time}}*\n📅 {{hijri}}` / `Sempurnakan ibadah harian kita dengan sholat Isya tepat waktu sebelum beristirahat 🤲`
 - I3: `🌌 salam singkat` / `Waktu *Sholat Isya* yang damai telah masuk 🕌\n🕐 Pukul *{{time}}*\n📅 {{hijri}}` / `Mari menghadap Allah SWT di penghujung hari. Selamat menunaikan ibadah sholat Isya 🤲`
 
-## 15.2 Pre-reminder (3 varian, `{{minutes}}` + `{{prayerName}}`)
+## 15.2 Pre-reminder (3 varian, `{{minutes}}` + `{{prayerName}}` + tanggal + link)
 
-- P1: `⏰ *Pengingat Sholat — Keluarga Besar UNIDA Gontor*\n\n*{{minutes}} menit* lagi masuk waktu *{{prayerName}}* 🕌\nSegera bersiap-siap dan ambil wudhu! 💧`
-- P2: `⏰ *Pre-Reminder Sholat — UNIDA Gontor*\n\nPersiapan diri, *{{minutes}} menit* lagi adzan *{{prayerName}}* akan berkumandang 🕌\nMari bersuci dan segerakan bersiap! 💧`
-- P3: `⏰ *Pengingat Sholat — Keluarga Besar UNIDA Gontor*\n\nWaktu *{{prayerName}}* segera tiba dalam *{{minutes}} menit* 🕌\nTinggalkan pekerjaan sejenak dan bersiaplah mengambil wudhu! 💧`
+- P1: `⏰ *Pengingat Sholat — Keluarga Besar UNIDA Gontor*\n\n*{{minutes}} menit* lagi masuk waktu *{{prayerName}}* 🕌\n🕐 Pukul *{{time}}*\n📅 {{hijri}}\n📆 {{gregorian}}\nSegera bersiap-siap dan ambil wudhu! 💧\n\n🔗 Jadwal lengkap: {{WEB_URL}}`
+- P2: `⏰ *Pre-Reminder Sholat — UNIDA Gontor*\n\nPersiapan diri, *{{minutes}} menit* lagi adzan *{{prayerName}}* akan berkumandang 🕌\n🕐 Pukul *{{time}}*\n📅 {{hijri}}\n📆 {{gregorian}}\nMari bersuci dan segerakan bersiap! 💧\n\n🔗 Jadwal lengkap: {{WEB_URL}}`
+- P3: `⏰ *Pengingat Sholat — Keluarga Besar UNIDA Gontor*\n\nWaktu *{{prayerName}}* segera tiba dalam *{{minutes}} menit* 🕌\n🕐 Pukul *{{time}}*\n📅 {{hijri}}\n📆 {{gregorian}}\nTinggalkan pekerjaan sejenak dan bersiaplah mengambil wudhu! 💧\n\n🔗 Jadwal lengkap: {{WEB_URL}}`
 - Jumat: `{{prayerName}}` = `Sholat Jumat`.
+- `{{gregorian}}` format `Hari, Tgl Bulan Tahun` (mis. `Rabu, 4 November 2026`).
+- `{{WEB_URL}}` dari env `WEB_URL` (tanpa trailing `/`); bila kosong/invalid baris link dihilangkan.
 
 ## 15.3 Footer khusus Jumat (pengganti footer Dzuhur)
 
@@ -89,3 +92,8 @@ _"<text>"_
 - [x] Sapaan "Keluarga Besar dan Civitas Akademika UNIDA Gontor" disetujui
 - [x] Footer Jumat §15.3 disetujui
 - [x] Seed hadits final: **pertahankan 10 item**; item #9 (QS) memakai header "Ayat Hari Ini"
+
+## 15.7 Aturan perubahan template berikutnya
+
+- Naikkan `TEMPLATE_VERSION` di `apps/api/src/modules/messages/templates.ts` + sesuaikan `isStaleTemplateBody()` agar snapshot lama otomatis dibatalkan, dihapus, dan diganti baris segar (`cancelStaleTemplatePending()` + `deleteRegeneratedRows()` di generator).
+- `CANCELLED` manual admin dan `SENT/FAILED` tidak pernah disentuh.

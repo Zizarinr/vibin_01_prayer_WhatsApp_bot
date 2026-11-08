@@ -26,13 +26,12 @@ export function PrayerCard({
 		<div
 			className={`relative flex flex-col justify-between rounded-2xl p-4 transition-all ${
 				isNext
-					? "bg-white ring-2 ring-[#1D5FA7] shadow-md -translate-y-0.5"
+					? "bg-white/95 backdrop-blur-md ring-2 ring-[#1D5FA7] shadow-md -translate-y-0.5"
 					: isPassed
-						? "bg-slate-50/80 border border-slate-200/60 opacity-70"
-						: "bg-white border border-slate-200/80 shadow-2xs hover:border-slate-300"
+						? "bg-slate-100/95 backdrop-blur-md border border-slate-200/80 shadow-2xs"
+						: "bg-white/95 backdrop-blur-md border border-slate-200/80 shadow-2xs hover:border-slate-300"
 			}`}
 		>
-			{/* Status Tag for Next Prayer */}
 			{isNext && (
 				<span className="absolute -top-2.5 right-3 rounded-full bg-[#1D5FA7] px-2 py-0.5 text-[10px] font-bold text-white shadow-xs">
 					Berikutnya

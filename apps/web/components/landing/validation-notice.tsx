@@ -2,7 +2,7 @@ import { Compass } from "lucide-react";
 
 export function ValidationNotice() {
 	return (
-		<div className="rounded-2xl border border-slate-200/90 bg-slate-50/80 p-4 text-xs text-[#64748B]">
+		<div className="rounded-2xl border border-slate-200/90 bg-white/90 backdrop-blur-md p-4 text-xs text-[#64748B]">
 			<div className="flex items-start gap-2.5">
 				<Compass className="h-4 w-4 shrink-0 text-[#1D5FA7] mt-0.5" />
 				<div className="space-y-1">

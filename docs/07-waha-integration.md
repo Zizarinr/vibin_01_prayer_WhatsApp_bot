@@ -40,7 +40,8 @@ Timeout QR: ikuti masa berlaku WAHA; bila kedaluwarsa, minta QR baru (jangan cac
   - Ada → update `name/updated_at`, jangan ubah `is_active` diam-diam.
   - Grup yang tak lagi muncul → tandai? Jangan hapus otomatis; tampilkan "tidak terlihat di WAHA" bila perlu (kunci Q-WAHA-02).
 - Jangan auto-kirim ke semua grup hasil sync. Admin eksplisit aktifkan.
-- `POST /test-message`: `{ targetId(db id), text? }` → cek target ada + sesi WORKING + rate-limit → kirim teks uji (default template uji + timestamp). Catat di log, **bukan** di `scheduled_messages` (atau tandai jelas bila dicatat).
+- `POST /test-message`: `{ targetId(db id) }` untuk grup tersimpan ATAU `{ phone }` untuk nomor pribadi (tanpa simpan DB) + `text?` opsional → cek target ada + sesi WORKING + rate-limit → kirim teks uji (default template uji + timestamp). Catat di log, **bukan** di `scheduled_messages` (atau tandai jelas bila dicatat).
+- `POST /test-day/preview|start|status|cancel`: simulasi sehari penuh (pre-reminder + adzan tiap waktu, konten identik generator, tanpa tulis DB). Jeda 3 dtk + acak 1–2 dtk antar pesan; satu run aktif dalam satu waktu; bisa batal mid-run.
 
 ## 7.5 Pengiriman & batas wajar
 
@@ -54,7 +55,27 @@ Timeout QR: ikuti masa berlaku WAHA; bila kedaluwarsa, minta QR baru (jangan cac
 - Gunakan untuk: update `waha_message_id`, konfirmasi kirim, deteksi session down → pengaruhi `/system/status`.
 - Jangan percaya webhook buta untuk mengubah `SENT→FAILED` tanpa aturan jelas; dokumentasikan mapping event per versi.
 
-## 7.7 Error mapping (backend → UI)
+## 7.8 Menjalakan WAHA dev lokal (tanpa deployment production)
+
+File: `deploy/compose.waha-dev.yml` — hanya service `waha` (image pin sama
+dengan production). Port host `:3008` agar tidak tabrakan dengan `next dev`
+(`:3000`). Sesi di volume `waha_dev_sessions` (persist, jangan hapus kecuali
+mau pairing ulang dari nol).
+
+```bash
+# Dari root repo:
+docker compose --env-file .env -f deploy/compose.waha-dev.yml up -d
+docker compose --env-file .env -f deploy/compose.waha-dev.yml logs -f   # lihat log
+curl -s http://localhost:3008/api/sessions -H "X-Api-Key: $WAHA_API_KEY"
+docker compose --env-file .env -f deploy/compose.waha-dev.yml down      # matikan (volume tetap ada)
+```
+
+Syarat: `.env` lokal `WAHA_BASE_URL=http://localhost:3008` + `WAHA_API_KEY`
+sama dengan yang dipakai container (interpolasi `${WAHA_API_KEY}` dari `.env`
+root). API backend + dashboard `/admin/whatsapp` langsung bisa dipakai untuk
+pairing QR, sync grup, dan test-message — tanpa deploy production.
+
+## 7.9 Error mapping (backend → UI)
 
 | Gejala WAHA | Kode API | Pesan UI |
 |---|---|---|

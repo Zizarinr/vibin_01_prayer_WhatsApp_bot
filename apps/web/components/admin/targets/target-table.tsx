@@ -69,7 +69,7 @@ export function TargetTable({
 		<div className="overflow-x-auto">
 			<table className="w-full text-left border-collapse text-xs">
 				<thead>
-					<tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-bold text-[#64748B]">
+					<tr className="border-b border-slate-100 bg-slate-50/90 text-[11px] font-bold text-slate-700">
 						<th className="py-3 px-4 w-12 text-center">#</th>
 						<th className="py-3 px-4">Nama Grup / Target</th>
 						<th className="py-3 px-4">WhatsApp Chat ID</th>

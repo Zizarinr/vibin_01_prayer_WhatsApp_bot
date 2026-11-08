@@ -8,8 +8,14 @@ export interface ApiResponse<T> {
 	error: ApiError | null;
 }
 
+// URL basis API:
+// - NEXT_PUBLIC_API_URL (disarankan dikosongkan di dev/prod agar same-origin
+//   "/api/..." lewat rewrite Next.js di next.config.ts → tidak kena CORS).
+// - NEXT_PUBLIC_API_BASE_URL didukung sebagai alias lama (dipakai deploy/compose.yml).
+// - SSR (server) memakai INTERNAL_API_URL bila keduanya kosong.
 const API_BASE =
 	process.env.NEXT_PUBLIC_API_URL ||
+	process.env.NEXT_PUBLIC_API_BASE_URL ||
 	(typeof window === "undefined"
 		? process.env.INTERNAL_API_URL || "http://127.0.0.1:3001"
 		: "");

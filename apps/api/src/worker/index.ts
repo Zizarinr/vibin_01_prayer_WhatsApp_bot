@@ -8,32 +8,35 @@ import { generateHorizonMessages } from "../modules/messages/generator";
 const logger = createLogger("worker");
 
 const WORKER_ID = `worker-${crypto.randomUUID().slice(0, 8)}`;
-const HEARTBEAT_INTERVAL_MS = 30_000; // 30 dtk
-const DISPATCHER_INTERVAL_MS = 20_000; // 20 dtk
-const GENERATOR_INTERVAL_MS = 15 * 60_000; // 15 menit
+const HEARTBEAT_INTERVAL_MS = 30_000;
+const DISPATCHER_INTERVAL_MS = 20_000;
+const GENERATOR_INTERVAL_MS = 15 * 60_000;
 
 let isRunning = true;
 let isDispatching = false;
 
 async function writeHeartbeat(): Promise<void> {
 	try {
+		const now = utcNow();
 		await db
 			.insert(appSettings)
 			.values({
 				key: "worker_heartbeat",
 				value: {
-					atUtc: utcNow().toISOString(),
+					atUtc: now.toISOString(),
 					workerId: WORKER_ID,
 					version: "2.0.0",
 				},
+				updatedAt: now,
 			})
 			.onDuplicateKeyUpdate({
 				set: {
 					value: {
-						atUtc: utcNow().toISOString(),
+						atUtc: now.toISOString(),
 						workerId: WORKER_ID,
 						version: "2.0.0",
 					},
+					updatedAt: now,
 				},
 			});
 	} catch (error) {
@@ -46,10 +49,8 @@ async function writeHeartbeat(): Promise<void> {
 async function startWorker() {
 	logger.info("Memulai worker UNIDA Prayer...", { workerId: WORKER_ID });
 
-	// 1. Tulis heartbeat awal
 	await writeHeartbeat();
 
-	// 2. Jalankan startup recovery (stale PROCESSING & expired PENDING)
 	try {
 		const rec = await runStartupRecovery();
 		logger.info("Startup recovery berhasil.", rec);
@@ -59,7 +60,6 @@ async function startWorker() {
 		});
 	}
 
-	// 3. Fulfill 7-hari horizon messages
 	try {
 		const gen = await generateHorizonMessages();
 		logger.info("Pemeriksaan awal horizon pesan berhasil.", {
@@ -72,13 +72,11 @@ async function startWorker() {
 		});
 	}
 
-	// 4. Timer Heartbeat
 	const heartbeatTimer = setInterval(() => {
 		if (!isRunning) return;
 		writeHeartbeat();
 	}, HEARTBEAT_INTERVAL_MS);
 
-	// 5. Timer Dispatcher
 	const dispatcherTimer = setInterval(async () => {
 		if (!isRunning || isDispatching) return;
 		isDispatching = true;
@@ -93,7 +91,6 @@ async function startWorker() {
 		}
 	}, DISPATCHER_INTERVAL_MS);
 
-	// 6. Timer Generator Horizon
 	const generatorTimer = setInterval(async () => {
 		if (!isRunning) return;
 		try {
@@ -105,7 +102,6 @@ async function startWorker() {
 		}
 	}, GENERATOR_INTERVAL_MS);
 
-	// Graceful shutdown
 	const shutdown = () => {
 		logger.info("Menerima sinyal terminasi, mematikan worker...", { workerId: WORKER_ID });
 		isRunning = false;

@@ -71,56 +71,63 @@ export const DEFAULT_SETTINGS: ResolvedSettings = {
 	},
 };
 
-export async function getResolvedSettings(): Promise<ResolvedSettings> {
+function isValidTimezone(tz: string): boolean {
 	try {
-		const rows = await db.select().from(appSettings);
-		const map = new Map<string, unknown>();
-		for (const row of rows) {
-			map.set(row.key, row.value);
-		}
-
-		const loc = map.get("location") as Partial<ResolvedSettings["location"]> | undefined;
-		const calc = map.get("prayer_calculation") as Partial<ResolvedSettings["calculation"]> | undefined;
-		const adj = map.get("prayer_adjustments") as Partial<Record<string, number>> | undefined;
-		const hij = map.get("hijri_settings") as Partial<ResolvedSettings["hijri"]> | undefined;
-		const rem = map.get("reminder_settings") as Partial<ResolvedSettings["reminder"]> | undefined;
-
-		return {
-			location: {
-				name: typeof loc?.name === "string" ? loc.name : DEFAULT_SETTINGS.location.name,
-				latitude: typeof loc?.latitude === "number" ? loc.latitude : DEFAULT_SETTINGS.location.latitude,
-				longitude: typeof loc?.longitude === "number" ? loc.longitude : DEFAULT_SETTINGS.location.longitude,
-				timezone: typeof loc?.timezone === "string" ? loc.timezone : DEFAULT_SETTINGS.location.timezone,
-			},
-			calculation: {
-				fajrAngle: typeof calc?.fajrAngle === "number" ? calc.fajrAngle : DEFAULT_SETTINGS.calculation.fajrAngle,
-				ishaAngle: typeof calc?.ishaAngle === "number" ? calc.ishaAngle : DEFAULT_SETTINGS.calculation.ishaAngle,
-				asrFactor: calc?.asrFactor === 2 ? 2 : 1,
-				methodLabel: typeof calc?.methodLabel === "string" ? calc.methodLabel : DEFAULT_SETTINGS.calculation.methodLabel,
-			},
-			adjustments: {
-				FAJR: typeof adj?.FAJR === "number" ? adj.FAJR : (typeof adj?.fajr === "number" ? adj.fajr : 0),
-				SUNRISE: typeof adj?.SUNRISE === "number" ? adj.SUNRISE : (typeof adj?.sunrise === "number" ? adj.sunrise : 0),
-				DHUHR: typeof adj?.DHUHR === "number" ? adj.DHUHR : (typeof adj?.dhuhr === "number" ? adj.dhuhr : 0),
-				ASR: typeof adj?.ASR === "number" ? adj.ASR : (typeof adj?.asr === "number" ? adj.asr : 0),
-				MAGHRIB: typeof adj?.MAGHRIB === "number" ? adj.MAGHRIB : (typeof adj?.maghrib === "number" ? adj.maghrib : 0),
-				ISHA: typeof adj?.ISHA === "number" ? adj.ISHA : (typeof adj?.isha === "number" ? adj.isha : 0),
-			},
-			hijri: {
-				adjustmentDays: typeof hij?.adjustmentDays === "number" ? hij.adjustmentDays : DEFAULT_SETTINGS.hijri.adjustmentDays,
-			},
-			reminder: {
-				enabled: typeof rem?.enabled === "boolean" ? rem.enabled : DEFAULT_SETTINGS.reminder.enabled,
-				preReminderEnabled: typeof rem?.preReminderEnabled === "boolean" ? rem.preReminderEnabled : DEFAULT_SETTINGS.reminder.preReminderEnabled,
-				adhanReminderEnabled: typeof rem?.adhanReminderEnabled === "boolean" ? rem.adhanReminderEnabled : DEFAULT_SETTINGS.reminder.adhanReminderEnabled,
-				preReminderMinutes: typeof rem?.preReminderMinutes === "number" ? rem.preReminderMinutes : DEFAULT_SETTINGS.reminder.preReminderMinutes,
-				lateGraceMinutes: typeof rem?.lateGraceMinutes === "number" ? rem.lateGraceMinutes : DEFAULT_SETTINGS.reminder.lateGraceMinutes,
-			},
-		};
+		Intl.DateTimeFormat(undefined, { timeZone: tz });
+		return true;
 	} catch {
-		// Fallback ke default bila DB belum siap atau tabel kosong
-		return DEFAULT_SETTINGS;
+		return false;
 	}
+}
+
+export async function getResolvedSettings(): Promise<ResolvedSettings> {
+	const rows = await db.select().from(appSettings);
+	const map = new Map<string, unknown>();
+	for (const row of rows) {
+		map.set(row.key, row.value);
+	}
+
+	const loc = map.get("location") as Partial<ResolvedSettings["location"]> | undefined;
+	const calc = map.get("prayer_calculation") as Partial<ResolvedSettings["calculation"]> | undefined;
+	const adj = map.get("prayer_adjustments") as Partial<Record<string, number>> | undefined;
+	const hij = map.get("hijri_settings") as Partial<ResolvedSettings["hijri"]> | undefined;
+	const rem = map.get("reminder_settings") as Partial<ResolvedSettings["reminder"]> | undefined;
+
+	const tzRaw = typeof loc?.timezone === "string" ? loc.timezone : DEFAULT_SETTINGS.location.timezone;
+	const timezone = isValidTimezone(tzRaw) ? tzRaw : DEFAULT_SETTINGS.location.timezone;
+
+	return {
+		location: {
+			name: typeof loc?.name === "string" ? loc.name : DEFAULT_SETTINGS.location.name,
+			latitude: typeof loc?.latitude === "number" ? loc.latitude : DEFAULT_SETTINGS.location.latitude,
+			longitude: typeof loc?.longitude === "number" ? loc.longitude : DEFAULT_SETTINGS.location.longitude,
+			timezone,
+		},
+		calculation: {
+			fajrAngle: typeof calc?.fajrAngle === "number" ? calc.fajrAngle : DEFAULT_SETTINGS.calculation.fajrAngle,
+			ishaAngle: typeof calc?.ishaAngle === "number" ? calc.ishaAngle : DEFAULT_SETTINGS.calculation.ishaAngle,
+			asrFactor: calc?.asrFactor === 2 ? 2 : 1,
+			methodLabel: typeof calc?.methodLabel === "string" ? calc.methodLabel : DEFAULT_SETTINGS.calculation.methodLabel,
+		},
+		adjustments: {
+			FAJR: typeof adj?.FAJR === "number" ? adj.FAJR : (typeof adj?.fajr === "number" ? adj.fajr : 0),
+			SUNRISE: typeof adj?.SUNRISE === "number" ? adj.SUNRISE : (typeof adj?.sunrise === "number" ? adj.sunrise : 0),
+			DHUHR: typeof adj?.DHUHR === "number" ? adj.DHUHR : (typeof adj?.dhuhr === "number" ? adj.dhuhr : 0),
+			ASR: typeof adj?.ASR === "number" ? adj.ASR : (typeof adj?.asr === "number" ? adj.asr : 0),
+			MAGHRIB: typeof adj?.MAGHRIB === "number" ? adj.MAGHRIB : (typeof adj?.maghrib === "number" ? adj.maghrib : 0),
+			ISHA: typeof adj?.ISHA === "number" ? adj.ISHA : (typeof adj?.isha === "number" ? adj.isha : 0),
+		},
+		hijri: {
+			adjustmentDays: typeof hij?.adjustmentDays === "number" ? hij.adjustmentDays : DEFAULT_SETTINGS.hijri.adjustmentDays,
+		},
+		reminder: {
+			enabled: typeof rem?.enabled === "boolean" ? rem.enabled : DEFAULT_SETTINGS.reminder.enabled,
+			preReminderEnabled: typeof rem?.preReminderEnabled === "boolean" ? rem.preReminderEnabled : DEFAULT_SETTINGS.reminder.preReminderEnabled,
+			adhanReminderEnabled: typeof rem?.adhanReminderEnabled === "boolean" ? rem.adhanReminderEnabled : DEFAULT_SETTINGS.reminder.adhanReminderEnabled,
+			preReminderMinutes: typeof rem?.preReminderMinutes === "number" ? rem.preReminderMinutes : DEFAULT_SETTINGS.reminder.preReminderMinutes,
+			lateGraceMinutes: typeof rem?.lateGraceMinutes === "number" ? rem.lateGraceMinutes : DEFAULT_SETTINGS.reminder.lateGraceMinutes,
+		},
+	};
 }
 
 export interface TodayPrayerResponse {

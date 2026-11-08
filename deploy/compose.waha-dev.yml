@@ -1,0 +1,26 @@
+# ==============================================================================
+# UNIDA Prayer V2 — WAHA saja untuk development lokal.
+# Bukan deployment production (lihat compose.yml yang prod-only).
+# Cara pakai dari root repo (WAHA_API_KEY dibaca dari `.env` root):
+#   docker compose --env-file .env -f deploy/compose.waha-dev.yml up -d
+#   docker compose --env-file .env -f deploy/compose.waha-dev.yml logs -f
+#   docker compose --env-file .env -f deploy/compose.waha-dev.yml down
+# Pastikan `.env`: WAHA_BASE_URL=http://localhost:3008
+#   (port 3000 dipakai `next dev`, jadi WAHA dipetakan ke host :3008).
+# Sesi tersimpan di volume `waha_dev_sessions` — pairing QR tidak hilang
+# saat container di-restart. Jangan hapus volume kecuali mau pairing ulang.
+# ==============================================================================
+services:
+  waha:
+    image: devlikeapro/waha:gows-2026.10.1
+    restart: unless-stopped
+    environment:
+      WHATSAPP_DEFAULT_ENGINE: GOWS
+      WAHA_API_KEY: ${WAHA_API_KEY}
+    ports:
+      - "127.0.0.1:3008:3000"
+    volumes:
+      - waha_dev_sessions:/app/.sessions
+
+volumes:
+  waha_dev_sessions:

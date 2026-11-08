@@ -21,13 +21,20 @@ export async function sendTextMessage(
 		textLength: payload.text.length,
 	});
 
+	const body: Record<string, unknown> = {
+		session,
+		chatId: payload.chatId,
+		text: payload.text,
+		linkPreview: payload.linkPreview ?? true,
+	};
+	if (payload.linkPreviewHighQuality !== undefined) {
+		body.linkPreviewHighQuality = payload.linkPreviewHighQuality;
+	}
+
 	const res = await wahaFetch<RawSendMessageResponse>("/api/sendText", {
 		method: "POST",
-		body: JSON.stringify({
-			session,
-			chatId: payload.chatId,
-			text: payload.text,
-		}),
+		body: JSON.stringify(body),
+		timeoutMs: 15000,
 	});
 
 	let messageId = "UNKNOWN";

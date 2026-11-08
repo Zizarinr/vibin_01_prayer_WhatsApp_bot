@@ -16,16 +16,16 @@ import { getResolvedSettings } from "../prayer/service";
 const logger = createLogger("dispatcher");
 
 const MAX_ATTEMPTS = 3;
-const LEASE_TIMEOUT_MS = 5 * 60 * 1000; // 5 menit stale PROCESSING lease
+const LEASE_TIMEOUT_MS = 5 * 60 * 1000;
 
 export function getBackoffMs(attemptCount: number): number {
 	switch (attemptCount) {
 		case 1:
-			return 30 * 1000; // 30s
+			return 30 * 1000;
 		case 2:
-			return 2 * 60 * 1000; // 2m
+			return 2 * 60 * 1000;
 		default:
-			return 5 * 60 * 1000; // 5m
+			return 5 * 60 * 1000;
 	}
 }
 
@@ -47,7 +47,6 @@ export async function claimDueMessages(
 	const now = utcNow();
 
 	return await db.transaction(async (tx) => {
-		// Cari kandidat yang PENDING dan waktunya sudah tiba
 		const candidates = await tx
 			.select()
 			.from(scheduledMessages)
@@ -76,7 +75,6 @@ export async function claimDueMessages(
 
 		const ids = candidates.map((c) => c.id);
 
-		// Perbarui status menjadi PROCESSING
 		await tx
 			.update(scheduledMessages)
 			.set({
@@ -87,7 +85,6 @@ export async function claimDueMessages(
 			})
 			.where(inArray(scheduledMessages.id, ids));
 
-		// Kembalikan daftar yang diklaim dengan data terbarui
 		return candidates.map((c) => ({
 			...c,
 			status: "PROCESSING",
@@ -105,7 +102,6 @@ export async function runDispatcherTick(batchSize = 10): Promise<DispatchTickRes
 	const now = utcNow();
 	const settings = await getResolvedSettings();
 
-	// Cek kill-switch sendingEnabled
 	const contentSettingsRow = await db
 		.select()
 		.from(appSettings)
@@ -148,7 +144,6 @@ export async function runDispatcherTick(batchSize = 10): Promise<DispatchTickRes
 	let expiredCount = 0;
 	let unknownCount = 0;
 
-	// Ambil semua target terkait
 	const targetIds = [...new Set(claimed.map((c) => c.targetId))];
 	const targets = await db
 		.select()
@@ -158,7 +153,6 @@ export async function runDispatcherTick(batchSize = 10): Promise<DispatchTickRes
 
 	const lateGraceMs = (settings.reminder.lateGraceMinutes || 5) * 60 * 1000;
 
-	// Cek status sesi WAHA terlebih dahulu
 	let wahaIsWorking = true;
 	try {
 		const session = await waha.sessions.getStatus(config.wahaSession);
@@ -173,66 +167,62 @@ export async function runDispatcherTick(batchSize = 10): Promise<DispatchTickRes
 		});
 	}
 
-	// Gunakan Promise.allSettled agar satu kegagalan target tidak memblokir target lain
 	const promises = claimed.map(async (msg) => {
-		const target = targetMap.get(msg.targetId);
+		try {
+			const target = targetMap.get(msg.targetId);
 
-		// 1. Cek target aktif
-		if (!target || !target.isActive) {
-			await db
-				.update(scheduledMessages)
-				.set({
-					status: "CANCELLED",
-					lastError: "Target grup WhatsApp tidak aktif atau telah dihapus.",
-					updatedAt: utcNow(),
-				})
-				.where(eq(scheduledMessages.id, msg.id));
-			return;
-		}
-
-		// 2. Cek apakah sudah expired melewati lateGraceMinutes
-		const diffMs = now.getTime() - new Date(msg.scheduledAtUtc).getTime();
-		if (diffMs > lateGraceMs) {
-			expiredCount++;
-			await db
-				.update(scheduledMessages)
-				.set({
-					status: "EXPIRED",
-					lastError: `Melewati batas toleransi keterlambatan (${settings.reminder.lateGraceMinutes} menit).`,
-					updatedAt: utcNow(),
-				})
-				.where(eq(scheduledMessages.id, msg.id));
-			return;
-		}
-
-		// 3. Bila sesi WAHA down, jadwalkan retry backoff jika belum lewat max attempt
-		if (!wahaIsWorking) {
-			if (msg.attemptCount < MAX_ATTEMPTS) {
-				const nextAttempt = new Date(now.getTime() + getBackoffMs(msg.attemptCount));
+			if (!target || !target.isActive) {
 				await db
 					.update(scheduledMessages)
 					.set({
-						status: "PENDING",
-						nextAttemptAtUtc: nextAttempt,
-						lastError: "Sesi WhatsApp belum terhubung (menunggu reconnect).",
+						status: "CANCELLED",
+						lastError: "Target grup WhatsApp tidak aktif atau telah dihapus.",
 						updatedAt: utcNow(),
 					})
 					.where(eq(scheduledMessages.id, msg.id));
-			} else {
-				failedCount++;
-				await db
-					.update(scheduledMessages)
-					.set({
-						status: "FAILED",
-						lastError: "Gagal kirim: sesi WhatsApp tidak terhubung setelah batas retry.",
-						updatedAt: utcNow(),
-					})
-					.where(eq(scheduledMessages.id, msg.id));
+				return;
 			}
-			return;
-		}
 
-		// 4. Kirim via WAHA
+			const diffMs = now.getTime() - new Date(msg.scheduledAtUtc).getTime();
+			if (diffMs > lateGraceMs) {
+				expiredCount++;
+				await db
+					.update(scheduledMessages)
+					.set({
+						status: "EXPIRED",
+						lastError: `Melewati batas toleransi keterlambatan (${settings.reminder.lateGraceMinutes} menit).`,
+						updatedAt: utcNow(),
+					})
+					.where(eq(scheduledMessages.id, msg.id));
+				return;
+			}
+
+			if (!wahaIsWorking) {
+				if (msg.attemptCount < MAX_ATTEMPTS) {
+					const nextAttempt = new Date(now.getTime() + getBackoffMs(msg.attemptCount));
+					await db
+						.update(scheduledMessages)
+						.set({
+							status: "PENDING",
+							nextAttemptAtUtc: nextAttempt,
+							lastError: "Sesi WhatsApp belum terhubung (menunggu reconnect).",
+							updatedAt: utcNow(),
+						})
+						.where(eq(scheduledMessages.id, msg.id));
+				} else {
+					failedCount++;
+					await db
+						.update(scheduledMessages)
+						.set({
+							status: "FAILED",
+							lastError: "Gagal kirim: sesi WhatsApp tidak terhubung setelah batas retry.",
+							updatedAt: utcNow(),
+						})
+						.where(eq(scheduledMessages.id, msg.id));
+				}
+				return;
+			}
+
 		try {
 			const sendRes = await waha.messages.sendText({
 				session: config.wahaSession,
@@ -284,7 +274,6 @@ export async function runDispatcherTick(batchSize = 10): Promise<DispatchTickRes
 				return;
 			}
 
-			// Cek apakah permanent rejection dari WAHA (mis. format ID salah / 4xx)
 			const isPermanent =
 				error instanceof WahaError &&
 				error.statusCode >= 400 &&
@@ -303,7 +292,6 @@ export async function runDispatcherTick(batchSize = 10): Promise<DispatchTickRes
 					})
 					.where(eq(scheduledMessages.id, msg.id));
 			} else {
-				// Retry dengan backoff
 				const nextAttempt = new Date(now.getTime() + getBackoffMs(msg.attemptCount));
 				await db
 					.update(scheduledMessages)
@@ -316,6 +304,24 @@ export async function runDispatcherTick(batchSize = 10): Promise<DispatchTickRes
 					.where(eq(scheduledMessages.id, msg.id));
 			}
 		}
+	} catch (outer) {
+		logger.error("Gagal proses job dispatcher (DB/update).", {
+			messageId: msg.id,
+			error: outer instanceof Error ? outer.message : String(outer),
+		});
+		try {
+			await db
+				.update(scheduledMessages)
+				.set({
+					status: "PENDING",
+					nextAttemptAtUtc: new Date(Date.now() + getBackoffMs(msg.attemptCount)),
+					lastError: `Gagal internal dispatcher: ${outer instanceof Error ? outer.message : String(outer)}`.slice(0, 500),
+					updatedAt: utcNow(),
+				})
+				.where(eq(scheduledMessages.id, msg.id));
+		} catch {
+		}
+	}
 	});
 
 	await Promise.allSettled(promises);
@@ -347,7 +353,6 @@ export async function runStartupRecovery(): Promise<{
 	const lateGraceMs = (settings.reminder.lateGraceMinutes || 5) * 60 * 1000;
 	const graceCutoff = new Date(now.getTime() - lateGraceMs);
 
-	// 1. Stale PROCESSING
 	const staleJobs = await db
 		.select()
 		.from(scheduledMessages)
@@ -363,7 +368,6 @@ export async function runStartupRecovery(): Promise<{
 
 	for (const job of staleJobs) {
 		if (job.wahaMessageId) {
-			// Sudah punya id tapi status gantung -> UNKNOWN
 			await db
 				.update(scheduledMessages)
 				.set({
@@ -374,7 +378,6 @@ export async function runStartupRecovery(): Promise<{
 				.where(eq(scheduledMessages.id, job.id));
 			recoveredUnknown++;
 		} else {
-			// Belum terkirim -> kembalikan ke PENDING
 			await db
 				.update(scheduledMessages)
 				.set({
@@ -388,7 +391,6 @@ export async function runStartupRecovery(): Promise<{
 		}
 	}
 
-	// 2. PENDING yang sudah kadaluarsa saat worker mati
 	const expiredResult = await db
 		.update(scheduledMessages)
 		.set({

@@ -10,6 +10,7 @@ import {
 	HaditsTable,
 	type HadithItem,
 } from "../../../components/admin/hadits/hadits-table";
+import { AdminPageHeader } from "../../../components/admin/shared/admin-page-header";
 import { ErrorBanner, SuccessBanner } from "../../../components/admin/shared/alert-banners";
 
 interface HadithsResponse {
@@ -28,20 +29,17 @@ export default function AdminHadithsPage() {
 	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 	const [warningZeroActive, setWarningZeroActive] = useState(false);
 
-	// Filters
 	const [searchQuery, setSearchQuery] = useState("");
 	const [activeFilter, setActiveFilter] = useState<"ALL" | "ACTIVE" | "INACTIVE">("ALL");
 	const [page, setPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 	const [totalCount, setTotalCount] = useState(0);
 
-	// Modals
 	const [showCreateModal, setShowCreateModal] = useState(false);
 	const [editingHadith, setEditingHadith] = useState<HadithItem | null>(null);
 	const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 	const [actionLoading, setActionLoading] = useState(false);
 
-	// Form inputs for create/edit
 	const [formText, setFormText] = useState("");
 	const [formSource, setFormSource] = useState("");
 	const [formIsActive, setFormIsActive] = useState(true);
@@ -184,16 +182,10 @@ export default function AdminHadithsPage() {
 
 	return (
 		<div className="space-y-6">
-			{/* Page Header */}
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
-						Konten Hadits & Ayat Shalat
-					</h1>
-					<p className="text-xs text-[#64748B]">
-						Kelola kutipan hadits dan ayat harian yang disisipkan pada pesan adzan WhatsApp.
-					</p>
-				</div>
+			<AdminPageHeader
+				title="Konten Hadits & Ayat Shalat"
+				description="Kelola kutipan hadits dan ayat harian yang disisipkan pada pesan adzan WhatsApp."
+			>
 				<button
 					type="button"
 					onClick={handleOpenCreate}
@@ -202,9 +194,8 @@ export default function AdminHadithsPage() {
 					<Plus className="h-4 w-4" />
 					<span>Tambah Hadits / Ayat</span>
 				</button>
-			</div>
+			</AdminPageHeader>
 
-			{/* Warning 0 Hadits Aktif */}
 			{warningZeroActive && (
 				<div className="flex items-center gap-3 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-xs text-amber-900">
 					<AlertTriangle className="h-5 w-5 shrink-0 text-amber-600" />
@@ -214,11 +205,9 @@ export default function AdminHadithsPage() {
 				</div>
 			)}
 
-			{/* Alert Messages */}
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
-			{/* Filter & Search Bar */}
 			<HaditsFilters
 				searchQuery={searchQuery}
 				activeFilter={activeFilter}
@@ -232,7 +221,6 @@ export default function AdminHadithsPage() {
 				}}
 			/>
 
-			{/* Table Container */}
 			<div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-2xs">
 				<HaditsTable
 					hadiths={hadiths}
@@ -247,7 +235,6 @@ export default function AdminHadithsPage() {
 				/>
 			</div>
 
-			{/* Modals */}
 			<HadithFormModal
 				isOpen={showCreateModal || editingHadith !== null}
 				editingHadith={editingHadith}

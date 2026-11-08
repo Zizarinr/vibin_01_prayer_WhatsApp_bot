@@ -11,6 +11,7 @@ import {
 	SystemDiagnosticsCard,
 	type SystemStatusData,
 } from "../../../components/admin/settings/system-diagnostics-card";
+import { AdminPageHeader } from "../../../components/admin/shared/admin-page-header";
 import { ErrorBanner, SuccessBanner } from "../../../components/admin/shared/alert-banners";
 
 interface SettingsPayload {
@@ -56,7 +57,6 @@ export default function AdminSettingsPage() {
 	const [error, setError] = useState<string | null>(null);
 	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	// Settings State
 	const [sendingEnabled, setSendingEnabled] = useState(true);
 	const [includeHadith, setIncludeHadith] = useState(true);
 	const [reminderEnabled, setReminderEnabled] = useState(true);
@@ -65,10 +65,8 @@ export default function AdminSettingsPage() {
 	const [preReminderMinutes, setPreReminderMinutes] = useState(3);
 	const [lateGraceMinutes, setLateGraceMinutes] = useState(5);
 
-	// Diagnostics
 	const [systemStatus, setSystemStatus] = useState<SystemStatusData | null>(null);
 
-	// Modal Kill-Switch confirmation
 	const [showKillSwitchModal, setShowKillSwitchModal] = useState(false);
 	const [pendingKillSwitchState, setPendingKillSwitchState] = useState(false);
 
@@ -170,16 +168,10 @@ export default function AdminSettingsPage() {
 
 	return (
 		<div className="space-y-6">
-			{/* Page Header */}
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
-						Pengaturan Sistem & Pengiriman
-					</h1>
-					<p className="text-xs text-[#64748B]">
-						Kontrol darurat pengiriman pesan (kill-switch), kebijakan reminder, dan diagnostik server.
-					</p>
-				</div>
+			<AdminPageHeader
+				title="Pengaturan Sistem & Pengiriman"
+				description="Kontrol darurat pengiriman pesan (kill-switch), kebijakan reminder, dan diagnostik server."
+			>
 				<button
 					type="button"
 					onClick={() => loadData()}
@@ -189,9 +181,8 @@ export default function AdminSettingsPage() {
 					<RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
 					<span>Segarkan Status</span>
 				</button>
-			</div>
+			</AdminPageHeader>
 
-			{/* Alert Messages */}
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
@@ -228,7 +219,7 @@ export default function AdminSettingsPage() {
 								onChangeIncludeHadith={setIncludeHadith}
 							/>
 
-							<div className="flex justify-end">
+							<div className="flex justify-end rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-2xs backdrop-blur-md">
 								<button
 									type="submit"
 									disabled={saving}

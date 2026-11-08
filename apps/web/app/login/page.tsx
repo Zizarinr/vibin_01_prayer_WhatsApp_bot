@@ -5,13 +5,15 @@ import {
 	ArrowLeft,
 	Lock,
 	Mail,
-	Moon,
 	ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { DynamicPrayerBackground } from "../../components/landing/dynamic-prayer-background";
+import { UnidaPrayerIcon } from "../../components/shared/unida-prayer-logo";
 import { fetchApi } from "../../lib/api-client";
+import { adminRoute } from "../../lib/admin-path";
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -31,7 +33,7 @@ export default function LoginPage() {
 		});
 
 		if (res.data) {
-			router.push("/admin");
+			router.push(adminRoute("/"));
 		} else if (res.error) {
 			setError(res.error.message);
 		}
@@ -39,25 +41,23 @@ export default function LoginPage() {
 	};
 
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center bg-[#F5F8FC] p-4 sm:p-6">
+		<div className="relative flex min-h-screen flex-col items-center justify-center bg-transparent p-4 sm:p-6">
+			<DynamicPrayerBackground />
+
 			<div className="w-full max-w-md space-y-6">
-				{/* Top Return Link */}
 				<Link
 					href="/"
-					className="inline-flex items-center gap-2 text-xs font-semibold text-[#64748B] hover:text-[#123B6D] transition"
+					className="inline-flex items-center gap-2 rounded-xl bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#102A46] shadow-2xs backdrop-blur-md ring-1 ring-slate-200/80 hover:bg-white hover:text-[#123B6D] transition"
 				>
 					<ArrowLeft className="h-4 w-4" />
 					<span>Kembali ke Beranda Jadwal</span>
 				</Link>
 
-				{/* Card */}
-				<div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-sm space-y-6">
+				<div className="rounded-3xl border border-white/60 bg-white/95 p-6 sm:p-8 shadow-xl backdrop-blur-md space-y-6">
 					<div className="flex flex-col items-center text-center space-y-2">
-						<div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#123B6D] text-white shadow-xs">
-							<Moon className="h-6 w-6 text-[#6BA9D8]" />
-						</div>
-						<h1 className="text-lg font-bold text-[#102A46] sm:text-xl">
-							Portal Administrator UNIDA Prayer
+						<UnidaPrayerIcon size="lg" className="mb-1" />
+						<h1 className="text-xl font-black text-[#102A46]">
+							Portal Administrator UNIDA <span className="text-[#1D5FA7]">Prayer</span>
 						</h1>
 						<p className="text-xs text-[#64748B]">
 							Universitas Darussalam Gontor • Kampus Siman

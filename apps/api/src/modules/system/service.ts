@@ -1,4 +1,5 @@
 import { desc, eq, sql } from "drizzle-orm";
+import { formatInTimeZone } from "date-fns-tz";
 import { config } from "../../core/config";
 import { createLogger } from "../../core/logger";
 import { utcNow } from "../../core/time";
@@ -7,6 +8,7 @@ import { appSettings } from "../../database/schema/appSettings";
 import { scheduledMessages } from "../../database/schema/messages";
 import { messageTargets } from "../../database/schema/targets";
 import { waha } from "../../integrations/waha";
+import { getResolvedSettings } from "../prayer/service";
 
 const logger = createLogger("api");
 
@@ -93,7 +95,6 @@ export async function getReadiness(): Promise<ReadinessStatus> {
 export async function getSystemStatus(): Promise<SystemStatusData> {
 	const now = utcNow();
 
-	// 1. Database
 	let dbStatus = { ok: false, latencyMs: 0 };
 	try {
 		dbStatus = await pingDatabase();
@@ -101,7 +102,6 @@ export async function getSystemStatus(): Promise<SystemStatusData> {
 		dbStatus = { ok: false, latencyMs: 0 };
 	}
 
-	// 2. Worker heartbeat
 	let workerState: "HEALTHY" | "WARNING" | "OFFLINE" = "OFFLINE";
 	let lastHeartbeatAt: string | null = null;
 	let workerId: string | null = null;
@@ -129,7 +129,6 @@ export async function getSystemStatus(): Promise<SystemStatusData> {
 		}
 	}
 
-	// 3. WAHA status
 	let wahaStatusStr = "UNKNOWN";
 	try {
 		const wRes = await waha.sessions.getStatus(config.wahaSession);
@@ -138,8 +137,13 @@ export async function getSystemStatus(): Promise<SystemStatusData> {
 		wahaStatusStr = "OFFLINE";
 	}
 
-	// 4. Message counts
-	const todayDateStr = now.toISOString().slice(0, 10);
+	// prayer_date adalah tanggal lokal (pakai timezone lokasi; fallback UTC bila settings gagal dibaca).
+	let todayDateStr = now.toISOString().slice(0, 10);
+	try {
+		const resolved = await getResolvedSettings();
+		todayDateStr = formatInTimeZone(now, resolved.location.timezone, "yyyy-MM-dd");
+	} catch {
+	}
 	const countsRes = await db
 		.select({
 			todaySent: sql<number>`SUM(CASE WHEN ${scheduledMessages.status} = 'SENT' AND ${scheduledMessages.prayerDate} = ${todayDateStr} THEN 1 ELSE 0 END)`,
@@ -158,7 +162,6 @@ export async function getSystemStatus(): Promise<SystemStatusData> {
 		activeTargets: 0,
 	};
 
-	// Target counts
 	const targetCountsRes = await db
 		.select({
 			total: sql<number>`count(*)`,
@@ -169,7 +172,6 @@ export async function getSystemStatus(): Promise<SystemStatusData> {
 	counts.totalTargets = Number(targetCountsRes[0]?.total ?? 0);
 	counts.activeTargets = Number(targetCountsRes[0]?.active ?? 0);
 
-	// 5. Recent 5 messages
 	const recentRows = await db
 		.select({
 			id: scheduledMessages.id,
