@@ -103,7 +103,7 @@ export function MessagesTable({
 			<div className="overflow-x-auto">
 				<table className="w-full text-left border-collapse text-xs">
 					<thead>
-						<tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-bold text-[#64748B]">
+						<tr className="border-b border-slate-100 bg-slate-50/90 text-[11px] font-bold text-slate-700">
 							<th className="py-3 px-4">Status</th>
 							<th className="py-3 px-4">Waktu & Tipe</th>
 							<th className="py-3 px-4">Target Grup</th>
@@ -122,19 +122,19 @@ export function MessagesTable({
 									<div className="font-bold text-[#102A46]">
 										{formatPrayerName(item.prayerName)}
 									</div>
-									<span className="text-[11px] text-[#64748B]">
+									<span className="text-[11px] font-medium text-slate-600">
 										{item.messageType === "ADHAN" ? "Adzan" : "Pre-Reminder"}
 									</span>
 								</td>
 								<td className="py-3 px-4">
 									<div className="font-semibold text-[#102A46]">{item.targetName}</div>
-									<span className="text-[10px] text-slate-400 font-mono">
+									<span className="text-[10px] text-slate-500 font-mono">
 										{item.targetExternalId}
 									</span>
 								</td>
 								<td className="py-3 px-4">
 									<div className="font-medium text-[#102A46]">{item.prayerDate}</div>
-									<span className="text-[11px] text-[#64748B]">
+									<span className="text-[11px] font-medium text-slate-600">
 										{new Date(item.scheduledAtUtc).toLocaleTimeString("id-ID", {
 											hour: "2-digit",
 											minute: "2-digit",
@@ -193,9 +193,9 @@ export function MessagesTable({
 			</div>
 
 			{totalPages > 1 && (
-				<div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-xs text-[#64748B]">
+				<div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-xs font-medium text-slate-700 bg-slate-50/50">
 					<span>
-						Menampilkan halaman <strong>{page}</strong> dari <strong>{totalPages}</strong> (Total {totalCount} pesan)
+						Menampilkan halaman <strong className="text-[#102A46]">{page}</strong> dari <strong className="text-[#102A46]">{totalPages}</strong> (Total {totalCount} pesan)
 					</span>
 					<div className="flex items-center gap-1.5">
 						<button
