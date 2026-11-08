@@ -41,6 +41,7 @@ Timeout QR: ikuti masa berlaku WAHA; bila kedaluwarsa, minta QR baru (jangan cac
   - Grup yang tak lagi muncul → tandai? Jangan hapus otomatis; tampilkan "tidak terlihat di WAHA" bila perlu (kunci Q-WAHA-02).
 - Jangan auto-kirim ke semua grup hasil sync. Admin eksplisit aktifkan.
 - `POST /test-message`: `{ targetId(db id) }` untuk grup tersimpan ATAU `{ phone }` untuk nomor pribadi (tanpa simpan DB) + `text?` opsional → cek target ada + sesi WORKING + rate-limit → kirim teks uji (default template uji + timestamp). Catat di log, **bukan** di `scheduled_messages` (atau tandai jelas bila dicatat).
+- `POST /test-day/preview|start|status|cancel`: simulasi sehari penuh (pre-reminder + adzan tiap waktu, konten identik generator, tanpa tulis DB). Jeda 3 dtk + acak 1–2 dtk antar pesan; satu run aktif dalam satu waktu; bisa batal mid-run.
 
 ## 7.5 Pengiriman & batas wajar
 

@@ -159,7 +159,7 @@ const PRE_TEMPLATES: [string, string, string] = [
 	`⏰ *Pengingat Sholat — Keluarga Besar UNIDA Gontor*\n\nWaktu *{{prayerName}}* segera tiba dalam *{{minutes}} menit* 🕌\nTinggalkan pekerjaan sejenak dan bersiaplah mengambil wudhu! 💧`,
 ];
 
-function getPrayerDisplayName(prayer: PrayerName, isFriday: boolean): string {
+export function getPrayerDisplayName(prayer: PrayerName, isFriday: boolean): string {
 	if (prayer === "DHUHR" && isFriday) {
 		return "Sholat Jumat";
 	}

@@ -15,6 +15,7 @@ import {
 	type MessageTargetOption,
 	type TestTargetMode,
 } from "../../../components/admin/whatsapp/test-message-card";
+import { DayTestCard } from "../../../components/admin/whatsapp/day-test-card";
 
 export default function WhatsappSessionPage() {
 	const [session, setSession] = useState<WahaSessionInfo | null>(null);
@@ -233,6 +234,13 @@ export default function WhatsappSessionPage() {
 						onPhoneChange={(p) => setPhone(p)}
 						onChangeText={(txt) => setCustomText(txt)}
 						onSendTest={handleSendTestMessage}
+					/>
+
+					<DayTestCard
+						mode={testMode}
+						targetId={selectedTargetId}
+						phone={phone}
+						hasTargets={targets.length > 0}
 					/>
 				</div>
 			)}

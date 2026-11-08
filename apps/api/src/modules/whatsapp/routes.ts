@@ -1,9 +1,21 @@
 import { type ErrorCode, fail, ok } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
 import { WahaError } from "../../integrations/waha";
+import {
+	cancelDayTestRun,
+	getDayTestRun,
+	previewDayTest,
+	startDayTestRun,
+} from "../messages/testday";
 import { requireAdminAuth } from "../auth/guard";
 import { AuthError } from "../auth/service";
-import { testMessageSchema } from "./schema";
+import {
+	testDayCancelSchema,
+	testDayStartSchema,
+	testDayStatusQuerySchema,
+	testDayTargetSchema,
+	testMessageSchema,
+} from "./schema";
 import {
 	fetchQrCode,
 	fetchSessionStatus,
@@ -71,4 +83,58 @@ export const whatsappRoutes = new Elysia({ prefix: "/api/admin/whatsapp" })
 	.post("/groups/sync", async () => {
 		const data = await syncGroups();
 		return ok(data);
-	});
+	})
+	.post(
+		"/test-day/preview",
+		async ({ body }) => {
+			const data = await previewDayTest({ targetId: body.targetId, phone: body.phone });
+			return ok(data);
+		},
+		{
+			body: testDayTargetSchema,
+		},
+	)
+	.post(
+		"/test-day/start",
+		async ({ body }) => {
+			const data = await startDayTestRun({
+				targetId: body.targetId,
+				phone: body.phone,
+				indexes: body.indexes,
+				delayBaseMs: body.delayBaseMs,
+				delayJitterMs: body.delayJitterMs,
+			});
+			return ok(data);
+		},
+		{
+			body: testDayStartSchema,
+		},
+	)
+	.get(
+		"/test-day/status",
+		async ({ query }) => {
+			const run = getDayTestRun(query.runId);
+			return ok({
+				runId: run.runId,
+				status: run.status,
+				total: run.messages.length,
+				sent: run.sent,
+				failed: run.failed,
+				target: run.target.displayName,
+				results: run.results,
+			});
+		},
+		{
+			query: testDayStatusQuerySchema,
+		},
+	)
+	.post(
+		"/test-day/cancel",
+		async ({ body }) => {
+			const run = cancelDayTestRun(body.runId);
+			return ok({ runId: run.runId, status: run.status });
+		},
+		{
+			body: testDayCancelSchema,
+		},
+	);

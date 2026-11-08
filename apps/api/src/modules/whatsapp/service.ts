@@ -8,13 +8,13 @@ import {
 	getSessionStatus,
 	listGroups,
 	logoutSession,
-	normalizePhoneToChatId,
 	restartSession,
 	sendTextMessage,
 	startSession,
 	stopSession,
 	WahaError,
 } from "../../integrations/waha";
+import { resolveDayTestTarget } from "../messages/testday";
 
 export async function fetchSessionStatus() {
 	return await getSessionStatus();
@@ -50,28 +50,9 @@ export async function sendTestMessage(
 	let chatId: string;
 	let displayName: string;
 
-	if (target.targetId != null) {
-		const [row] = await db
-			.select()
-			.from(messageTargets)
-			.where(eq(messageTargets.id, target.targetId));
-
-		if (!row) {
-			throw new WahaError("Target grup tidak ditemukan di database.", 404, "TARGET_NOT_FOUND");
-		}
-		chatId = row.targetId;
-		displayName = row.name;
-	} else if (target.phone?.trim()) {
-		// Mode pribadi: kirim langsung ke nomor tanpa simpan ke database.
-		chatId = normalizePhoneToChatId(target.phone);
-		displayName = chatId;
-	} else {
-		throw new WahaError(
-			"Pilih grup tersimpan atau isi nomor HP pribadi.",
-			400,
-			"VALIDATION_ERROR",
-		);
-	}
+	const resolved = await resolveDayTestTarget({ targetId: target.targetId, phone: target.phone });
+	chatId = resolved.chatId;
+	displayName = resolved.displayName;
 
 	const session = await getSessionStatus();
 	if (session.status !== "WORKING") {
