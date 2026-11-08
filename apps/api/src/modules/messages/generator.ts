@@ -8,6 +8,7 @@ import { PRAYER_NAMES, type PrayerName } from "@unida-prayer/shared";
 import { addDays } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { and, eq, gt, inArray, sql } from "drizzle-orm";
+import { config } from "../../core/config";
 import { createLogger } from "../../core/logger";
 import { utcNow } from "../../core/time";
 import { db } from "../../database/client";
@@ -150,6 +151,7 @@ export async function generateHorizonMessages(
 						gregorian: gregorianStr,
 						isFriday: timesResult.isFriday,
 						minutes: preMinutes,
+						detailUrl: config.webUrl,
 					});
 
 					jobsToInsert.push({
@@ -198,6 +200,7 @@ export async function generateHorizonMessages(
 						gregorian: gregorianStr,
 						isFriday: timesResult.isFriday,
 						hadith: selectedHadith,
+						detailUrl: config.webUrl,
 					});
 
 					jobsToInsert.push({

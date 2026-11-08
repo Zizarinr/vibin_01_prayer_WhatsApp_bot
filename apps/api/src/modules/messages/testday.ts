@@ -7,6 +7,7 @@ import {
 import { PRAYER_NAMES, type PrayerName } from "@unida-prayer/shared";
 import { formatInTimeZone } from "date-fns-tz";
 import { eq } from "drizzle-orm";
+import { config } from "../../core/config";
 import { createLogger } from "../../core/logger";
 import { utcNow } from "../../core/time";
 import { db } from "../../database/client";
@@ -138,6 +139,7 @@ export function buildDayTestMessages(input: BuildDayInput): DayTestMessage[] {
 				gregorian: gregorianStr,
 				isFriday: timesResult.isFriday,
 				minutes: preMinutes,
+				detailUrl: config.webUrl,
 			});
 			messages.push({
 				seq: messages.length,
@@ -170,6 +172,7 @@ export function buildDayTestMessages(input: BuildDayInput): DayTestMessage[] {
 				gregorian: gregorianStr,
 				isFriday: timesResult.isFriday,
 				hadith: selectedHadith,
+				detailUrl: config.webUrl,
 			});
 			messages.push({
 				seq: messages.length,
