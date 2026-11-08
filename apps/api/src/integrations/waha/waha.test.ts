@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { sendTextMessage } from "./messages";
 import { WahaError } from "./types";
 
 describe("apps/api/integrations/waha", () => {
@@ -27,5 +28,53 @@ describe("apps/api/integrations/waha", () => {
 		);
 		expect(rateErr.statusCode).toBe(429);
 		expect(rateErr.code).toBe("RATE_LIMITED");
+	});
+
+	it("mengirim payload dengan linkPreview: true secara default", async () => {
+		const originalFetch = globalThis.fetch;
+		let capturedBody: { linkPreview?: boolean; chatId?: string } | undefined;
+		globalThis.fetch = (async (_url: string | URL | Request, init?: RequestInit) => {
+			capturedBody = JSON.parse(init?.body as string);
+			return new Response(JSON.stringify({ id: "msg_123", timestamp: 12345 }), {
+				status: 200,
+				headers: { "Content-Type": "application/json" },
+			});
+		}) as typeof fetch;
+
+		try {
+			const res = await sendTextMessage({
+				chatId: "12036301@g.us",
+				text: "Jadwal: https://prayer.unida.gontor.ac.id",
+			});
+			expect(res.id).toBe("msg_123");
+			expect(capturedBody?.linkPreview).toBe(true);
+			expect(capturedBody?.chatId).toBe("12036301@g.us");
+		} finally {
+			globalThis.fetch = originalFetch;
+		}
+	});
+
+	it("menghormati linkPreview: false bila ditentukan secara eksplisit", async () => {
+		const originalFetch = globalThis.fetch;
+		let capturedBody: { linkPreview?: boolean; chatId?: string } | undefined;
+		globalThis.fetch = (async (_url: string | URL | Request, init?: RequestInit) => {
+			capturedBody = JSON.parse(init?.body as string);
+			return new Response(JSON.stringify({ id: "msg_124" }), {
+				status: 200,
+				headers: { "Content-Type": "application/json" },
+			});
+		}) as typeof fetch;
+
+		try {
+			const res = await sendTextMessage({
+				chatId: "12036301@g.us",
+				text: "Jadwal tanpa preview",
+				linkPreview: false,
+			});
+			expect(res.id).toBe("msg_124");
+			expect(capturedBody?.linkPreview).toBe(false);
+		} finally {
+			globalThis.fetch = originalFetch;
+		}
 	});
 });
