@@ -63,7 +63,7 @@ _UNIDA Prayer System V2.0_`;
 					<button
 						type="button"
 						onClick={handleCopySchedule}
-						className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 hover:text-[#123B6D] transition"
+						className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/90 bg-white/95 backdrop-blur-xs px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 hover:text-[#123B6D] transition"
 						title="Salin ringkasan jadwal untuk dibagikan ke WhatsApp"
 					>
 						{copied ? (
@@ -83,7 +83,7 @@ _UNIDA Prayer System V2.0_`;
 						type="button"
 						onClick={onRefresh}
 						disabled={refreshing}
-						className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200/80 bg-blue-50/50 px-2.5 py-1 text-xs font-semibold text-[#1D5FA7] hover:bg-blue-100/50 transition disabled:opacity-50"
+						className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200/90 bg-white/95 backdrop-blur-xs px-2.5 py-1 text-xs font-semibold text-[#1D5FA7] hover:bg-blue-50 transition disabled:opacity-50"
 					>
 						<RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
 						<span>Segarkan</span>

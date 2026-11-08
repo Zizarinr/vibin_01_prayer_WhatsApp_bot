@@ -27,3 +27,6 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 .DS_Store
+
+# MCP & Playwright local runtime
+.playwright-mcp/

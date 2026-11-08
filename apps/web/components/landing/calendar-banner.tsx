@@ -13,7 +13,7 @@ export function CalendarBanner({
 	hijri,
 }: CalendarBannerProps) {
 	return (
-		<div className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200/80 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+		<div className="flex flex-col gap-3 rounded-2xl bg-white/95 backdrop-blur-md p-4 shadow-sm ring-1 ring-slate-200/80 sm:flex-row sm:items-center sm:justify-between sm:p-5">
 			<div className="flex items-center gap-3">
 				<div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#1D5FA7]">
 					<MapPin className="h-5 w-5" />

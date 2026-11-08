@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CalendarBanner } from "../components/landing/calendar-banner";
+import { DynamicPrayerBackground } from "../components/landing/dynamic-prayer-background";
 import { ErrorState } from "../components/landing/error-state";
 import { Footer } from "../components/landing/footer";
 import { Header } from "../components/landing/header";
@@ -128,7 +129,14 @@ export default function HomePage() {
 	);
 
 	return (
-		<div className="flex min-h-screen flex-col bg-[#F5F8FC]">
+		<div className="relative flex min-h-screen flex-col bg-transparent">
+			{/* Dynamic Time-of-Day Background (Subuh, Dzuhur, Ashar, Maghrib, Isya) */}
+			<DynamicPrayerBackground
+				data={data}
+				now={now}
+				serverSkewMs={serverSkewMs}
+			/>
+
 			{/* Header Navigasi & Live Clock */}
 			<Header liveTimeString={liveTimeString} />
 
