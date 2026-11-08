@@ -58,7 +58,10 @@ export const whatsappRoutes = new Elysia({ prefix: "/api/admin/whatsapp" })
 	.post(
 		"/test-message",
 		async ({ body }) => {
-			const data = await sendTestMessage(body.targetId, body.text);
+			const data = await sendTestMessage(
+			{ targetId: body.targetId, phone: body.phone },
+			body.text,
+		);
 			return ok(data);
 		},
 		{

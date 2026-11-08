@@ -8,6 +8,7 @@ import {
 	getSessionStatus,
 	listGroups,
 	logoutSession,
+	normalizePhoneToChatId,
 	restartSession,
 	sendTextMessage,
 	startSession,
@@ -42,14 +43,34 @@ export async function fetchQrCode() {
 	return await getSessionQr();
 }
 
-export async function sendTestMessage(targetId: number, customText?: string) {
-	const [target] = await db
-		.select()
-		.from(messageTargets)
-		.where(eq(messageTargets.id, targetId));
+export async function sendTestMessage(
+	target: { targetId?: number; phone?: string },
+	customText?: string,
+) {
+	let chatId: string;
+	let displayName: string;
 
-	if (!target) {
-		throw new WahaError("Target grup tidak ditemukan di database.", 404, "TARGET_NOT_FOUND");
+	if (target.targetId != null) {
+		const [row] = await db
+			.select()
+			.from(messageTargets)
+			.where(eq(messageTargets.id, target.targetId));
+
+		if (!row) {
+			throw new WahaError("Target grup tidak ditemukan di database.", 404, "TARGET_NOT_FOUND");
+		}
+		chatId = row.targetId;
+		displayName = row.name;
+	} else if (target.phone?.trim()) {
+		// Mode pribadi: kirim langsung ke nomor tanpa simpan ke database.
+		chatId = normalizePhoneToChatId(target.phone);
+		displayName = chatId;
+	} else {
+		throw new WahaError(
+			"Pilih grup tersimpan atau isi nomor HP pribadi.",
+			400,
+			"VALIDATION_ERROR",
+		);
 	}
 
 	const session = await getSessionStatus();
@@ -79,14 +100,14 @@ export async function sendTestMessage(targetId: number, customText?: string) {
 		`🧪 *Uji Coba Pengiriman UNIDA Prayer*\n\nPesan uji coba ini dikirim oleh Administrator sistem untuk memastikan integrasi bot WhatsApp berjalan dengan baik.\n\n📅 Waktu uji: ${nowWib}`;
 
 	const result = await sendTextMessage({
-		chatId: target.targetId,
+		chatId,
 		text,
 	});
 
 	return {
 		success: true,
-		targetName: target.name,
-		targetId: target.targetId,
+		target: displayName,
+		targetId: chatId,
 		messageId: result.id,
 	};
 }

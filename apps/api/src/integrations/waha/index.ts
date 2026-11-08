@@ -5,6 +5,7 @@ import * as sessions from "./sessions";
 export * from "./client";
 export * from "./groups";
 export * from "./messages";
+export * from "./phone";
 export * from "./sessions";
 export * from "./types";
 export * from "./webhooks";

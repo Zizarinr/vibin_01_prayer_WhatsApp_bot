@@ -13,6 +13,7 @@ import {
 import {
 	TestMessageCard,
 	type MessageTargetOption,
+	type TestTargetMode,
 } from "../../../components/admin/whatsapp/test-message-card";
 
 export default function WhatsappSessionPage() {
@@ -30,6 +31,8 @@ export default function WhatsappSessionPage() {
 	// Test Message state
 	const [targets, setTargets] = useState<MessageTargetOption[]>([]);
 	const [selectedTargetId, setSelectedTargetId] = useState<number | null>(null);
+	const [testMode, setTestMode] = useState<TestTargetMode>("GROUP");
+	const [phone, setPhone] = useState("");
 	const [customText, setCustomText] = useState("");
 	const [sendingTest, setSendingTest] = useState(false);
 	const [testResult, setTestResult] = useState<string | null>(null);
@@ -140,7 +143,8 @@ export default function WhatsappSessionPage() {
 
 	const handleSendTestMessage = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!selectedTargetId) return;
+		if (testMode === "GROUP" && selectedTargetId === null) return;
+		if (testMode === "PERSONAL" && phone.trim().length === 0) return;
 
 		setSendingTest(true);
 		setTestResult(null);
@@ -151,7 +155,9 @@ export default function WhatsappSessionPage() {
 			{
 				method: "POST",
 				body: JSON.stringify({
-					targetId: selectedTargetId,
+					...(testMode === "GROUP"
+						? { targetId: selectedTargetId }
+						: { phone: phone.trim() }),
 					text: customText.trim() || undefined,
 				}),
 			},
@@ -217,10 +223,14 @@ export default function WhatsappSessionPage() {
 					<TestMessageCard
 						targets={targets}
 						selectedTargetId={selectedTargetId}
+						mode={testMode}
+						phone={phone}
 						customText={customText}
 						sendingTest={sendingTest}
 						testResult={testResult}
 						onSelectTarget={(id) => setSelectedTargetId(id)}
+						onModeChange={(m) => setTestMode(m)}
+						onPhoneChange={(p) => setPhone(p)}
 						onChangeText={(txt) => setCustomText(txt)}
 						onSendTest={handleSendTestMessage}
 					/>

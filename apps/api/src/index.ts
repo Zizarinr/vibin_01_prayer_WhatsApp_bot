@@ -1,8 +1,9 @@
 import cors from "@elysiajs/cors";
-import { fail } from "@unida-prayer/shared";
+import { type ErrorCode, fail } from "@unida-prayer/shared";
 import { Elysia } from "elysia";
 import { config } from "./core/config";
 import { createLogger } from "./core/logger";
+import { WahaError } from "./integrations/waha";
 import { authRoutes } from "./modules/auth/routes";
 import { hadithsRoutes } from "./modules/hadiths/routes";
 import { messagesRoutes } from "./modules/messages/routes";
@@ -25,6 +26,9 @@ const app = new Elysia()
 	)
 	.onError(({ code, error, status }) => {
 		// Jangan bocorkan stack trace / detail internal ke klien.
+		if (error instanceof WahaError) {
+			return status(error.statusCode, fail(error.code as ErrorCode, error.message));
+		}
 		if (code === "NOT_FOUND") {
 			return status(404, fail("NOT_FOUND", "Endpoint tidak ditemukan."));
 		}

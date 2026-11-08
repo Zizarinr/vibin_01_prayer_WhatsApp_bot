@@ -6,9 +6,39 @@ import type { WahaGroup } from "./types";
 const logger = createLogger("waha-groups");
 
 interface RawGroupItem {
-	id: string | { _serialized: string; user?: string };
+	id?: string | { _serialized?: string; user?: string };
 	name?: string;
 	subject?: string;
+	// Bentuk respons engine GOWS (huruf kapital, lihat image pin gows-2026.10.1).
+	JID?: string;
+	Name?: string;
+}
+
+/**
+ * Normalisasi daftar grup mentah WAHA ke {id, name}.
+ * Mendukung dua bentuk respons:
+ * - Klasik: {id, name|subject} (huruf kecil).
+ * - Engine GOWS: {JID, Name} (huruf kapital).
+ * Entri tanpa id valid dibuang (bukan "undefined" string).
+ */
+export function normalizeGroups(raw: unknown): WahaGroup[] {
+	if (!Array.isArray(raw)) {
+		logger.warn("WAHA mengembalikan respons grup non-array.", { rawGroups: raw });
+		return [];
+	}
+
+	const groups: WahaGroup[] = [];
+	for (const item of raw as RawGroupItem[]) {
+		const rawId = item?.id;
+		const id =
+			typeof rawId === "string"
+				? rawId
+				: (rawId?._serialized ?? item?.JID ?? "");
+		const name = item?.name || item?.subject || item?.Name || id;
+		if (!id || id === "undefined") continue;
+		groups.push({ id, name });
+	}
+	return groups;
 }
 
 export async function listGroups(
@@ -20,17 +50,5 @@ export async function listGroups(
 		`/api/${sessionName}/groups`,
 	);
 
-	if (!Array.isArray(rawGroups)) {
-		logger.warn("WAHA mengembalikan respons grup non-array.", { rawGroups });
-		return [];
-	}
-
-	return rawGroups.map((item) => {
-		const id =
-			typeof item.id === "string"
-				? item.id
-				: (item.id?._serialized || String(item.id));
-		const name = item.name || item.subject || id;
-		return { id, name };
-	});
+	return normalizeGroups(rawGroups);
 }
