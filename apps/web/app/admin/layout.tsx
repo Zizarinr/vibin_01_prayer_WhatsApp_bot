@@ -19,6 +19,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { UnidaPrayerLogo } from "../../components/shared/unida-prayer-logo";
 import { fetchApi } from "../../lib/api-client";
+import { adminRoute, LOGIN_ROUTE } from "../../lib/admin-path";
 
 interface AdminProfile {
 	id: number;
@@ -50,7 +51,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 			if (res.data) {
 				setAdmin(res.data);
 			} else {
-				router.push("/login");
+				router.push(LOGIN_ROUTE);
 				return;
 			}
 			setAuthChecked(true);
@@ -63,43 +64,43 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
 	const handleLogout = async () => {
 		await fetchApi("/api/auth/logout", { method: "POST" });
-		router.push("/login");
+		router.push(LOGIN_ROUTE);
 	};
 
 	const navItems = [
 		{
 			label: "Dashboard Utama",
-			href: "/admin",
+			href: adminRoute("/"),
 			icon: <LayoutDashboard className="h-4 w-4" />,
 		},
 		{
 			label: "WhatsApp Sesi",
-			href: "/admin/whatsapp",
+			href: adminRoute("/whatsapp"),
 			icon: <Radio className="h-4 w-4" />,
 		},
 		{
 			label: "Grup & Target",
-			href: "/admin/targets",
+			href: adminRoute("/targets"),
 			icon: <Users className="h-4 w-4" />,
 		},
 		{
 			label: "Jadwal & Hisab",
-			href: "/admin/prayer",
+			href: adminRoute("/prayer"),
 			icon: <Calendar className="h-4 w-4" />,
 		},
 		{
 			label: "Riwayat Kirim",
-			href: "/admin/messages",
+			href: adminRoute("/messages"),
 			icon: <MessageSquare className="h-4 w-4" />,
 		},
 		{
 			label: "Konten Hadits",
-			href: "/admin/hadits",
+			href: adminRoute("/hadits"),
 			icon: <BookOpen className="h-4 w-4" />,
 		},
 		{
 			label: "Pengaturan Sistem",
-			href: "/admin/settings",
+			href: adminRoute("/settings"),
 			icon: <Settings className="h-4 w-4" />,
 		},
 	];
@@ -116,7 +117,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 		<div className="flex min-h-screen flex-col bg-[#F5F8FC] lg:flex-row">
 			{/* Mobile Top Navigation Bar */}
 			<header className="sticky top-0 z-40 flex items-center justify-between border-b border-blue-100/80 bg-white/95 px-4 py-3 backdrop-blur-md lg:hidden">
-				<UnidaPrayerLogo href="/admin" size="xs" showBadge={false} />
+				<UnidaPrayerLogo href={adminRoute("/")} size="xs" showBadge={false} />
 
 				<button
 					type="button"
@@ -144,7 +145,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 					>
 						<div>
 							<div className="flex items-center justify-between border-b border-slate-100 pb-4">
-								<UnidaPrayerLogo href="/admin" size="xs" showBadge />
+								<UnidaPrayerLogo href={adminRoute("/")} size="xs" showBadge />
 								<button
 									type="button"
 									onClick={() => setMobileMenuOpen(false)}
@@ -218,7 +219,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 			<aside className="hidden w-64 shrink-0 border-r border-blue-100/80 bg-white lg:flex lg:flex-col lg:justify-between lg:p-6 min-h-screen sticky top-0">
 				<div>
 					{/* Logo / Header */}
-					<UnidaPrayerLogo href="/admin" size="sm" showBadge />
+					<UnidaPrayerLogo href={adminRoute("/")} size="sm" showBadge />
 
 					{/* Navigation Links */}
 					<nav className="mt-8 space-y-1.5">

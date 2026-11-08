@@ -1,5 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import { adminRoute } from "../../../lib/admin-path";
 
 interface AttentionBannerProps {
 	failedCount: number;
@@ -20,7 +21,7 @@ export function AttentionBanner({ failedCount, unknownCount }: AttentionBannerPr
 				</div>
 			</div>
 			<Link
-				href="/admin/messages?status=FAILED"
+				href={adminRoute("/messages?status=FAILED")}
 				className="shrink-0 rounded-xl bg-amber-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-amber-700 transition"
 			>
 				Tinjau Antrean

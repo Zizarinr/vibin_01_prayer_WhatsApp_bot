@@ -1,5 +1,6 @@
 import { MessageSquare, Radio, Server, Users } from "lucide-react";
 import Link from "next/link";
+import { adminRoute } from "../../../lib/admin-path";
 import { WahaStatusBadge, WorkerStatusBadge } from "../shared/status-badges";
 
 export interface SystemStatusData {
@@ -51,7 +52,7 @@ export function MetricsGrid({ statusData }: MetricsGridProps) {
 				<div className="mt-3 flex items-baseline justify-between">
 					<WahaStatusBadge status={statusData?.waha.status || "Memuat..."} />
 					<Link
-						href="/admin/whatsapp"
+						href={adminRoute("/whatsapp")}
 						className="text-[11px] font-semibold text-[#1D5FA7] hover:underline"
 					>
 						Kelola Sesi &rarr;

@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { UnidaPrayerIcon } from "../../components/shared/unida-prayer-logo";
 import { fetchApi } from "../../lib/api-client";
+import { adminRoute } from "../../lib/admin-path";
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -31,7 +32,7 @@ export default function LoginPage() {
 		});
 
 		if (res.data) {
-			router.push("/admin");
+			router.push(adminRoute("/"));
 		} else if (res.error) {
 			setError(res.error.message);
 		}

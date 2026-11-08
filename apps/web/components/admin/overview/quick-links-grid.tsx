@@ -8,12 +8,13 @@ import {
 	Users,
 } from "lucide-react";
 import Link from "next/link";
+import { adminRoute } from "../../../lib/admin-path";
 
 export function QuickLinksGrid() {
 	return (
 		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			<Link
-				href="/admin/whatsapp"
+				href={adminRoute("/whatsapp")}
 				className="group rounded-3xl border border-blue-100 bg-white p-5 shadow-xs hover:border-[#1D5FA7] hover:shadow-md transition"
 			>
 				<div className="flex items-center justify-between">
@@ -29,7 +30,7 @@ export function QuickLinksGrid() {
 			</Link>
 
 			<Link
-				href="/admin/targets"
+				href={adminRoute("/targets")}
 				className="group rounded-3xl border border-blue-100 bg-white p-5 shadow-xs hover:border-[#1D5FA7] hover:shadow-md transition"
 			>
 				<div className="flex items-center justify-between">
@@ -45,7 +46,7 @@ export function QuickLinksGrid() {
 			</Link>
 
 			<Link
-				href="/admin/prayer"
+				href={adminRoute("/prayer")}
 				className="group rounded-3xl border border-blue-100 bg-white p-5 shadow-xs hover:border-[#1D5FA7] hover:shadow-md transition"
 			>
 				<div className="flex items-center justify-between">
@@ -61,7 +62,7 @@ export function QuickLinksGrid() {
 			</Link>
 
 			<Link
-				href="/admin/messages"
+				href={adminRoute("/messages")}
 				className="group rounded-3xl border border-blue-100 bg-white p-5 shadow-xs hover:border-[#1D5FA7] hover:shadow-md transition"
 			>
 				<div className="flex items-center justify-between">
@@ -77,7 +78,7 @@ export function QuickLinksGrid() {
 			</Link>
 
 			<Link
-				href="/admin/hadits"
+				href={adminRoute("/hadits")}
 				className="group rounded-3xl border border-blue-100 bg-white p-5 shadow-xs hover:border-[#1D5FA7] hover:shadow-md transition"
 			>
 				<div className="flex items-center justify-between">
@@ -93,7 +94,7 @@ export function QuickLinksGrid() {
 			</Link>
 
 			<Link
-				href="/admin/settings"
+				href={adminRoute("/settings")}
 				className="group rounded-3xl border border-blue-100 bg-white p-5 shadow-xs hover:border-[#1D5FA7] hover:shadow-md transition"
 			>
 				<div className="flex items-center justify-between">

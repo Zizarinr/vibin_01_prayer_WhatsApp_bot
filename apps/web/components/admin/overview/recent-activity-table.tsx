@@ -1,5 +1,6 @@
 import { Activity } from "lucide-react";
 import Link from "next/link";
+import { adminRoute } from "../../../lib/admin-path";
 import { MessageStatusBadge } from "../shared/status-badges";
 import type { SystemStatusData } from "./metrics-grid";
 
@@ -35,7 +36,7 @@ export function RecentActivityTable({ recent }: RecentActivityTableProps) {
 					</h2>
 				</div>
 				<Link
-					href="/admin/messages"
+					href={adminRoute("/messages")}
 					className="text-xs font-semibold text-[#1D5FA7] hover:underline"
 				>
 					Lihat Seluruh Riwayat &rarr;

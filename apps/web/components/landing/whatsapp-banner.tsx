@@ -1,5 +1,4 @@
-import { ChevronRight, Send } from "lucide-react";
-import Link from "next/link";
+import { CheckCircle2, Send } from "lucide-react";
 
 export function WhatsappBanner() {
 	return (
@@ -24,13 +23,10 @@ export function WhatsappBanner() {
 					</div>
 				</div>
 
-				<Link
-					href="/login"
-					className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#123B6D] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#1D5FA7]"
-				>
-					<span>Kelola Grup & Jadwal</span>
-					<ChevronRight className="h-4 w-4" />
-				</Link>
+				<div className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-50/80 px-4 py-2.5 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-200">
+					<CheckCircle2 className="h-4 w-4 text-emerald-600" />
+					<span>Terkoneksi Grup Kampus</span>
+				</div>
 			</div>
 		</div>
 	);
