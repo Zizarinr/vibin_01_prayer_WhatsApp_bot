@@ -14,6 +14,32 @@ jobs:
   check:
     name: Typecheck, Lint, Test & Build
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: Root_Test123!
+          MYSQL_DATABASE: unida_prayer
+          MYSQL_USER: unida_prayer
+          MYSQL_PASSWORD: UnidaPrayer_Test123!
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u root -pRoot_Test123!"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      NODE_ENV: test
+      APP_SECRET: test-secret-min-32-chars-for-ci-1234567890
+      DATABASE_URL: mysql://unida_prayer:UnidaPrayer_Test123!@127.0.0.1:3306/unida_prayer
+      WAHA_BASE_URL: http://127.0.0.1:3008
+      WAHA_API_KEY: ci-dummy
+      WAHA_SESSION: unida-prayer
+      WEB_URL: http://localhost:3000
+      CORS_ORIGINS: http://localhost:3000
+      INTERNAL_API_URL: http://127.0.0.1:3001
+      NEXT_PUBLIC_ADMIN_PATH: /admin
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -31,6 +57,9 @@ jobs:
 
       - name: Lint (oxlint)
         run: bun run lint
+
+      - name: Migrate Test DB
+        run: bun run db:migrate
 
       - name: Run Tests
         run: bun run test
