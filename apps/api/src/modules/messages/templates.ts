@@ -19,6 +19,22 @@ export interface RenderedMessage {
 	contentRef: string;
 }
 
+/**
+ * Versi generator template pesan. Naikkan setiap kali isi template berubah
+ * agar `cancelStaleTemplatePending()` dapat mengenali snapshot basi.
+ * Aturan: ubah template → bump versi + sesuaikan `isStaleTemplateBody()`.
+ */
+export const TEMPLATE_VERSION = 2;
+
+/** Penanda wajib di body baru: baris tanggal Masehi `📆 ...`. Snapshot lama tidak memilikinya. */
+export const TEMPLATE_BODY_MARKER = "📆";
+
+/** True bila body snapshot berasal dari template lama (tanpa penanda versi kini). */
+export function isStaleTemplateBody(body: string | null | undefined): boolean {
+	if (!body) return true;
+	return !body.includes(TEMPLATE_BODY_MARKER);
+}
+
 const INDO_MONTHS = [
 	"Januari",
 	"Februari",

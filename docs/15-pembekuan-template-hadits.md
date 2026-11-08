@@ -92,3 +92,8 @@ _"<text>"_
 - [x] Sapaan "Keluarga Besar dan Civitas Akademika UNIDA Gontor" disetujui
 - [x] Footer Jumat §15.3 disetujui
 - [x] Seed hadits final: **pertahankan 10 item**; item #9 (QS) memakai header "Ayat Hari Ini"
+
+## 15.7 Aturan perubahan template berikutnya
+
+- Naikkan `TEMPLATE_VERSION` di `apps/api/src/modules/messages/templates.ts` + sesuaikan `isStaleTemplateBody()` agar snapshot lama otomatis dibatalkan dan diregenerasi (`cancelStaleTemplatePending()` + `reviveRegeneratedRows()` di generator).
+- `CANCELLED` manual admin tidak dibangkitkan otomatis; `SENT/FAILED` tidak pernah disentuh.

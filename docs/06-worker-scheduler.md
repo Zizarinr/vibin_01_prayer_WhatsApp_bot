@@ -21,6 +21,10 @@ Untuk tiap `date` dalam horizon × tiap target aktif × tiap kombinasi aktif (pr
 3. Render `message_body` snapshot + `content_ref` (hadits/template). Hadits diambil dari tabel `hadiths` (`is_active=true`, acak, hindari `content_ref` terakhir untuk anti-repeat); bila 0 aktif / `includeHadith=false` → pesan tanpa hadits.
 4. `idempotency_key = sha256(prayer_date|prayer_name|message_type|targetDbId)`.
 5. `INSERT ... ON DUPLICATE KEY UPDATE nothing` (atau `INSERT IGNORE`). **Jangan overwrite `SENT/FAILED`.**
+   Baris `CANCELLED` non-manual yang kuncinya diregenerasi dihidupkan ulang segar
+   (`reviveRegeneratedRows`): tanpa ini horizon yang pernah dibatalkan recalculate
+   tidak akan terisi lagi karena INSERT IGNORE tidak menimpa duplikat.
+   `CANCELLED` manual admin tidak dibangkitkan.
 
 Aturan:
 - Target nonaktif → jangan buat job baru. Job PENDING milik target yang baru dinonaktifkan → `CANCELLED` saat regenerasi/sync (jangan kirim).
@@ -90,6 +94,11 @@ stateDiagram-v2
 - Admin ubah lokasi/timezone/metode/koreksi/pre-menit/toggle → `PATCH /settings` sukses → panggil `regenerateFuturePending()` (sync kecil atau job internal; kunci Q-API-01).
 - Target dinonaktifkan → `CANCELLED`kan `PENDING` masa depan milik target itu.
 - Target diaktifkan → generator akan membuat job ke depan (jangan buat job masa lalu).
+  Baris `CANCELLED` non-manual yang kuncinya diregenerasi dihidupkan ulang segar
+  (kecuali `CANCELLED` manual admin) — reaktivasi target otomatis mengisi horizon lagi.
+- Template pesan berubah → naikkan `TEMPLATE_VERSION` di `templates.ts` + sesuaikan
+  `isStaleTemplateBody()`. Tiap tick generator membatalkan `PENDING` masa depan yang
+  basi (`cancelStaleTemplatePending()`) lalu meregenerasinya segar — tanpa recalculate manual.
 
 ## 6.7 Observabilitas worker
 

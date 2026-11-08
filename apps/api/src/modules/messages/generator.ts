@@ -24,7 +24,10 @@ import {
 	formatIndonesianDate,
 	renderAdhanMessage,
 	renderPreReminderMessage,
+	TEMPLATE_BODY_MARKER,
+	TEMPLATE_VERSION,
 } from "./templates";
+import { MANUAL_CANCEL_PREFIX } from "./service";
 
 const logger = createLogger("generator");
 
@@ -36,6 +39,83 @@ export function computeIdempotencyKey(
 ): string {
 	const raw = `${prayerDate}|${prayerName}|${messageType}|${targetDbId}`;
 	return crypto.createHash("sha256").update(raw).digest("hex");
+}
+
+/**
+ * Batalkan PENDING masa depan yang body-nya memakai template lama (tanpa
+ * penanda `TEMPLATE_BODY_MARKER`). Tanpa ini, snapshot basi tetap terkirim
+ * karena generator tidak pernah menimpa baris yang sudah ada.
+ * Pembatalan manual admin tidak disentuh (tidak mungkin basi-di-sweep karena
+ * statusnya sudah CANCELLED, bukan PENDING).
+ */
+export async function cancelStaleTemplatePending(now = utcNow()): Promise<number> {
+	const result = await db
+		.update(scheduledMessages)
+		.set({
+			status: "CANCELLED",
+			lastError: `Dibatalkan otomatis: template pesan kedaluwarsa (tersedia v${TEMPLATE_VERSION}).`,
+			updatedAt: now,
+		})
+		.where(
+			and(
+				eq(scheduledMessages.status, "PENDING"),
+				gt(scheduledMessages.scheduledAtUtc, now),
+				sql`${scheduledMessages.messageBody} NOT LIKE ${`%${TEMPLATE_BODY_MARKER}%`}`,
+			),
+		);
+
+	return Number((result as unknown as { affectedRows?: unknown })?.affectedRows ?? 0);
+}
+
+/**
+ * Hidupkan ulang baris CANCELLED yang kuncinya diregenerasi (mis. pasca
+ * recalculate atau sweep template basi) menjadi PENDING segar.
+ * INSERT IGNORE tidak menimpa duplikat, sehingga tanpa langkah ini horizon
+ * yang pernah dibatalkan tidak akan terisi lagi (antrean mati).
+ * Yang dikecualikan: CANCELLED manual admin (`MANUAL_CANCEL_PREFIX`) —
+ * itu penonaktifan sengaja per pesan dan tidak boleh bangkit otomatis.
+ * SENT / FAILED / PROCESSING / EXPIRED / UNKNOWN tidak disentuh.
+ */
+export async function reviveRegeneratedRows(
+	jobs: NewScheduledMessage[],
+	now = utcNow(),
+): Promise<number> {
+	const freshByKey = new Map(jobs.map((j) => [j.idempotencyKey, j]));
+	if (freshByKey.size === 0) return 0;
+
+	const existing = await db
+		.select({
+			key: scheduledMessages.idempotencyKey,
+			status: scheduledMessages.status,
+			lastError: scheduledMessages.lastError,
+		})
+		.from(scheduledMessages)
+		.where(inArray(scheduledMessages.idempotencyKey, [...freshByKey.keys()]));
+
+	let revived = 0;
+	for (const row of existing) {
+		if (row.status !== "CANCELLED") continue;
+		if ((row.lastError ?? "").startsWith(MANUAL_CANCEL_PREFIX)) continue;
+		const job = freshByKey.get(row.key);
+		if (!job) continue;
+		await db
+			.update(scheduledMessages)
+			.set({
+				status: "PENDING",
+				prayerTimeUtc: job.prayerTimeUtc,
+				scheduledAtUtc: job.scheduledAtUtc,
+				messageBody: job.messageBody,
+				contentRef: job.contentRef,
+				attemptCount: 0,
+				nextAttemptAtUtc: null,
+				claimedAtUtc: null,
+				lastError: `Diregenerasi otomatis pada ${now.toISOString()} (template v${TEMPLATE_VERSION}).`,
+				updatedAt: now,
+			})
+			.where(eq(scheduledMessages.idempotencyKey, row.key));
+		revived++;
+	}
+	return revived;
 }
 
 
@@ -100,6 +180,14 @@ export async function generateHorizonMessages(
 		.select()
 		.from(hadiths)
 		.where(eq(hadiths.isActive, true));
+
+	const staleCancelled = await cancelStaleTemplatePending();
+	if (staleCancelled > 0) {
+		logger.info("Antrean template basi dibatalkan untuk diregenerasi.", {
+			staleCancelled,
+			templateVersion: TEMPLATE_VERSION,
+		});
+	}
 
 	const tz = settings.location.timezone;
 	const now = utcNow();
@@ -222,9 +310,18 @@ export async function generateHorizonMessages(
 
 	// Insert idempotent ke MySQL: ON DUPLICATE KEY UPDATE id = id (no-op update)
 	// Memastikan baris yang sudah SENT / FAILED / PROCESSING tidak disentuh sama sekali!
-	// affectedRows MySQL: 1 untuk insert baru, 0 untuk duplikat no-op.
+	// Baris CANCELLED non-manual yang kuncinya diregenerasi dihidupkan ulang dulu
+	// (lihat reviveRegeneratedRows) karena INSERT IGNORE tidak menimpa baris duplikat.
 	let insertedCount = 0;
+	let revivedTotal = 0;
 	if (jobsToInsert.length > 0) {
+		revivedTotal = await reviveRegeneratedRows(jobsToInsert);
+		if (revivedTotal > 0) {
+			logger.info("Baris CANCELLED diregenerasi menjadi PENDING segar.", {
+				revivedCount: revivedTotal,
+				templateVersion: TEMPLATE_VERSION,
+			});
+		}
 		const batchSize = 50;
 		for (let i = 0; i < jobsToInsert.length; i += batchSize) {
 			const batch = jobsToInsert.slice(i, i + batchSize);
@@ -247,12 +344,13 @@ export async function generateHorizonMessages(
 		activeTargets: activeTargets.length,
 		totalJobsEvaluated: jobsToInsert.length,
 		totalJobsInserted: insertedCount,
+		revivedCount: revivedTotal,
 	});
 
 	return {
 		horizonDays: 7,
 		activeTargetsCount: activeTargets.length,
-		totalJobsGenerated: insertedCount,
+		totalJobsGenerated: insertedCount + revivedTotal,
 	};
 }
 
@@ -293,6 +391,8 @@ export async function cancelFuturePendingForInactiveTargets(): Promise<number> {
  * Sesuai docs/06-worker-scheduler.md §6.6:
  * - SENT, FAILED, PROCESSING tidak disentuh.
  * - PENDING masa depan (scheduled_at > now) dibatalkan lalu di-generate ulang.
+ * - CANCELLED non-manual yang kuncinya diregenerasi dihidupkan ulang segar
+ *   (reviveRegeneratedRows); CANCELLED manual admin tidak dibangkitkan.
  */
 export async function recalculateFuturePending(): Promise<RecalculateResult> {
 	const now = utcNow();

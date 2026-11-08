@@ -55,6 +55,22 @@ describe("buildDayTestMessages", () => {
 		expect(adhan?.body).toContain("Hadith Hari Ini");
 	});
 
+	it("simulasi memuat tanggal Masehi-Hijriyah dan link jadwal di semua pesan", () => {
+		const messages = buildDayTestMessages({
+			settings: DEFAULT_SETTINGS,
+			activeHadiths: [],
+			includeHadith: false,
+			dateLocal: "2026-11-08",
+		});
+
+		expect(messages.length).toBeGreaterThan(0);
+		for (const m of messages) {
+			expect(m.body).toContain("📆");
+			expect(m.body).toContain("📅");
+			expect(m.body).toContain("🔗 Jadwal lengkap:");
+		}
+	});
+
 	it("tidak menyisipkan hadits bila includeHadith false atau kosong", () => {
 		const withoutFlag = buildDayTestMessages({
 			settings: DEFAULT_SETTINGS,
