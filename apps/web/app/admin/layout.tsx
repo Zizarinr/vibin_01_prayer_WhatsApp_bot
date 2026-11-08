@@ -220,7 +220,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 				</div>
 			)}
 
-			<aside className="hidden w-64 shrink-0 border-r border-slate-200/80 bg-white/95 backdrop-blur-md lg:flex lg:flex-col lg:justify-between lg:p-6 min-h-screen sticky top-0 shadow-sm">
+			<aside className="hidden w-64 shrink-0 border-r border-slate-200/80 bg-white/95 backdrop-blur-md lg:flex lg:flex-col lg:justify-between lg:p-6 h-screen sticky top-0 shadow-sm">
 				<div>
 					<UnidaPrayerLogo href={adminRoute("/")} size="sm" showBadge />
 

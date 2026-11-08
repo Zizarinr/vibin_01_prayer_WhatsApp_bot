@@ -71,7 +71,7 @@ export function HaditsTable({
 			<div className="overflow-x-auto">
 				<table className="w-full text-left border-collapse text-xs">
 					<thead>
-						<tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-bold text-[#64748B]">
+						<tr className="border-b border-slate-100 bg-slate-50/90 text-[11px] font-bold text-slate-700">
 							<th className="py-3 px-4 w-12 text-center">#</th>
 							<th className="py-3 px-4">Teks Terjemahan</th>
 							<th className="py-3 px-4 w-52">Sumber Periwayatan</th>
@@ -138,9 +138,9 @@ export function HaditsTable({
 			</div>
 
 			{totalPages > 1 && (
-				<div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-xs text-[#64748B]">
+				<div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-xs font-medium text-slate-700 bg-slate-50/50">
 					<span>
-						Menampilkan halaman <strong>{page}</strong> dari <strong>{totalPages}</strong> (Total {totalCount} hadits)
+						Menampilkan halaman <strong className="text-[#102A46]">{page}</strong> dari <strong className="text-[#102A46]">{totalPages}</strong> (Total {totalCount} hadits)
 					</span>
 					<div className="flex items-center gap-1.5">
 						<button

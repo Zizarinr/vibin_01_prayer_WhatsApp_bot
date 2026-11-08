@@ -157,12 +157,12 @@ export default function TargetsPage() {
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
-			<div className="flex items-center justify-between rounded-2xl bg-white border border-slate-200/80 px-4 py-3 shadow-2xs text-xs text-[#64748B]">
+			<div className="flex items-center justify-between rounded-2xl bg-white/95 border border-slate-200/80 px-4 py-3 shadow-2xs text-xs font-medium text-slate-700">
 				<div>
 					Total terdaftar: <strong className="text-[#102A46]">{targets.length} grup</strong> • Aktif menerima pesan:{" "}
 					<strong className="text-emerald-700">{activeCount} grup</strong>
 				</div>
-				<div className="flex items-center gap-1.5 text-[11px] text-[#1D5FA7]">
+				<div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#1D5FA7]">
 					<ShieldCheck className="h-4 w-4" />
 					<span>Grup baru hasil sync default nonaktif</span>
 				</div>
