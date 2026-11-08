@@ -72,7 +72,6 @@ export function LocationSettingsCard({
 	const [reverseLoading, setReverseLoading] = useState(false);
 	const searchContainerRef = useRef<HTMLDivElement | null>(null);
 
-	// Tutup dropdown saat klik di luar container pencarian
 	useEffect(() => {
 		function handleClickOutside(e: MouseEvent) {
 			if (
@@ -89,7 +88,6 @@ export function LocationSettingsCard({
 		};
 	}, []);
 
-	// Fungsi pencarian lokasi via backend proxy Nominatim
 	const handleSearch = useCallback(
 		async (query: string) => {
 			const trimmed = query.trim();
@@ -119,7 +117,6 @@ export function LocationSettingsCard({
 		[],
 	);
 
-	// Debounce pencarian otomatis saat pengguna mengetik
 	useEffect(() => {
 		if (searchQuery.trim().length < 3) {
 			setSearchResults([]);
@@ -173,7 +170,6 @@ export function LocationSettingsCard({
 
 	return (
 		<div className="rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-2xs space-y-5">
-			{/* Card Header */}
 			<div className="flex items-center justify-between border-b border-slate-100 pb-3">
 				<div className="flex items-center gap-2">
 					<div className="p-1.5 rounded-xl bg-blue-50 text-[#1D5FA7]">
@@ -190,7 +186,6 @@ export function LocationSettingsCard({
 				</div>
 			</div>
 
-			{/* Search Box / Geocoding */}
 			<div ref={searchContainerRef} className="relative">
 				<label className="block text-xs font-semibold text-[#102A46] mb-1.5">
 					Cari Lokasi / Kampus / Masjid:
@@ -237,7 +232,6 @@ export function LocationSettingsCard({
 					</button>
 				</div>
 
-				{/* Search Results Dropdown */}
 				{showDropdown && searchResults.length > 0 && (
 					<div className="absolute top-full left-0 right-0 z-[1100] mt-1.5 max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl">
 						<div className="p-1.5 divide-y divide-slate-100">
@@ -275,7 +269,6 @@ export function LocationSettingsCard({
 				)}
 			</div>
 
-			{/* Interactive Map Component */}
 			<div className="space-y-1.5">
 				<MapPicker
 					latitude={latitude}
@@ -303,7 +296,6 @@ export function LocationSettingsCard({
 				</div>
 			</div>
 
-			{/* Form Inputs Grid */}
 			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 pt-2 border-t border-slate-100">
 				<div className="sm:col-span-2">
 					<label className="block text-xs font-semibold text-[#102A46] mb-1">

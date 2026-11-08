@@ -137,7 +137,6 @@ export function HaditsTable({
 				</table>
 			</div>
 
-			{/* Pagination Footer */}
 			{totalPages > 1 && (
 				<div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-xs text-[#64748B]">
 					<span>

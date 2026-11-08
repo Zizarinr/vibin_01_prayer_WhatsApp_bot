@@ -92,7 +92,6 @@ _UNIDA Prayer System V2.0_`;
 			</div>
 
 			<div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-6">
-				{/* Subuh */}
 				<PrayerCard
 					name="Subuh"
 					time={data.times.FAJR.timeLabel}
@@ -100,7 +99,6 @@ _UNIDA Prayer System V2.0_`;
 					status={getSlotStatus(data.times.FAJR.utc, "FAJR")}
 				/>
 
-				{/* Terbit (Astronomical Reference Card) */}
 				<PrayerCard
 					name="Terbit"
 					time={data.times.SUNRISE.timeLabel}
@@ -109,7 +107,6 @@ _UNIDA Prayer System V2.0_`;
 					isAstronomicalNote
 				/>
 
-				{/* Dzuhur / Sholat Jumat */}
 				<PrayerCard
 					name={data.times.DHUHR.displayName}
 					time={data.times.DHUHR.timeLabel}
@@ -118,7 +115,6 @@ _UNIDA Prayer System V2.0_`;
 					badge={data.isFriday ? "Jumat Berkah" : undefined}
 				/>
 
-				{/* Ashar */}
 				<PrayerCard
 					name="Ashar"
 					time={data.times.ASR.timeLabel}
@@ -126,7 +122,6 @@ _UNIDA Prayer System V2.0_`;
 					status={getSlotStatus(data.times.ASR.utc, "ASR")}
 				/>
 
-				{/* Maghrib */}
 				<PrayerCard
 					name="Maghrib"
 					time={data.times.MAGHRIB.timeLabel}
@@ -134,7 +129,6 @@ _UNIDA Prayer System V2.0_`;
 					status={getSlotStatus(data.times.MAGHRIB.utc, "MAGHRIB")}
 				/>
 
-				{/* Isya */}
 				<PrayerCard
 					name="Isya"
 					time={data.times.ISHA.timeLabel}

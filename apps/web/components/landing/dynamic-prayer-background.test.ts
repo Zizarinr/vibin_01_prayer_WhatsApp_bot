@@ -67,31 +67,26 @@ const mockPrayerData: TodayPrayerData = {
 
 describe("getActivePhase", () => {
 	it("mengembalikan SUBUH di antara Fajr dan Sunrise", () => {
-		// 04:30 WIB = 2026-11-07T21:30:00.000Z
 		const t = new Date("2026-11-07T21:30:00.000Z").getTime();
 		expect(getActivePhase(mockPrayerData, t, 0)).toBe("SUBUH");
 	});
 
 	it("mengembalikan DZUHUR di antara Sunrise dan Asr", () => {
-		// 12:00 WIB = 2026-11-08T05:00:00.000Z
 		const t = new Date("2026-11-08T05:00:00.000Z").getTime();
 		expect(getActivePhase(mockPrayerData, t, 0)).toBe("DZUHUR");
 	});
 
 	it("mengembalikan ASHAR di antara Asr dan Maghrib", () => {
-		// 16:00 WIB = 2026-11-08T09:00:00.000Z
 		const t = new Date("2026-11-08T09:00:00.000Z").getTime();
 		expect(getActivePhase(mockPrayerData, t, 0)).toBe("ASHAR");
 	});
 
 	it("mengembalikan MAGHRIB di antara Maghrib dan Isha", () => {
-		// 18:15 WIB = 2026-11-08T11:15:00.000Z
 		const t = new Date("2026-11-08T11:15:00.000Z").getTime();
 		expect(getActivePhase(mockPrayerData, t, 0)).toBe("MAGHRIB");
 	});
 
 	it("mengembalikan ISYA setelah Isha dan sebelum Fajr esok", () => {
-		// 21:00 WIB = 2026-11-08T14:00:00.000Z
 		const t = new Date("2026-11-08T14:00:00.000Z").getTime();
 		expect(getActivePhase(mockPrayerData, t, 0)).toBe("ISYA");
 	});

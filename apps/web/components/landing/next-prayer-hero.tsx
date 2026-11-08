@@ -18,11 +18,9 @@ export function NextPrayerHero({
 }: NextPrayerHeroProps) {
 	return (
 		<div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-[#123B6D] via-[#102A46] to-[#0A1B2E] p-6 text-white shadow-xl ring-1 ring-white/10 sm:p-8">
-			{/* Subtle ambient lighting */}
 			<div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-[#1D5FA7]/30 blur-3xl" />
 			<div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-[#6BA9D8]/20 blur-3xl" />
 
-			{/* Decorative Islamic Dome Arch Silhouette in background */}
 			<svg
 				className="pointer-events-none absolute right-4 bottom-0 h-48 w-48 text-white/[0.03] lg:h-64 lg:w-64"
 				viewBox="0 0 100 100"
@@ -63,14 +61,12 @@ export function NextPrayerHero({
 					</div>
 				</div>
 
-				{/* Countdown Display Box */}
 				{countdown && (
 					<div className="rounded-2xl bg-white/10 p-4.5 backdrop-blur-md ring-1 ring-white/20 sm:p-5 shadow-inner">
 						<span className="text-[11px] font-semibold uppercase tracking-wider text-slate-300">
 							Menuju Kumandang Adzan
 						</span>
 						<div className="mt-2.5 flex items-baseline gap-2.5">
-							{/* Hours */}
 							<div className="flex flex-col items-center">
 								<span className="tabular-nums font-mono text-3xl font-extrabold text-white sm:text-4xl">
 									{countdown.hours}
@@ -80,7 +76,6 @@ export function NextPrayerHero({
 								</span>
 							</div>
 							<span className="font-mono text-2xl font-bold text-[#6BA9D8] animate-pulse">:</span>
-							{/* Minutes */}
 							<div className="flex flex-col items-center">
 								<span className="tabular-nums font-mono text-3xl font-extrabold text-white sm:text-4xl">
 									{countdown.minutes}
@@ -90,7 +85,6 @@ export function NextPrayerHero({
 								</span>
 							</div>
 							<span className="font-mono text-2xl font-bold text-[#6BA9D8] animate-pulse">:</span>
-							{/* Seconds */}
 							<div className="flex flex-col items-center">
 								<span className="tabular-nums font-mono text-3xl font-extrabold text-emerald-400 sm:text-4xl">
 									{countdown.seconds}

@@ -47,7 +47,6 @@ export default function MapPickerView({
 	const markerRef = useRef<L.Marker | null>(null);
 	const isInternalUpdateRef = useRef(false);
 
-	// Inisialisasi peta sekali saat mount
 	useEffect(() => {
 		if (!mapContainerRef.current) return;
 
@@ -175,7 +174,6 @@ export default function MapPickerView({
 		<div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-inner group">
 			<div ref={mapContainerRef} style={{ height, width: "100%" }} className="z-0" />
 
-			{/* Floating Controls Bar */}
 			<div className="absolute top-3 right-3 z-[1000] flex flex-col sm:flex-row gap-1.5 pointer-events-auto">
 				<button
 					type="button"
@@ -198,7 +196,6 @@ export default function MapPickerView({
 				</button>
 			</div>
 
-			{/* Floating Coordinate Info Badge */}
 			<div className="absolute bottom-2 left-2 z-[1000] pointer-events-none">
 				<div className="inline-flex items-center gap-2 bg-[#102A46]/90 text-white backdrop-blur-xs px-2.5 py-1 rounded-lg text-[10px] font-mono tracking-wide shadow-md">
 					<span>

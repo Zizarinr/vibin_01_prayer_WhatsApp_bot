@@ -14,7 +14,6 @@ export function Header({ liveTimeString }: HeaderProps) {
 				<UnidaPrayerLogo href="/" size="sm" showBadge />
 
 				<div className="flex items-center gap-2 sm:gap-4">
-					{/* Real-time Clock Pill */}
 					<div className="flex items-center gap-1.5 rounded-lg bg-[#EAF2FB] px-3 py-1.5 text-xs font-semibold text-[#123B6D] ring-1 ring-blue-700/10">
 						<Clock className="h-3.5 w-3.5 text-[#1D5FA7]" />
 						<span className="tabular-nums font-mono text-sm tracking-wide">

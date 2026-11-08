@@ -43,7 +43,6 @@ interface MetricsGridProps {
 export function MetricsGrid({ statusData }: MetricsGridProps) {
 	return (
 		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-			{/* Card 1: WAHA Status */}
 			<div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xs">
 				<div className="flex items-center justify-between">
 					<span className="text-xs font-semibold text-[#64748B]">WhatsApp Gateway</span>
@@ -60,7 +59,6 @@ export function MetricsGrid({ statusData }: MetricsGridProps) {
 				</div>
 			</div>
 
-			{/* Card 2: Worker Scheduler */}
 			<div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xs">
 				<div className="flex items-center justify-between">
 					<span className="text-xs font-semibold text-[#64748B]">Worker Scheduler</span>
@@ -74,7 +72,6 @@ export function MetricsGrid({ statusData }: MetricsGridProps) {
 				</div>
 			</div>
 
-			{/* Card 3: Pesan Terkirim Hari Ini */}
 			<div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xs">
 				<div className="flex items-center justify-between">
 					<span className="text-xs font-semibold text-[#64748B]">Terkirim Hari Ini</span>
@@ -90,7 +87,6 @@ export function MetricsGrid({ statusData }: MetricsGridProps) {
 				</div>
 			</div>
 
-			{/* Card 4: Target Grup Aktif */}
 			<div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xs">
 				<div className="flex items-center justify-between">
 					<span className="text-xs font-semibold text-[#64748B]">Grup WhatsApp</span>

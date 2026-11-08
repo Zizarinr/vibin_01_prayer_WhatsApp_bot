@@ -109,7 +109,6 @@ export function DynamicPrayerBackground({
 			aria-label="Latar belakang kampus dinamis"
 			className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
 		>
-			{/* Daftar Layer Background Gambar dengan Cross-fade */}
 			{BACKGROUND_VARIANTS.map((variant) => {
 				const isActive = variant.key === activePhase;
 				return (
@@ -132,7 +131,6 @@ export function DynamicPrayerBackground({
 				);
 			})}
 
-			{/* Pelindung Kontras & Gradasi Terintegrasi */}
 			<div className="absolute inset-0 z-20 bg-linear-to-b from-[#0A1B2E]/55 via-[#102A46]/35 to-[#F5F8FC]/95 backdrop-blur-[2px]" />
 		</aside>
 	);

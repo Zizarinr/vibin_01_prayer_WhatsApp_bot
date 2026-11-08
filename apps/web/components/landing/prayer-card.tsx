@@ -32,7 +32,6 @@ export function PrayerCard({
 						: "bg-white/95 backdrop-blur-md border border-slate-200/80 shadow-2xs hover:border-slate-300"
 			}`}
 		>
-			{/* Status Tag for Next Prayer */}
 			{isNext && (
 				<span className="absolute -top-2.5 right-3 rounded-full bg-[#1D5FA7] px-2 py-0.5 text-[10px] font-bold text-white shadow-xs">
 					Berikutnya
