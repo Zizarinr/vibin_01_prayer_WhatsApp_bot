@@ -20,21 +20,19 @@ interface MapPickerViewProps {
 
 function createPinIcon() {
 	return L.divIcon({
-		className: "custom-unida-marker",
+		className: "unida-map-marker",
 		html: `
-			<div style="position: relative; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -100%);">
-				<div style="background-color: #123B6D; color: white; padding: 6px; border-radius: 9999px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 2.5px solid white;">
-					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
-						<circle cx="12" cy="10" r="3"/>
-					</svg>
-				</div>
-				<div style="position: absolute; bottom: -3px; width: 8px; height: 3px; background: rgba(0,0,0,0.35); border-radius: 9999px; filter: blur(1px);"></div>
+			<div style="width: 32px; height: 44px; display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35)); cursor: pointer; user-select: none;">
+				<svg width="32" height="44" viewBox="0 0 32 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block; width: 32px; height: 44px;">
+					<path d="M 16 1 A 15 15 0 0 0 1 16 C 1 27 12 37 16 43 C 20 37 31 27 31 16 A 15 15 0 0 0 16 1 Z" fill="#123B6D" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
+					<circle cx="16" cy="16" r="5.5" fill="#FFFFFF"/>
+					<circle cx="16" cy="16" r="2.5" fill="#1D5FA7"/>
+				</svg>
 			</div>
 		`,
-		iconSize: [32, 32],
-		iconAnchor: [16, 32],
-		popupAnchor: [0, -32],
+		iconSize: [32, 44],
+		iconAnchor: [16, 43],
+		popupAnchor: [0, -43],
 	});
 }
 
@@ -93,12 +91,23 @@ export default function MapPickerView({
 		mapInstanceRef.current = map;
 		markerRef.current = marker;
 
+		let resizeObserver: ResizeObserver | null = null;
+		if (typeof ResizeObserver !== "undefined" && mapContainerRef.current) {
+			resizeObserver = new ResizeObserver(() => {
+				map.invalidateSize();
+			});
+			resizeObserver.observe(mapContainerRef.current);
+		}
+
 		const timer = setTimeout(() => {
 			map.invalidateSize();
 		}, 200);
 
 		return () => {
 			clearTimeout(timer);
+			if (resizeObserver) {
+				resizeObserver.disconnect();
+			}
 			map.remove();
 			mapInstanceRef.current = null;
 			markerRef.current = null;
