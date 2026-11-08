@@ -10,6 +10,15 @@ const nextConfig: NextConfig = {
 	output: "standalone",
 	cacheComponents: true,
 	partialPrefetching: true,
+	// Admin + landing masih full Client Component (fetch di useEffect),
+	// belum ada static shell untuk instant navigation. Batasi validasi
+	// hanya ke segmen yang opt-in eksplisit agar dev overlay
+	// "instant-unrendered-segment" tidak berisik di /admin.
+	experimental: {
+		instantInsights: {
+			validationLevel: "manual-warning",
+		},
+	},
 	turbopack: {
 		rules: {
 			"*.css": {
