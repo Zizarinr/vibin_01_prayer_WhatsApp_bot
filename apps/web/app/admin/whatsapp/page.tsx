@@ -24,12 +24,10 @@ export default function WhatsappSessionPage() {
 	const [error, setError] = useState<string | null>(null);
 	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	// QR Code state
 	const [qrData, setQrData] = useState<string | null>(null);
 	const [showQrModal, setShowQrModal] = useState(false);
 	const [loadingQr, setLoadingQr] = useState(false);
 
-	// Test Message state
 	const [targets, setTargets] = useState<MessageTargetOption[]>([]);
 	const [selectedTargetId, setSelectedTargetId] = useState<number | null>(null);
 	const [testMode, setTestMode] = useState<TestTargetMode>("GROUP");
@@ -38,7 +36,6 @@ export default function WhatsappSessionPage() {
 	const [sendingTest, setSendingTest] = useState(false);
 	const [testResult, setTestResult] = useState<string | null>(null);
 
-	// Modal konfirmasi aksi
 	const [confirmAction, setConfirmAction] = useState<"STOP" | "RESTART" | "LOGOUT" | null>(null);
 
 	const loadSession = useCallback(async () => {
@@ -87,7 +84,6 @@ export default function WhatsappSessionPage() {
 		loadTargets();
 	}, [loadSession, loadTargets]);
 
-	// Polling berkala jika status sesi adalah SCAN_QR
 	useEffect(() => {
 		if (session?.status !== "SCAN_QR") return;
 
@@ -178,7 +174,6 @@ export default function WhatsappSessionPage() {
 
 	return (
 		<div className="space-y-6">
-			{/* Header */}
 			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
@@ -199,7 +194,6 @@ export default function WhatsappSessionPage() {
 				</button>
 			</div>
 
-			{/* Alert Banners */}
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 

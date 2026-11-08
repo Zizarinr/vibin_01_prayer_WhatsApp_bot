@@ -56,7 +56,6 @@ export default function AdminSettingsPage() {
 	const [error, setError] = useState<string | null>(null);
 	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	// Settings State
 	const [sendingEnabled, setSendingEnabled] = useState(true);
 	const [includeHadith, setIncludeHadith] = useState(true);
 	const [reminderEnabled, setReminderEnabled] = useState(true);
@@ -65,10 +64,8 @@ export default function AdminSettingsPage() {
 	const [preReminderMinutes, setPreReminderMinutes] = useState(3);
 	const [lateGraceMinutes, setLateGraceMinutes] = useState(5);
 
-	// Diagnostics
 	const [systemStatus, setSystemStatus] = useState<SystemStatusData | null>(null);
 
-	// Modal Kill-Switch confirmation
 	const [showKillSwitchModal, setShowKillSwitchModal] = useState(false);
 	const [pendingKillSwitchState, setPendingKillSwitchState] = useState(false);
 
@@ -170,7 +167,6 @@ export default function AdminSettingsPage() {
 
 	return (
 		<div className="space-y-6">
-			{/* Page Header */}
 			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
@@ -191,7 +187,6 @@ export default function AdminSettingsPage() {
 				</button>
 			</div>
 
-			{/* Alert Messages */}
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 

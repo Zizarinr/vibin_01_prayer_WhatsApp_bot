@@ -20,7 +20,6 @@ export default function HomePage() {
 	const [error, setError] = useState<string | null>(null);
 	const [refreshing, setRefreshing] = useState(false);
 
-	// Skew waktu antara server dan browser (dalam milidetik)
 	const [serverSkewMs, setServerSkewMs] = useState(0);
 	const [now, setNow] = useState<number | null>(null);
 
@@ -43,7 +42,6 @@ export default function HomePage() {
 			setData(null);
 		} else {
 			const serverTime = new Date(res.data.serverNowUtc).getTime();
-			// Estimasi round-trip latency dibagi 2
 			const latency = (Date.now() - clientFetchStart) / 2;
 			setServerSkewMs(serverTime + latency - Date.now());
 			setData(res.data);
@@ -58,7 +56,6 @@ export default function HomePage() {
 		loadPrayerData();
 	}, [loadPrayerData]);
 
-	// Timer 1 detik untuk jam berjalan & countdown
 	useEffect(() => {
 		const timer = setInterval(() => {
 			setNow(Date.now());
@@ -66,7 +63,6 @@ export default function HomePage() {
 		return () => clearInterval(timer);
 	}, []);
 
-	// Perhitungan countdown waktu shalat berikutnya
 	const countdown = useMemo(() => {
 		if (!now || !data?.nextPrayer?.scheduledAtUtc) return null;
 		const targetUtc = new Date(data.nextPrayer.scheduledAtUtc).getTime();
@@ -84,7 +80,6 @@ export default function HomePage() {
 		};
 	}, [data, now, serverSkewMs]);
 
-	// Jam lokal yang sedang berjalan (WIB)
 	const liveTimeString = useMemo(() => {
 		if (!now) return "--:--:--";
 		const current = new Date(now + serverSkewMs);
@@ -96,7 +91,6 @@ export default function HomePage() {
 		});
 	}, [now, serverSkewMs]);
 
-	// Format tanggal Masehi dalam bahasa Indonesia
 	const gregorianDateFormatted = useMemo(() => {
 		if (!data?.dateLocal) return "";
 		const [year, month, day] = data.dateLocal.split("-").map(Number);
@@ -110,7 +104,6 @@ export default function HomePage() {
 		});
 	}, [data?.dateLocal]);
 
-	// Status tiap kartu waktu shalat
 	const getSlotStatus = useCallback(
 		(utcString: string, prayerName: string): SlotStatus => {
 			if (!now || !data) return "UPCOMING";
@@ -130,29 +123,24 @@ export default function HomePage() {
 
 	return (
 		<div className="relative flex min-h-screen flex-col bg-transparent">
-			{/* Dynamic Time-of-Day Background (Subuh, Dzuhur, Ashar, Maghrib, Isya) */}
 			<DynamicPrayerBackground
 				data={data}
 				now={now}
 				serverSkewMs={serverSkewMs}
 			/>
 
-			{/* Header Navigasi & Live Clock */}
 			<Header liveTimeString={liveTimeString} />
 
 			<main className="flex-1 px-4 py-6 sm:px-6 sm:py-8">
 				<div className="mx-auto max-w-5xl space-y-6 sm:space-y-8">
-					{/* Banner Lokasi & Kalender Masehi/Hijriyah */}
 					<CalendarBanner
 						locationName={data?.locationName ?? "UNIDA Gontor"}
 						gregorianDateFormatted={gregorianDateFormatted}
 						hijri={data?.hijri}
 					/>
 
-					{/* Loading State Skeleton */}
 					{loading && <SkeletonLoading />}
 
-					{/* Honest Error State ("State Gagal Jujur") */}
 					{error && !loading && (
 						<ErrorState
 							message={error}
@@ -161,16 +149,13 @@ export default function HomePage() {
 						/>
 					)}
 
-					{/* Konten Utama Jadwal & Next Prayer */}
 					{data && !loading && !error && (
 						<>
-							{/* Hero Card: Next Prayer & Real-time Countdown */}
 							<NextPrayerHero
 								nextPrayer={data.nextPrayer}
 								countdown={countdown}
 							/>
 
-							{/* Grid 6 Waktu Shalat (5 Waktu Utama + Terbit) */}
 							<PrayerTimesGrid
 								data={data}
 								refreshing={refreshing}
@@ -178,17 +163,14 @@ export default function HomePage() {
 								getSlotStatus={getSlotStatus}
 							/>
 
-							{/* Info Integrasi WhatsApp Bot */}
 							<WhatsappBanner />
 
-							{/* Pemberitahuan Ketentuan Rujukan Hisab */}
 							<ValidationNotice />
 						</>
 					)}
 				</div>
 			</main>
 
-			{/* Footer */}
 			<Footer />
 		</div>
 	);

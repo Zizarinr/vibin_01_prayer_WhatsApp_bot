@@ -35,7 +35,6 @@ export default function AdminOverviewPage() {
 
 	return (
 		<div className="space-y-6">
-			{/* Page Header */}
 			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
@@ -58,10 +57,8 @@ export default function AdminOverviewPage() {
 
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 
-			{/* Metric Cards Grid */}
 			<MetricsGrid statusData={statusData} />
 
-			{/* Attention Banner if any failed or unknown */}
 			{statusData && (
 				<AttentionBanner
 					failedCount={statusData.counts.failed}
@@ -69,10 +66,8 @@ export default function AdminOverviewPage() {
 				/>
 			)}
 
-			{/* Quick Action Navigation Grid */}
 			<QuickLinksGrid />
 
-			{/* Recent Messages Activity Table */}
 			<RecentActivityTable recent={statusData?.recent ?? []} />
 		</div>
 	);

@@ -17,11 +17,9 @@ export default function TargetsPage() {
 	const [error, setError] = useState<string | null>(null);
 	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	// Filters
 	const [searchQuery, setSearchQuery] = useState("");
 	const [filterActive, setFilterActive] = useState<"ALL" | "ACTIVE" | "INACTIVE">("ALL");
 
-	// Inline editing
 	const [editingId, setEditingId] = useState<number | null>(null);
 	const [editName, setEditName] = useState("");
 
@@ -135,7 +133,6 @@ export default function TargetsPage() {
 
 	return (
 		<div className="space-y-6">
-			{/* Page Header */}
 			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
@@ -160,11 +157,9 @@ export default function TargetsPage() {
 				</div>
 			</div>
 
-			{/* Alert Messages */}
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
-			{/* Stat Summary */}
 			<div className="flex items-center justify-between rounded-2xl bg-white border border-slate-200/80 px-4 py-3 shadow-2xs text-xs text-[#64748B]">
 				<div>
 					Total terdaftar: <strong className="text-[#102A46]">{targets.length} grup</strong> • Aktif menerima pesan:{" "}
@@ -176,7 +171,6 @@ export default function TargetsPage() {
 				</div>
 			</div>
 
-			{/* Filter Bar */}
 			<TargetFilters
 				searchQuery={searchQuery}
 				filterActive={filterActive}
@@ -184,7 +178,6 @@ export default function TargetsPage() {
 				onFilterChange={setFilterActive}
 			/>
 
-			{/* Table Container */}
 			<div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-2xs">
 				<TargetTable
 					targets={filteredTargets}

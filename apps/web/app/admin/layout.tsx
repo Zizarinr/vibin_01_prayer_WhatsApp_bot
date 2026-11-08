@@ -38,7 +38,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 	const [authChecked, setAuthChecked] = useState(false);
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-	// Tutup mobile menu ketika rute berpindah
 	useEffect(() => {
 		setMobileMenuOpen(false);
 	}, [pathname]);
@@ -115,7 +114,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
 	return (
 		<div className="flex min-h-screen flex-col bg-[#F5F8FC] lg:flex-row">
-			{/* Mobile Top Navigation Bar */}
 			<header className="sticky top-0 z-40 flex items-center justify-between border-b border-blue-100/80 bg-white/95 px-4 py-3 backdrop-blur-md lg:hidden">
 				<UnidaPrayerLogo href={adminRoute("/")} size="xs" showBadge={false} />
 
@@ -133,7 +131,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 				</button>
 			</header>
 
-			{/* Mobile Drawer Backdrop & Menu */}
 			{mobileMenuOpen && (
 				<div
 					className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs lg:hidden"
@@ -215,13 +212,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 				</div>
 			)}
 
-			{/* Desktop Admin Sidebar */}
 			<aside className="hidden w-64 shrink-0 border-r border-blue-100/80 bg-white lg:flex lg:flex-col lg:justify-between lg:p-6 min-h-screen sticky top-0">
 				<div>
-					{/* Logo / Header */}
 					<UnidaPrayerLogo href={adminRoute("/")} size="sm" showBadge />
 
-					{/* Navigation Links */}
 					<nav className="mt-8 space-y-1.5">
 						{navItems.map((item) => {
 							const active = pathname === item.href;
@@ -243,7 +237,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 					</nav>
 				</div>
 
-				{/* Bottom Actions */}
 				<div className="border-t border-slate-100 pt-4 space-y-3">
 					{admin && (
 						<div className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 border border-slate-100">
@@ -281,7 +274,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 				</div>
 			</aside>
 
-			{/* Main Content Area */}
 			<div className="flex flex-1 flex-col">
 				<main className="flex-1 p-4 sm:p-6 lg:p-8">
 					<div className="mx-auto max-w-5xl">{children}</div>

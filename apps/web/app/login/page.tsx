@@ -42,7 +42,6 @@ export default function LoginPage() {
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center bg-[#F5F8FC] p-4 sm:p-6">
 			<div className="w-full max-w-md space-y-6">
-				{/* Top Return Link */}
 				<Link
 					href="/"
 					className="inline-flex items-center gap-2 text-xs font-semibold text-[#64748B] hover:text-[#123B6D] transition"
@@ -51,7 +50,6 @@ export default function LoginPage() {
 					<span>Kembali ke Beranda Jadwal</span>
 				</Link>
 
-				{/* Card */}
 				<div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-sm space-y-6">
 					<div className="flex flex-col items-center text-center space-y-2">
 						<UnidaPrayerIcon size="lg" className="mb-1" />

@@ -57,7 +57,6 @@ export default function AdminPrayerPage() {
 	const [error, setError] = useState<string | null>(null);
 	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	// Settings Form State
 	const [locationName, setLocationName] = useState("");
 	const [latitude, setLatitude] = useState<number>(-7.8652);
 	const [longitude, setLongitude] = useState<number>(111.4617);
@@ -74,12 +73,10 @@ export default function AdminPrayerPage() {
 	const [adjIsha, setAdjIsha] = useState(0);
 	const [hijriAdjustmentDays, setHijriAdjustmentDays] = useState(0);
 
-	// Preview Hisab State
 	const [previewDate, setPreviewDate] = useState("");
 	const [previewResult, setPreviewResult] = useState<PreviewResult | null>(null);
 	const [loadingPreview, setLoadingPreview] = useState(false);
 
-	// Confirmation Modal for Recalculate
 	const [showRecalcModal, setShowRecalcModal] = useState(false);
 
 	const loadSettings = useCallback(async () => {
@@ -222,7 +219,6 @@ export default function AdminPrayerPage() {
 
 	return (
 		<div className="space-y-6">
-			{/* Page Header */}
 			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
@@ -245,7 +241,6 @@ export default function AdminPrayerPage() {
 				</div>
 			</div>
 
-			{/* Alert Messages */}
 			<ErrorBanner message={error} onClose={() => setError(null)} />
 			<SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
