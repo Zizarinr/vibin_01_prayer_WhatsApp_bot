@@ -219,7 +219,7 @@ export default function AdminSettingsPage() {
 								onChangeIncludeHadith={setIncludeHadith}
 							/>
 
-							<div className="flex justify-end">
+							<div className="flex justify-end rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-2xs backdrop-blur-md">
 								<button
 									type="submit"
 									disabled={saving}

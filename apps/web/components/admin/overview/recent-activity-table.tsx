@@ -47,7 +47,7 @@ export function RecentActivityTable({ recent }: RecentActivityTableProps) {
 				<div className="overflow-x-auto">
 					<table className="w-full text-left border-collapse text-xs">
 						<thead>
-							<tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-bold text-[#64748B]">
+							<tr className="border-b border-slate-100 bg-slate-50/90 text-[11px] font-bold text-slate-700">
 								<th className="py-2.5 px-3">Status</th>
 								<th className="py-2.5 px-3">Shalat</th>
 								<th className="py-2.5 px-3">Target Grup</th>
@@ -63,14 +63,14 @@ export function RecentActivityTable({ recent }: RecentActivityTableProps) {
 									</td>
 									<td className="py-2.5 px-3 font-semibold text-[#102A46]">
 										{formatPrayerName(item.prayerName)}{" "}
-										<span className="text-[10px] text-[#64748B] font-normal">
+										<span className="text-[10px] text-slate-500 font-medium">
 											({item.messageType === "ADHAN" ? "Adzan" : "Pre"})
 										</span>
 									</td>
 									<td className="py-2.5 px-3 font-medium text-[#102A46]">
 										{item.targetName}
 									</td>
-									<td className="py-2.5 px-3 text-[#64748B]">
+									<td className="py-2.5 px-3 font-medium text-slate-600">
 										{new Date(item.scheduledAtUtc).toLocaleString("id-ID", {
 											dateStyle: "short",
 											timeStyle: "short",

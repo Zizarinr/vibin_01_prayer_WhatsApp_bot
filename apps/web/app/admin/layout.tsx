@@ -118,9 +118,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
 	return (
 		<div className="relative flex min-h-screen flex-col bg-transparent lg:flex-row">
-			<DynamicPrayerBackground />
+			<DynamicPrayerBackground
+				overlayClassName="bg-linear-to-b from-[#0A1B2E]/35 via-[#102A46]/15 to-[#F5F8FC]/92 backdrop-blur-[3px]"
+			/>
 
-			<header className="sticky top-0 z-40 flex items-center justify-between border-b border-blue-100/70 bg-white/85 px-4 py-3 backdrop-blur-md shadow-xs lg:hidden">
+			<header className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur-md shadow-xs lg:hidden">
 				<UnidaPrayerLogo href={adminRoute("/")} size="xs" showBadge={false} />
 
 				<button
@@ -143,7 +145,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 					onClick={() => setMobileMenuOpen(false)}
 				>
 					<div
-						className="relative flex h-full w-4/5 max-w-xs flex-col justify-between bg-white/95 p-5 shadow-2xl backdrop-blur-xl"
+						className="relative flex h-full w-4/5 max-w-xs flex-col justify-between bg-white p-5 shadow-2xl"
 						onClick={(e) => e.stopPropagation()}
 					>
 						<div>
@@ -168,7 +170,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 											className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all ${
 												active
 													? "bg-[#123B6D] text-white shadow-xs"
-													: "text-[#64748B] hover:bg-slate-50 hover:text-[#123B6D]"
+													: "text-slate-700 hover:bg-slate-100/80 hover:text-[#123B6D]"
 											}`}
 										>
 											{item.icon}
@@ -181,7 +183,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
 						<div className="border-t border-slate-100 pt-4 space-y-3">
 							{admin && (
-								<div className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 border border-slate-100">
+								<div className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 border border-slate-200/80">
 									<div className="flex items-center gap-2 overflow-hidden">
 										<div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#123B6D] text-white">
 											<User className="h-3.5 w-3.5" />
@@ -190,7 +192,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 											<p className="truncate text-xs font-bold text-[#102A46]">
 												{admin.name}
 											</p>
-											<p className="truncate text-[10px] text-[#64748B]">
+											<p className="truncate text-[10px] font-medium text-slate-600">
 												{admin.email}
 											</p>
 										</div>
@@ -208,7 +210,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
 							<Link
 								href="/"
-								className="flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium text-[#64748B] hover:bg-slate-50 hover:text-[#123B6D]"
+								className="flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100/80 hover:text-[#123B6D]"
 							>
 								<ArrowLeft className="h-4 w-4" />
 								<span>Kembali ke Beranda</span>
@@ -218,7 +220,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 				</div>
 			)}
 
-			<aside className="hidden w-64 shrink-0 border-r border-blue-100/70 bg-white/85 backdrop-blur-xl lg:flex lg:flex-col lg:justify-between lg:p-6 min-h-screen sticky top-0 shadow-xs">
+			<aside className="hidden w-64 shrink-0 border-r border-slate-200/80 bg-white/95 backdrop-blur-md lg:flex lg:flex-col lg:justify-between lg:p-6 min-h-screen sticky top-0 shadow-sm">
 				<div>
 					<UnidaPrayerLogo href={adminRoute("/")} size="sm" showBadge />
 
@@ -232,7 +234,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 									className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all ${
 										active
 											? "bg-[#123B6D] text-white shadow-xs"
-											: "text-[#64748B] hover:bg-slate-50 hover:text-[#123B6D]"
+											: "text-slate-700 hover:bg-slate-100/80 hover:text-[#123B6D]"
 									}`}
 								>
 									{item.icon}
@@ -245,7 +247,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
 				<div className="border-t border-slate-100 pt-4 space-y-3">
 					{admin && (
-						<div className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 border border-slate-100">
+						<div className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 border border-slate-200/80">
 							<div className="flex items-center gap-2 overflow-hidden">
 								<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#123B6D] text-white shadow-2xs">
 									<User className="h-4 w-4" />
@@ -254,7 +256,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 									<p className="truncate text-xs font-bold text-[#102A46]">
 										{admin.name}
 									</p>
-									<p className="truncate text-[10px] text-[#64748B]">
+									<p className="truncate text-[10px] font-medium text-slate-600">
 										{admin.email}
 									</p>
 								</div>
@@ -272,7 +274,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
 					<Link
 						href="/"
-						className="flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium text-[#64748B] hover:bg-slate-50 hover:text-[#123B6D]"
+						className="flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100/80 hover:text-[#123B6D]"
 					>
 						<ArrowLeft className="h-4 w-4" />
 						<span>Kembali ke Beranda</span>

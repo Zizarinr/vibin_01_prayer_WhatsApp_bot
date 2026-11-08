@@ -286,7 +286,7 @@ export default function AdminPrayerPage() {
 								onChangeHijriDays={setHijriAdjustmentDays}
 							/>
 
-							<div className="flex items-center justify-end">
+							<div className="flex items-center justify-end rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-2xs backdrop-blur-md">
 								<button
 									type="submit"
 									disabled={saving}

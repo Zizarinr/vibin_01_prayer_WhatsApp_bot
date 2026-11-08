@@ -45,7 +45,7 @@ export function MetricsGrid({ statusData }: MetricsGridProps) {
 		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 			<div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xs">
 				<div className="flex items-center justify-between">
-					<span className="text-xs font-semibold text-[#64748B]">WhatsApp Gateway</span>
+					<span className="text-xs font-semibold text-slate-700">WhatsApp Gateway</span>
 					<Radio className="h-4 w-4 text-[#1D5FA7]" />
 				</div>
 				<div className="mt-3 flex items-baseline justify-between">
@@ -61,12 +61,12 @@ export function MetricsGrid({ statusData }: MetricsGridProps) {
 
 			<div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xs">
 				<div className="flex items-center justify-between">
-					<span className="text-xs font-semibold text-[#64748B]">Worker Scheduler</span>
+					<span className="text-xs font-semibold text-slate-700">Worker Scheduler</span>
 					<Server className="h-4 w-4 text-[#1D5FA7]" />
 				</div>
 				<div className="mt-3 flex items-baseline justify-between">
 					<WorkerStatusBadge state={statusData?.worker.state || "OFFLINE"} />
-					<span className="text-[10px] text-slate-400">
+					<span className="text-[10px] font-medium text-slate-500">
 						{statusData?.database.ok ? `DB: ${statusData.database.latencyMs}ms` : "DB Offline"}
 					</span>
 				</div>
@@ -74,7 +74,7 @@ export function MetricsGrid({ statusData }: MetricsGridProps) {
 
 			<div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xs">
 				<div className="flex items-center justify-between">
-					<span className="text-xs font-semibold text-[#64748B]">Terkirim Hari Ini</span>
+					<span className="text-xs font-semibold text-slate-700">Terkirim Hari Ini</span>
 					<MessageSquare className="h-4 w-4 text-[#1D5FA7]" />
 				</div>
 				<div className="mt-3 flex items-baseline gap-2">
@@ -89,14 +89,14 @@ export function MetricsGrid({ statusData }: MetricsGridProps) {
 
 			<div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xs">
 				<div className="flex items-center justify-between">
-					<span className="text-xs font-semibold text-[#64748B]">Grup WhatsApp</span>
+					<span className="text-xs font-semibold text-slate-700">Grup WhatsApp</span>
 					<Users className="h-4 w-4 text-[#1D5FA7]" />
 				</div>
 				<div className="mt-3 flex items-baseline gap-2">
 					<span className="text-2xl font-extrabold text-[#102A46]">
 						{statusData?.counts.activeTargets ?? 0}
 					</span>
-					<span className="text-xs text-[#64748B]">
+					<span className="text-xs font-medium text-slate-600">
 						aktif dari {statusData?.counts.totalTargets ?? 0} terdaftar
 					</span>
 				</div>

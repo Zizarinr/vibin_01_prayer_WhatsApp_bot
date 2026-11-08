@@ -12,12 +12,12 @@ export function AdminPageHeader({
 	children,
 }: AdminPageHeaderProps) {
 	return (
-		<div className="flex flex-col gap-3 rounded-2xl border border-white/80 bg-white/90 p-4 sm:p-5 shadow-xs backdrop-blur-md ring-1 ring-slate-200/60 sm:flex-row sm:items-center sm:justify-between">
+		<div className="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white/95 p-4 sm:p-5 shadow-xs backdrop-blur-md sm:flex-row sm:items-center sm:justify-between">
 			<div>
 				<h1 className="text-xl font-bold text-[#102A46] sm:text-2xl">
 					{title}
 				</h1>
-				<p className="text-xs text-[#64748B]">
+				<p className="text-xs font-medium text-slate-600">
 					{description}
 				</p>
 			</div>

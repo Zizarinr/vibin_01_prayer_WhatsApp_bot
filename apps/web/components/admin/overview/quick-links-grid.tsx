@@ -24,7 +24,7 @@ export function QuickLinksGrid() {
 					<ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-[#1D5FA7] transition" />
 				</div>
 				<h3 className="mt-3 text-sm font-bold text-[#102A46]">Koneksi WhatsApp</h3>
-				<p className="mt-1 text-xs text-[#64748B]">
+				<p className="mt-1 text-xs font-medium text-slate-600">
 					Pantau status sesi WAHA, scan QR code pairing, dan kirim pesan uji coba.
 				</p>
 			</Link>
@@ -40,7 +40,7 @@ export function QuickLinksGrid() {
 					<ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 transition" />
 				</div>
 				<h3 className="mt-3 text-sm font-bold text-[#102A46]">Target & Grup</h3>
-				<p className="mt-1 text-xs text-[#64748B]">
+				<p className="mt-1 text-xs font-medium text-slate-600">
 					Sinkronisasi grup dari WhatsApp dan aktifkan grup penerima jadwal shalat.
 				</p>
 			</Link>
@@ -56,7 +56,7 @@ export function QuickLinksGrid() {
 					<ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 transition" />
 				</div>
 				<h3 className="mt-3 text-sm font-bold text-[#102A46]">Jadwal & Hisab</h3>
-				<p className="mt-1 text-xs text-[#64748B]">
+				<p className="mt-1 text-xs font-medium text-slate-600">
 					Sesuaikan koordinat kampus, sudut hisab Kemenag, koreksi menit, dan hitung ulang jadwal.
 				</p>
 			</Link>
@@ -72,7 +72,7 @@ export function QuickLinksGrid() {
 					<ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-sky-600 transition" />
 				</div>
 				<h3 className="mt-3 text-sm font-bold text-[#102A46]">Riwayat Pesan</h3>
-				<p className="mt-1 text-xs text-[#64748B]">
+				<p className="mt-1 text-xs font-medium text-slate-600">
 					Lihat daftar pesan yang telah terkirim, tinjau snapshot teks, dan lakukan retry manual.
 				</p>
 			</Link>
@@ -88,7 +88,7 @@ export function QuickLinksGrid() {
 					<ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-amber-600 transition" />
 				</div>
 				<h3 className="mt-3 text-sm font-bold text-[#102A46]">Konten Hadits</h3>
-				<p className="mt-1 text-xs text-[#64748B]">
+				<p className="mt-1 text-xs font-medium text-slate-600">
 					Kelola hadits dan ayat shalat terverifikasi yang dirotasikan pada pesan adzan harian.
 				</p>
 			</Link>
@@ -104,7 +104,7 @@ export function QuickLinksGrid() {
 					<ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-[#123B6D] transition" />
 				</div>
 				<h3 className="mt-3 text-sm font-bold text-[#102A46]">Pengaturan Sistem</h3>
-				<p className="mt-1 text-xs text-[#64748B]">
+				<p className="mt-1 text-xs font-medium text-slate-600">
 					Kontrol kill-switch darurat, durasi pre-reminder, batas late grace, dan status server.
 				</p>
 			</Link>
